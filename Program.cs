@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Ticket.Data;
 using Ticket.ExceptionFilter;
+using Ticket.Interface;
 using Ticket.Model;
 using Ticket.Service;
 
@@ -11,8 +12,6 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
 
 var connectionString = builder.Configuration.GetConnectionString("TicketConnection");
 
@@ -25,7 +24,7 @@ builder.Services.AddIdentity<User, IdentityRole>()
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddControllers(opts =>
 {

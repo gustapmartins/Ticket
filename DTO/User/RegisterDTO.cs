@@ -4,10 +4,10 @@ namespace Ticket.DTO.User;
 
 public class RegisterDTO
 {
-    [Required]
+    [Required(ErrorMessage = "O Name do filme é obrigatório")]
     public string? Name { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "O Email do filme é obrigatório")]
     public string? Email { get; set; }
 
     [Required]
