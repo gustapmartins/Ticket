@@ -31,6 +31,18 @@ public class CategoryController: ControllerBase
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
+    /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="201">Caso inserção seja feita com sucesso</response>
+    [HttpGet("{id}")]
+    public IActionResult FindIdFilme([FromRoute] int id)
+    {
+        return Ok(_categoryService.FindId(id));
+    }
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
     /// <param name="categoryDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
@@ -44,13 +56,28 @@ public class CategoryController: ControllerBase
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
+    /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="201">Caso inserção seja feita com sucesso</response>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult DeleteCategory(int id)
+    {
+        return Ok(_categoryService.DeleteCategory(id));
+    }
+
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
     /// <param name="categoryDto">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    public CreatedAtActionResult UpdateCategory(int id, [FromBody] JsonPatchDocument<CategoryUpdateDTO> categoryDto)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<CategoryUpdateDTO> categoryDto)
     {
-        return CreatedAtAction(nameof(FindAllFilmes), _categoryService.UpdateCategory(id, categoryDto));
+        return Ok(_categoryService.UpdateCategory(id, categoryDto));
     }
 }

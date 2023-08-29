@@ -28,12 +28,31 @@ public class CategoryService: ICategoryService
 
             if (find.Count == 0)
             {
-                throw new StudentNotFoundException("Está lista está vazia");
+                throw new StudentNotFoundException("The list is empty");
             }
             return find;
         }catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error ao fazer a requisição", ex);
+            throw new StudentNotFoundException("Error in the request", ex);
+        }
+    }
+
+    public Category FindId(int id)
+    {
+        try
+        {
+            var find = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
+
+            if(find == null)
+            {
+                throw new StudentNotFoundException("This value does not exist");
+            }
+
+            return find;
+        }
+        catch (Exception ex)
+        {
+            throw new StudentNotFoundException("Error in the request", ex);
         }
     }
 
@@ -47,7 +66,7 @@ public class CategoryService: ICategoryService
             return CategoryDto;
         }catch(Exception ex)
         {
-            throw new StudentNotFoundException("Error ao fazer a requisição", ex);
+            throw new StudentNotFoundException("Error in the request", ex);
         }
     }
 
@@ -58,29 +77,38 @@ public class CategoryService: ICategoryService
             var category = _ticketContext.Categorys.FirstOrDefault(endereco => endereco.Id == id);
             if (category == null)
             {
-                throw new StudentNotFoundException("Not Found");
+                throw new StudentNotFoundException("This value does not exist");
             }
             _ticketContext.Remove(category);
             _ticketContext.SaveChanges();
             return category;
         }catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error ao fazer a requisição", ex);
+            throw new StudentNotFoundException("Error in the request", ex);
         }
     }
 
-    public CategoryUpdateDTO UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDTO> updateDto)
+    public CategoryUpdateDTO UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDTO> categoryDto)
     {
-        var category = _ticketContext.Categorys.FirstOrDefault(filme => filme.Id == id);
-        if (category == null)
+        try
         {
-            throw new StudentNotFoundException("Not Found");
+            // Exemplo hipotético de busca da categoria pelo ID (isso varia de acordo com sua lógica):
+            var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
+
+            if (category == null)
+            {
+                throw new StudentNotFoundException("This value does not exist");
+            }
+
+            var categoryView = _mapper.Map<CategoryUpdateDTO>(category);
+
+            categoryDto.ApplyTo(categoryView);
+            _ticketContext.SaveChanges();
+            return categoryView;
         }
-
-        var updateMapper = _mapper.Map<CategoryUpdateDTO>(category);
-
-        _mapper.Map(updateDto, category);
-        _ticketContext.SaveChanges();
-        return updateMapper;
+        catch(Exception ex)
+        {
+            throw new StudentNotFoundException("Error in the request", ex);
+        }
     }
 }

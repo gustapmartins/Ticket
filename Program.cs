@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Ticket.Data;
 using Ticket.ExceptionFilter;
+using Ticket.Model;
 using Ticket.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -16,6 +18,10 @@ var connectionString = builder.Configuration.GetConnectionString("TicketConnecti
 
 builder.Services.AddDbContext<TicketContext>(opts =>
     opts.UseLazyLoadingProxies().UseNpgsql(connectionString));
+
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<TicketContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
