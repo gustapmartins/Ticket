@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Category;
+using Ticket.Interface;
 using Ticket.Model;
-using Ticket.Service;
 
 namespace Ticket.Controllers;
 
@@ -10,9 +10,9 @@ namespace Ticket.Controllers;
 [Route("[controller]")]
 public class CategoryController: ControllerBase
 {
-    private readonly CategoryService _categoryService;
+    private readonly ICategoryService _categoryService;
 
-    public CategoryController(CategoryService categoryService)
+    public CategoryController(ICategoryService categoryService)
     {
         _categoryService = categoryService;
     }
@@ -23,6 +23,7 @@ public class CategoryController: ControllerBase
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public List<Category> FindAllFilmes()
     {
         return _categoryService.FindAll();
@@ -60,7 +61,7 @@ public class CategoryController: ControllerBase
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult DeleteCategory(int id)
     {
         return Ok(_categoryService.DeleteCategory(id));

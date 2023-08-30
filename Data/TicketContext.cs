@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Ticket.Model;
 
@@ -10,11 +10,7 @@ public class TicketContext: IdentityDbContext<User>
     public TicketContext(DbContextOptions<TicketContext> opts)
         : base(opts)
     {
-
-    }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
+      
     }
 
     public DbSet<Category> Categorys { get; set; }

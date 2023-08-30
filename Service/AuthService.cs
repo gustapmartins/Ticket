@@ -10,13 +10,11 @@ namespace Ticket.Service;
 
 public class AuthService: IAuthService
 {
-    private readonly TicketContext _ticketContext;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IMapper _mapper;
-    public AuthService(TicketContext ticketContext, IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
+    public AuthService(IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
     {
-        _ticketContext = ticketContext;
         _mapper = mapper;
         _userManager = userManager;
         _signInManager = signInManager;
@@ -50,8 +48,21 @@ public class AuthService: IAuthService
         throw new Exception();
     }
 
-    public Task RegisterAsync(RegisterDTO loginDto)
+    public async Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto)
     {
-        throw new Exception();
+        var existEmail = await _userManager.FindByEmailAsync(registerDto.Email);
+
+        if (existEmail != null)
+        {
+            throw new StudentNotFoundException("This email already exists");
+        }
+
+        User user = _mapper.Map<User>(registerDto);
+
+        IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password);
+
+        if(!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
+
+        return registerDto;
     }
 }
