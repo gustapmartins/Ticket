@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Category;
+using Ticket.Interface;
 using Ticket.Model;
 using Ticket.Service;
 
@@ -10,9 +11,9 @@ namespace Ticket.Controllers;
 [Route("[controller]")]
 public class CategoryController: ControllerBase
 {
-    private readonly CategoryService _categoryService;
+    private readonly ICategoryService _categoryService;
 
-    public CategoryController(CategoryService categoryService)
+    public CategoryController(ICategoryService categoryService)
     {
         _categoryService = categoryService;
     }
