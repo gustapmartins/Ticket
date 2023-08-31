@@ -94,7 +94,7 @@ public class CategoryService: ICategoryService
         {
             // Exemplo hipotético de busca da categoria pelo ID (isso varia de acordo com sua lógica):
             var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
-
+             
             if (category == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
@@ -103,6 +103,8 @@ public class CategoryService: ICategoryService
             var categoryView = _mapper.Map<CategoryUpdateDTO>(category);
 
             categoryDto.ApplyTo(categoryView);
+
+            _mapper.Map(categoryView, category); 
             _ticketContext.SaveChanges();
             return categoryView;
         }
