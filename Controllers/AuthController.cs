@@ -10,9 +10,9 @@ namespace Ticket.Controllers;
 [Route("[Controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly AuthService _authService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(AuthService authService)
     {
         _authService = authService;
     }
@@ -23,7 +23,8 @@ public class AuthController : ControllerBase
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
-    public List<User> FindAll()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public List<Users> FindAllFilmes()
     {
         return _authService.FindAll();
     }
@@ -33,12 +34,11 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <param name="loginDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
-    /// <response code="201">Caso inserção seja feita com sucesso</response>
-    [HttpPost("Login")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpPost("login")]
     public async Task<IActionResult> LoginAsync(LoginDTO loginDto)
     {
-        await _authService.LoginAsync(loginDto);
+        await _authService.Login(loginDto);
         return Ok("Logado");
     }
 
@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
     /// <param name="registerDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
-    [HttpPost("Register")]
+    [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Register(RegisterDTO registerDto)
     {

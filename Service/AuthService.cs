@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Ticket.Data;
 using Ticket.DTO.User;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
@@ -8,22 +7,21 @@ using Ticket.Model;
 
 namespace Ticket.Service;
 
-public class AuthService : IAuthService
+public class AuthService: IAuthService
 {
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
+    private UserManager<Users> _userManager;
+    private SignInManager<Users> _signInManager;
     private readonly IMapper _mapper;
-    private readonly RoleManager<IdentityUser> _roleManager;
-
-    public AuthService(IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityUser> roleMnager)
+    private RoleManager<IdentityUser> _roleManager;
+    public AuthService(UserManager<Users> userManager, IMapper mapper, SignInManager<Users> signInManager = null, RoleManager<IdentityUser> roleManager = null)
     {
-        _mapper = mapper;
         _userManager = userManager;
+        _mapper = mapper;
         _signInManager = signInManager;
-        _roleManager = roleMnager;
+        _roleManager = roleManager;
     }
 
-    public List<User> FindAll()
+    public List<Users> FindAll()
     {
         try
         {
@@ -35,24 +33,19 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);   
+            throw new StudentNotFoundException("Error in the request", ex);
         }
     }
 
-    public async Task LoginAsync(LoginDTO loginDto)
+    public async Task Login(LoginDTO loginDto)
     {
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
-
-        if (user == null) throw new StudentNotFoundException("Incorrect email and password");
 
         var result = await _signInManager.PasswordSignInAsync(loginDto.Email, loginDto.Password, false, false);
 
-        if (!result.Succeeded) throw new StudentNotFoundException("unauthenticated user");
-    }
-
-    public Task LogoutAsync()
-    {
-        throw new Exception();
+        if (!result.Succeeded)
+        {
+            throw new StudentNotFoundException("Unauthenticated user");
+        }
     }
 
     public async Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto)
@@ -64,12 +57,13 @@ public class AuthService : IAuthService
             throw new StudentNotFoundException("This email already exists");
         }
 
-        if(registerDto.YearsOld <= 16)
+        if (registerDto.YearsOld <= 16)
         {
             throw new StudentNotFoundException("This email already exists");
         }
 
-        User user = new User{
+        Users user = new Users
+        {
             SecurityStamp = Guid.NewGuid().ToString(),
             UserName = registerDto.Username,
             Email = registerDto.Email,
@@ -80,12 +74,12 @@ public class AuthService : IAuthService
 
         IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password);
 
-        if(!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
+        if (!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
 
         if (!await _roleManager.RoleExistsAsync(registerDto.Role))
             await _roleManager.CreateAsync(new IdentityUser(registerDto.Role));
 
-        if(await _roleManager.RoleExistsAsync(registerDto.Role))
+        if (await _roleManager.RoleExistsAsync(registerDto.Role))
         {
             await _userManager.AddToRoleAsync(user, registerDto.Role);
         }

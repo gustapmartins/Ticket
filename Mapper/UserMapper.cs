@@ -9,6 +9,6 @@ public class UserMapper: Profile
 {
     public UserMapper()
     {
-        CreateMap<RegisterDTO, User>();
+        CreateMap<RegisterDTO, Users>();
     }
 }

@@ -5,12 +5,11 @@ using Ticket.Model;
 
 namespace Ticket.Data;
 
-public class TicketContext: IdentityDbContext<User>
+public class TicketContext: IdentityDbContext<Users>
 {
     public TicketContext(DbContextOptions<TicketContext> opts)
         : base(opts)
     {
     }
-
     public DbSet<Category> Categorys { get; set; }
 }

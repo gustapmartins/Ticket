@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20230830203835_Create-User")]
-    partial class CreateUser
+    [Migration("20230902190544_CreateUsers")]
+    partial class CreateUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -181,7 +181,7 @@ namespace Ticket.Migrations
                     b.ToTable("Categorys");
                 });
 
-            modelBuilder.Entity("Ticket.Model.User", b =>
+            modelBuilder.Entity("Ticket.Model.Users", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -262,7 +262,7 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Ticket.Model.User", null)
+                    b.HasOne("Ticket.Model.Users", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -271,7 +271,7 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Ticket.Model.User", null)
+                    b.HasOne("Ticket.Model.Users", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -286,7 +286,7 @@ namespace Ticket.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Ticket.Model.User", null)
+                    b.HasOne("Ticket.Model.Users", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -295,7 +295,7 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Ticket.Model.User", null)
+                    b.HasOne("Ticket.Model.Users", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

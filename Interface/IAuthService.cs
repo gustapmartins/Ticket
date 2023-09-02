@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Ticket.DTO.User;
+﻿using Ticket.DTO.User;
 using Ticket.Model;
 
 namespace Ticket.Interface;
 
 public interface IAuthService
 {
+    List<Users> FindAll();
 
-    List<User> FindAll();
-    Task LoginAsync(LoginDTO loginDto);
-    Task LogoutAsync();
+    Task Login(LoginDTO loginDto);
+
     Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto);
 }
