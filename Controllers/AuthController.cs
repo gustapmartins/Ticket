@@ -2,6 +2,7 @@
 using Ticket.DTO.User;
 using Ticket.Interface;
 using Ticket.Model;
+using Ticket.Service;
 
 namespace Ticket.Controllers;
 
@@ -35,9 +36,10 @@ public class AuthController : ControllerBase
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Register(LoginDTO loginDto)
+    public async Task<IActionResult> LoginAsync(LoginDTO loginDto)
     {
-        return Ok("Login");
+        await _authService.LoginAsync(loginDto);
+        return Ok("Logado");
     }
 
     /// <summary>

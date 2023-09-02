@@ -8,39 +8,46 @@ using Ticket.Model;
 
 namespace Ticket.Service;
 
-public class AuthService: IAuthService
+public class AuthService : IAuthService
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IMapper _mapper;
-    public AuthService(IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
+    private readonly RoleManager<IdentityUser> _roleManager;
+
+    public AuthService(IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityUser> roleMnager)
     {
         _mapper = mapper;
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleMnager;
     }
 
     public List<User> FindAll()
     {
-            try
-            {
-                var find = _userManager.Users.ToList();
+        try
+        {
+            var find = _userManager.Users.ToList();
 
-                if (find.Count == 0)
-                {
-                    throw new StudentNotFoundException("The list is empty");
-                }
-                return find;
-            }
-            catch (Exception ex)
-            {
-                throw new StudentNotFoundException("Error in the request", ex);
-            }
+            if (find.Count == 0) throw new StudentNotFoundException("The list is empty");
+
+            return find;
+        }
+        catch (Exception ex)
+        {
+            throw new StudentNotFoundException("Error in the request", ex);   
+        }
     }
 
-    public Task LoginAsync(LoginDTO loginDto)
+    public async Task LoginAsync(LoginDTO loginDto)
     {
-        throw new Exception();
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+
+        if (user == null) throw new StudentNotFoundException("Incorrect email and password");
+
+        var result = await _signInManager.PasswordSignInAsync(loginDto.Email, loginDto.Password, false, false);
+
+        if (!result.Succeeded) throw new StudentNotFoundException("unauthenticated user");
     }
 
     public Task LogoutAsync()
@@ -57,11 +64,31 @@ public class AuthService: IAuthService
             throw new StudentNotFoundException("This email already exists");
         }
 
-        User user = _mapper.Map<User>(registerDto);
+        if(registerDto.YearsOld <= 16)
+        {
+            throw new StudentNotFoundException("This email already exists");
+        }
+
+        User user = new User{
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = registerDto.Username,
+            Email = registerDto.Email,
+            YearsOld = registerDto.YearsOld,
+            Cpf = registerDto.Cpf,
+            EmailConfirmed = true
+        };
 
         IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password);
 
         if(!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
+
+        if (!await _roleManager.RoleExistsAsync(registerDto.Role))
+            await _roleManager.CreateAsync(new IdentityUser(registerDto.Role));
+
+        if(await _roleManager.RoleExistsAsync(registerDto.Role))
+        {
+            await _userManager.AddToRoleAsync(user, registerDto.Role);
+        }
 
         return registerDto;
     }
