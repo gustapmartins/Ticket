@@ -13,10 +13,6 @@ public class Show
     public string? Description { get; set; }
 
     public DateTime Date { get; set; }
-
     public string? Local { get; set; }
-
     public virtual Category Category { get; set; }
-
-
 }

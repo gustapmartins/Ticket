@@ -2,7 +2,7 @@
 
 namespace Ticket.Model;
 
-public class Ticket
+public class Tickets
 {
     [Key]
     [Required]

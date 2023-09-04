@@ -4,7 +4,7 @@ using Ticket.DTO.Category;
 using Ticket.Interface;
 using Ticket.Model;
 
-namespace Ticket.Controllers;
+namespace Ticket.Controles;
 
 [ApiController]
 [Route("[controller]")]
@@ -24,19 +24,14 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Category> FindAllFilmes()
+    public List<Category> FindAllCategory()
     {
         return _categoryService.FindAll();
     }
 
-    /// <summary>
-    ///     Adiciona um filme ao banco de dados
-    /// </summary>
-    /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
-    ///     <returns>IActionResult</returns>
-    /// <response code="201">Caso inserção seja feita com sucesso</response>
+
     [HttpGet("{id}")]
-    public IActionResult FindIdFilme([FromRoute] int id)
+    public IActionResult FindIdCategory( int id)
     {
         return Ok(_categoryService.FindId(id));
     }
@@ -51,7 +46,7 @@ public class CategoryController: ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     public CreatedAtActionResult CreateFilme([FromBody] CategoryCreateDTO categoryDto)
     {
-        return CreatedAtAction(nameof(FindAllFilmes), _categoryService.CreateCategory(categoryDto));
+        return CreatedAtAction(nameof(FindAllCategory), _categoryService.CreateCategory(categoryDto));
     }
 
     /// <summary>

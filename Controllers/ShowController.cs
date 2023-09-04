@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Ticket.DTO.User;
+using Ticket.DTO.Category;
+using Ticket.DTO.Show;
 using Ticket.Interface;
 using Ticket.Model;
-using Ticket.Service;
 
-namespace Ticket.Controles;
+namespace Ticket.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthController : ControllerBase
+public class ShowController: ControllerBase
 {
-    private readonly AuthService _authService;
+    private readonly IShowService _showService;
 
-    public AuthController(AuthService authService)
+    public ShowController(IShowService showService)
     {
-        _authService = authService;
+        _showService = showService;
     }
 
     /// <summary>
@@ -24,35 +24,34 @@ public class AuthController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Users> FindAllAuth()
+    public List<Show> FindAllShow()
     {
-        return _authService.FindAll();
+        return _showService.FindAll();
     }
 
     /// <summary>
     ///     Adiciona um filme ao banco de dados
+    /// <param name="id">Objeto com os campos necessários para criação de um filme</param> 
     /// </summary>
-    /// <param name="loginDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpPost("login")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> LoginAsync(LoginDTO loginDto)
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult FindIdShow(int id)
     {
-        await _authService.Login(loginDto);
-        return Ok("Logado");
+        return Ok(_showService.FindId(id));
     }
 
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
-    /// <param name="registerDto">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="showDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
-    [HttpPost("register")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Register(RegisterDTO registerDto)
+    public CreatedAtActionResult CreateShow([FromBody] ShowCreateDto showDto)
     {
-        return Ok(await _authService.RegisterAsync(registerDto));
+        return CreatedAtAction(nameof(FindAllShow), _showService.CreateShow(showDto));
     }
 }

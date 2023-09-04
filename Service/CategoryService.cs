@@ -17,7 +17,6 @@ public class CategoryService: ICategoryService
     {
         _ticketContext = ticketContext;
         _mapper = mapper;
-
     }
 
     public List<Category> FindAll()
@@ -41,14 +40,14 @@ public class CategoryService: ICategoryService
     {
         try
         {
-            var find = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
+            var categorys = _ticketContext.Categorys.FirstOrDefault(filme => filme.Id == id);
 
-            if(find == null)
+            if (categorys == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
             }
 
-            return find;
+            return categorys;
         }
         catch (Exception ex)
         {

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ticket.Data;
@@ -11,9 +12,11 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    partial class TicketContextModelSnapshot : ModelSnapshot
+    [Migration("20230903021158_RelacionamentoDeTabelaShowCategory")]
+    partial class RelacionamentoDeTabelaShowCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -356,7 +359,7 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
                     b.HasOne("Ticket.Model.Category", "Category")
-                        .WithMany("Shows")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -373,11 +376,6 @@ namespace Ticket.Migrations
                         .IsRequired();
 
                     b.Navigation("Show");
-                });
-
-            modelBuilder.Entity("Ticket.Model.Category", b =>
-                {
-                    b.Navigation("Shows");
                 });
 #pragma warning restore 612, 618
         }

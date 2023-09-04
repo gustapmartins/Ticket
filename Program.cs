@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("TicketConnection");
 
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IShowService, ShowService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddDbContext<TicketContext>(opts =>
