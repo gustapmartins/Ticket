@@ -1,13 +1,18 @@
-﻿using Ticket.DTO.Show;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Ticket.DTO.Show;
 using Ticket.Model;
 
 namespace Ticket.Interface;
 
 public interface IShowService
 {
-    List<Show> FindAll();
+    IEnumerable<Show> FindAll();
 
     Show FindId(int id);
 
-    Task<ShowCreateDto> CreateShow(ShowCreateDto showDto);
+    ShowCreateDto CreateShow(ShowCreateDto showDto);
+
+    Show DeleteShow(int Id);
+
+    ShowUpdateDto UpdateShow(int id, JsonPatchDocument<ShowUpdateDto> showDto);
 }

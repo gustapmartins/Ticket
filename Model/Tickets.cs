@@ -10,7 +10,7 @@ public class Tickets
 
     public decimal Price { get; set; }
 
-    public int Quantity { get; set; }
+    public string TicketNumber { get; set; }
 
     public virtual Show Show { get; set; }
 }

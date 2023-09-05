@@ -356,7 +356,7 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
                     b.HasOne("Ticket.Model.Category", "Category")
-                        .WithMany("Shows")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -373,11 +373,6 @@ namespace Ticket.Migrations
                         .IsRequired();
 
                     b.Navigation("Show");
-                });
-
-            modelBuilder.Entity("Ticket.Model.Category", b =>
-                {
-                    b.Navigation("Shows");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,13 +13,24 @@ public class CategoryService: ICategoryService
     private readonly TicketContext _ticketContext;
     private readonly IMapper _mapper;
 
+
     public CategoryService(TicketContext ticketContext, IMapper mapper)
     {
         _ticketContext = ticketContext;
         _mapper = mapper;
     }
 
-    public List<Category> FindAll()
+    private IEnumerable<Category> FindAllCategorys()
+    {
+        return _ticketContext.Categorys.ToList();
+    }
+
+    private Category? FindIdCategory(int id)
+    {
+        return _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
+    }
+
+    public IEnumerable<Category> FindAll()
     {
         try
         {
@@ -40,7 +51,7 @@ public class CategoryService: ICategoryService
     {
         try
         {
-            var categorys = _ticketContext.Categorys.FirstOrDefault(filme => filme.Id == id);
+            var categorys = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
 
             if (categorys == null)
             {
@@ -55,25 +66,27 @@ public class CategoryService: ICategoryService
         }
     }
 
-    public CategoryCreateDTO CreateCategory(CategoryCreateDTO CategoryDto)
+    public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
     {
-        try
+        var categoryExist = _ticketContext.Categorys.Any(category =>
+            category.Name == categoryDto.Name);
+
+        if (categoryExist)
         {
-            Category category = _mapper.Map<Category>(CategoryDto);
-            _ticketContext.Categorys.Add(category);
-            _ticketContext.SaveChanges();   
-            return CategoryDto;
-        }catch(Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
+            throw new StudentNotFoundException("This category already exists");
         }
+
+        Category category = _mapper.Map<Category>(categoryDto);
+        _ticketContext.Categorys.Add(category);
+        _ticketContext.SaveChanges();
+        return categoryDto;
     }
 
     public Category DeleteCategory(int id)
     {
         try
         {
-            var category = _ticketContext.Categorys.FirstOrDefault(endereco => endereco.Id == id);
+            var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
             if (category == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
@@ -87,7 +100,7 @@ public class CategoryService: ICategoryService
         }
     }
 
-    public CategoryUpdateDTO UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDTO> categoryDto)
+    public CategoryUpdateDto UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDto> categoryDto)
     {
         try
         {
@@ -99,7 +112,7 @@ public class CategoryService: ICategoryService
                 throw new StudentNotFoundException("This value does not exist");
             }
 
-            var categoryView = _mapper.Map<CategoryUpdateDTO>(category);
+            var categoryView = _mapper.Map<CategoryUpdateDto>(category);
 
             categoryDto.ApplyTo(categoryView);
 
