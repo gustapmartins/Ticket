@@ -15,7 +15,9 @@ public class Show
     public DateTime Date { get; set; }
 
     public string? Local { get; set; }
-    
+
+    public decimal Price { get; set; }
+
     public virtual Category Category { get; set; }
 
     public virtual ICollection<Tickets> Tickets { get; set; }

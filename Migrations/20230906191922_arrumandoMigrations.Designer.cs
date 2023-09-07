@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ticket.Data;
@@ -11,9 +12,11 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    partial class TicketContextModelSnapshot : ModelSnapshot
+    [Migration("20230906191922_arrumandoMigrations")]
+    partial class arrumandoMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -371,17 +374,12 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Tickets", b =>
                 {
                     b.HasOne("Ticket.Model.Show", "Show")
-                        .WithMany("Tickets")
+                        .WithMany()
                         .HasForeignKey("ShowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Show");
-                });
-
-            modelBuilder.Entity("Ticket.Model.Show", b =>
-                {
-                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

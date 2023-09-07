@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Security.Cryptography;
+using System.Text;
 using Ticket.Data;
 using Ticket.DTO.Show;
 using Ticket.ExceptionFilter;
@@ -59,7 +61,7 @@ public class ShowService: IShowService
     public ShowCreateDto CreateShow(ShowCreateDto showDto)
     {
         var category = _ticketContext.Categorys.FirstOrDefault(category =>
-            category.Name == showDto.Category);
+            category.Name == showDto.CategoryName);
 
         if (category == null)
         {
@@ -70,9 +72,10 @@ public class ShowService: IShowService
         {
             Name = showDto.Name,
             Description = showDto.Description,
+            Price = showDto.Price,
             Date = showDto.Date,
             Local = showDto.Local,
-            Category = category // Associe a categoria existente ao Show
+            Category = category // Associate the existing category with the Show
         };
 
         _ticketContext.Shows.Add(show);

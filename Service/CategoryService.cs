@@ -13,21 +13,10 @@ public class CategoryService: ICategoryService
     private readonly TicketContext _ticketContext;
     private readonly IMapper _mapper;
 
-
     public CategoryService(TicketContext ticketContext, IMapper mapper)
     {
         _ticketContext = ticketContext;
         _mapper = mapper;
-    }
-
-    private IEnumerable<Category> FindAllCategorys()
-    {
-        return _ticketContext.Categorys.ToList();
-    }
-
-    private Category? FindIdCategory(int id)
-    {
-        return _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
     }
 
     public IEnumerable<Category> FindAll()

@@ -8,9 +8,11 @@ public class Tickets
     [Required]
     public int Id { get; set; }
 
-    public decimal Price { get; set; }
+    public int QuantityTickets { get; set; }
 
-    public string TicketNumber { get; set; }
+    public decimal Total { get; set; }
+
+    public string? TicketNumber { get; set; }
 
     public virtual Show Show { get; set; }
 }
