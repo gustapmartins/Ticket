@@ -38,15 +38,26 @@ public class TicketService
 
     public Tickets FindId(int id)
     {
+        var ticket = _ticketContext.Tickets.FirstOrDefault(filme => filme.Id == id);
+
+        if (ticket == null)
+        {
+            throw new StudentNotFoundException("The list is empty");
+        }
+        return ticket;
+    }
+
+    public IEnumerable<Tickets> FindAllTicket()
+    {
         try
         {
-            var ticket = _ticketContext.Tickets.FirstOrDefault(filme => filme.Id == id);
+            var ticketFind = _ticketContext.Tickets.ToList();
 
-            if (ticket == null)
+            if (ticketFind.Count == 0)
             {
                 throw new StudentNotFoundException("The list is empty");
             }
-            return ticket;
+            return ticketFind;
         }
         catch (Exception ex)
         {
@@ -56,17 +67,17 @@ public class TicketService
 
     public TicketCreateDto CreateTicket(TicketCreateDto ticketDto)
     {
-        var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == ticketDto.ShowId);
+        var show = _ticketContext.Shows.FirstOrDefault(ticket => ticket.Id == ticketDto.ShowId);
 
         if (show == null)
         {
             throw new StudentNotFoundException("A categoria especificada não existe.");
         }
-        // Crie o novo Show com a categoria existente
+
         var tickets = new Tickets
         {
             Price = ticketDto.Price,
-            Quantity = ticketDto.Quantity,
+            QuantityTickets = ticketDto.Quantity,
             Show = show,
         };
 

@@ -2,7 +2,7 @@
 
 namespace Ticket.DTO.Category;
 
-public class CategoryCreateDTO
+public class CategoryCreateDto
 {
     [Required(ErrorMessage = "O Name do filme é obrigatório")]
     public string? Name { get; set; }

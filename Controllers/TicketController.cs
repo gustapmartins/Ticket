@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Ticket.DTO.Category;
 using Ticket.DTO.Ticket;
-using Ticket.Interface;
 using Ticket.Model;
 using Ticket.Service;
 
@@ -41,7 +39,7 @@ public class TicketController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public Tickets FindId(int id)
-    { 
+    {
         return _ticketService.FindId(id);
     }
 
@@ -66,7 +64,7 @@ public class TicketController : ControllerBase
     /// <response code="204">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult DeleteCategory(int id)
+    public IActionResult DeleteTicket(int id)
     {
         return Ok(_ticketService.DeleteTicket(id));
     }
@@ -80,7 +78,7 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
+    public IActionResult UpdateTicket([FromRoute] int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
     {
         return Ok(_ticketService.UpdateTicket(id, ticketDto));
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.User;
-using Ticket.Interface;
 using Ticket.Model;
 using Ticket.Service;
 

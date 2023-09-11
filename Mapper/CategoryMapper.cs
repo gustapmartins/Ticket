@@ -8,9 +8,8 @@ public class CategoryMapper: Profile
 {
     public CategoryMapper() 
     {
-        CreateMap<CategoryCreateDTO, Category>();
-        CreateMap<CategoryUpdateDTO, Category>();
-        CreateMap<Category, CategoryUpdateDTO>();
+        CreateMap<CategoryCreateDto, Category>();
+        CreateMap<CategoryUpdateDto, Category>();
+        CreateMap<Category, CategoryUpdateDto>();
     }    
-
 }

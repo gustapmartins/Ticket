@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;
 using Ticket.Data;
 using Ticket.DTO.Show;
-using Ticket.DTO.Ticket;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;
@@ -21,7 +19,7 @@ public class ShowService : IShowService
         _mapper = mapper;
     }
 
-    public List<Show> FindAll()
+    public IEnumerable<Show> FindAll()
     {
         try
         {
@@ -43,7 +41,8 @@ public class ShowService : IShowService
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(filme => filme.Id == id);
+            var show = _ticketContext.Shows.FirstOrDefault(category =>
+                category.Id == id);
 
             if (show == null)
             {
@@ -57,22 +56,24 @@ public class ShowService : IShowService
         }
     }
 
-    public async Task<ShowCreateDto> CreateShow(ShowCreateDto showDto)
+    public ShowCreateDto CreateShow(ShowCreateDto showDto)
     {
-        var category = _ticketContext.Categorys.FirstOrDefault(show => show.Name == showDto.Category);
+        var category = _ticketContext.Categorys.FirstOrDefault(category =>
+            category.Name == showDto.CategoryName);
 
         if (category == null)
         {
             throw new StudentNotFoundException("A categoria especificada não existe.");
         }
-
+        // Crie o novo Show com a categoria existente
         var show = new Show
         {
             Name = showDto.Name,
             Description = showDto.Description,
+            Price = showDto.Price,
             Date = showDto.Date,
             Local = showDto.Local,
-            Category = category
+            Category = category // Associate the existing category with the Show
         };
 
         _ticketContext.Shows.Add(show);
@@ -84,7 +85,8 @@ public class ShowService : IShowService
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(ticket => ticket.Id == Id);
+            var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
+
             if (show == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
@@ -99,24 +101,24 @@ public class ShowService : IShowService
         }
     }
 
-    public ShowUpdateDto UpdateShow(int Id, JsonPatchDocument<ShowUpdateDto> showtDto)
+    public ShowUpdateDto UpdateShow(int id, JsonPatchDocument<ShowUpdateDto> showDto)
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
+            var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == id);
 
             if (show == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
             }
 
-            var showView = _mapper.Map<ShowUpdateDto>(show);
+            var categoryView = _mapper.Map<ShowUpdateDto>(show);
 
-            showtDto.ApplyTo(showView);
+            showDto.ApplyTo(categoryView);
 
-            _mapper.Map(showView, show);
+            _mapper.Map(categoryView, show);
             _ticketContext.SaveChanges();
-            return showView;
+            return categoryView;
         }
         catch (Exception ex)
         {

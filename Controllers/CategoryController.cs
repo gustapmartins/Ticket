@@ -24,7 +24,7 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Category> FindAllCategory()
+    public IEnumerable<Category> FindAllCategory()
     {
         return _categoryService.FindAll();
     }
@@ -44,7 +44,7 @@ public class CategoryController: ControllerBase
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public CreatedAtActionResult CreateFilme([FromBody] CategoryCreateDTO categoryDto)
+    public CreatedAtActionResult CreateFilme([FromBody] CategoryCreateDto categoryDto)
     {
         return CreatedAtAction(nameof(FindAllCategory), _categoryService.CreateCategory(categoryDto));
     }
@@ -72,7 +72,7 @@ public class CategoryController: ControllerBase
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<CategoryUpdateDTO> categoryDto)
+    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<CategoryUpdateDto> categoryDto)
     {
         return Ok(_categoryService.UpdateCategory(id, categoryDto));
     }

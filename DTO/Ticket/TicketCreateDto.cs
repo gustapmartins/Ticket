@@ -10,6 +10,9 @@ public class TicketCreateDto
     [Required(ErrorMessage = "Quantity é obrigatório")]
     public int Quantity { get; set; }
 
+    [Required(ErrorMessage = "QuantityTickets é obrigatório")]
+    public int QuantityTickets { get; set; }
+
     [Required(ErrorMessage = "ShowId é obrigatório")]
     public int ShowId { get; set; }
 }

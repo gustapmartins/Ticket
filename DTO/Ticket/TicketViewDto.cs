@@ -9,6 +9,4 @@ public class TicketViewDto
     public int Quantity { get; set; }
 
     public int ShowId { get; set; }
-
-    public string Show { get; set; }
 }

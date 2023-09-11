@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Ticket.DTO.Show;
+﻿namespace Ticket.DTO.Show;
 
 public class ShowUpdateDto
 {
@@ -9,7 +7,7 @@ public class ShowUpdateDto
     public string? Description { get; set; }
 
     public DateTime Date { get; set; }
-
+   
     public string? Local { get; set; }
 
     public string? Category { get; set; }
