@@ -1,9 +1,8 @@
-﻿
-using Ticket.Model;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Ticket.DTO.Show;
 
-public class ShowViewDto
+public class ShowUpdateDto
 {
     public string? Name { get; set; }
 
@@ -14,6 +13,4 @@ public class ShowViewDto
     public string? Local { get; set; }
 
     public string? Category { get; set; }
-
-    public ICollection<Tickets> Tickets { get; set; }
 }

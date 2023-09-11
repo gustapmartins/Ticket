@@ -18,6 +18,7 @@ var connectionString = builder.Configuration.GetConnectionString("TicketConnecti
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IShowService, ShowService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<TicketService>();
 
 builder.Services.AddDbContext<TicketContext>(opts =>
     opts.UseLazyLoadingProxies().UseNpgsql(connectionString));

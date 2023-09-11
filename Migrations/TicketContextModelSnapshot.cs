@@ -222,7 +222,7 @@ namespace Ticket.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ShowId")
+                    b.Property<int?>("ShowId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -356,7 +356,7 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
                     b.HasOne("Ticket.Model.Category", "Category")
-                        .WithMany("Shows")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -367,17 +367,15 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Tickets", b =>
                 {
                     b.HasOne("Ticket.Model.Show", "Show")
-                        .WithMany()
-                        .HasForeignKey("ShowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Tickets")
+                        .HasForeignKey("ShowId");
 
                     b.Navigation("Show");
                 });
 
-            modelBuilder.Entity("Ticket.Model.Category", b =>
+            modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
-                    b.Navigation("Shows");
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

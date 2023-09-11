@@ -1,31 +1,28 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;
 using Ticket.Data;
-using Ticket.DTO.Show;
 using Ticket.DTO.Ticket;
 using Ticket.ExceptionFilter;
-using Ticket.Interface;
 using Ticket.Model;
 
 namespace Ticket.Service;
 
-public class ShowService : IShowService
+public class TicketService
 {
     private readonly TicketContext _ticketContext;
     private readonly IMapper _mapper;
 
-    public ShowService(TicketContext ticketContext, IMapper mapper)
+    public TicketService(TicketContext ticketContext, IMapper mapper)
     {
         _ticketContext = ticketContext;
         _mapper = mapper;
     }
 
-    public List<Show> FindAll()
+    public List<Tickets> FindAll()
     {
         try
         {
-            var find = _ticketContext.Shows.ToList();
+            var find = _ticketContext.Tickets.ToList();
 
             if (find.Count == 0)
             {
@@ -39,17 +36,17 @@ public class ShowService : IShowService
         }
     }
 
-    public Show FindId(int id)
+    public Tickets FindId(int id)
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(filme => filme.Id == id);
+            var ticket = _ticketContext.Tickets.FirstOrDefault(filme => filme.Id == id);
 
-            if (show == null)
+            if (ticket == null)
             {
                 throw new StudentNotFoundException("The list is empty");
             }
-            return show;
+            return ticket;
         }
         catch (Exception ex)
         {
@@ -57,41 +54,39 @@ public class ShowService : IShowService
         }
     }
 
-    public async Task<ShowCreateDto> CreateShow(ShowCreateDto showDto)
+    public TicketCreateDto CreateTicket(TicketCreateDto ticketDto)
     {
-        var category = _ticketContext.Categorys.FirstOrDefault(show => show.Name == showDto.Category);
+        var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == ticketDto.ShowId);
 
-        if (category == null)
+        if (show == null)
         {
             throw new StudentNotFoundException("A categoria especificada não existe.");
         }
-
-        var show = new Show
+        // Crie o novo Show com a categoria existente
+        var tickets = new Tickets
         {
-            Name = showDto.Name,
-            Description = showDto.Description,
-            Date = showDto.Date,
-            Local = showDto.Local,
-            Category = category
+            Price = ticketDto.Price,
+            Quantity = ticketDto.Quantity,
+            Show = show,
         };
 
-        _ticketContext.Shows.Add(show);
+        _ticketContext.Tickets.Add(tickets);
         _ticketContext.SaveChanges();
-        return showDto;
+        return ticketDto;
     }
 
-    public Show DeleteShow(int Id)
+    public Tickets DeleteTicket(int id)
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(ticket => ticket.Id == Id);
-            if (show == null)
+            var ticket = _ticketContext.Tickets.FirstOrDefault(ticket => ticket.Id == id);
+            if (ticket == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
             }
-            _ticketContext.Remove(show);
+            _ticketContext.Remove(ticket);
             _ticketContext.SaveChanges();
-            return show;
+            return ticket;
         }
         catch (Exception ex)
         {
@@ -99,24 +94,24 @@ public class ShowService : IShowService
         }
     }
 
-    public ShowUpdateDto UpdateShow(int Id, JsonPatchDocument<ShowUpdateDto> showtDto)
+    public TicketUpdateDto UpdateTicket(int id, JsonPatchDocument<TicketUpdateDto> ticketDto)
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
+            var ticket = _ticketContext.Tickets.FirstOrDefault(category => category.Id == id);
 
-            if (show == null)
+            if (ticket == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
             }
 
-            var showView = _mapper.Map<ShowUpdateDto>(show);
+            var ticketView = _mapper.Map<TicketUpdateDto>(ticket);
 
-            showtDto.ApplyTo(showView);
+            ticketDto.ApplyTo(ticketView);
 
-            _mapper.Map(showView, show);
+            _mapper.Map(ticketView, ticket);
             _ticketContext.SaveChanges();
-            return showView;
+            return ticketView;
         }
         catch (Exception ex)
         {

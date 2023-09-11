@@ -9,9 +9,10 @@ public class ShowMapper: Profile
 {
     public ShowMapper()
     {
-        CreateMap<ShowCreateDto, Show>()
-           .ForMember(filmeDto => filmeDto.Category, opt => opt.MapFrom(filme => filme.Category));
-        CreateMap<Show, ShowViewDto>();
-
+        CreateMap<ShowCreateDto, Show>();
+        CreateMap<ShowUpdateDto, Show>();
+        CreateMap<Show, ShowViewDto>()
+         .ForMember(showDto => showDto.Category, opt => opt.MapFrom(showDto => showDto.Category))
+         .ForMember(showDto => showDto.Tickets, opt => opt.MapFrom(showDto => showDto.Tickets));
     }
 }

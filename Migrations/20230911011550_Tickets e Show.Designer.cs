@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20230903021158_RelacionamentoDeTabelaShowCategory")]
-    partial class RelacionamentoDeTabelaShowCategory
+    [Migration("20230911011550_Tickets e Show")]
+    partial class TicketseShow
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -370,12 +370,17 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Tickets", b =>
                 {
                     b.HasOne("Ticket.Model.Show", "Show")
-                        .WithMany()
+                        .WithMany("Tickets")
                         .HasForeignKey("ShowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Show");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Show", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

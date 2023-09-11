@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class RelacionamentoDeTabelaShowCategory : Migration
+    public partial class TicketseShow : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

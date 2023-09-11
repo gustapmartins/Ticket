@@ -1,20 +1,23 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Category;
+using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
+using Ticket.Service;
 
-namespace Ticket.Controles;
+namespace Ticket.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CategoryController: ControllerBase
+public class TicketController : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
 
-    public CategoryController(ICategoryService categoryService)
+    private readonly TicketService _ticketService;
+
+    public TicketController(TicketService ticketService)
     {
-        _categoryService = categoryService;
+        _ticketService = ticketService;
     }
 
     /// <summary>
@@ -24,29 +27,35 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Category> FindAllCategory()
+    public List<Tickets> FindAll()
     {
-        return _categoryService.FindAll();
+        return _ticketService.FindAll();
     }
 
-
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// <param name="id">Objeto com os campos necessários para criação de um filme</param> 
+    /// </summary>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet("{id}")]
-    public IActionResult FindIdCategory( int id)
-    {
-        return Ok(_categoryService.FindId(id));
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public Tickets FindId(int id)
+    { 
+        return _ticketService.FindId(id);
     }
 
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
-    /// <param name="categoryDto">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="ticketDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public CreatedAtActionResult CreateFilme([FromBody] CategoryCreateDTO categoryDto)
+    public CreatedAtActionResult CreateTicket([FromBody] TicketCreateDto ticketDto)
     {
-        return CreatedAtAction(nameof(FindAllCategory), _categoryService.CreateCategory(categoryDto));
+        return CreatedAtAction(nameof(FindAll), _ticketService.CreateTicket(ticketDto));
     }
 
     /// <summary>
@@ -59,21 +68,20 @@ public class CategoryController: ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult DeleteCategory(int id)
     {
-        return Ok(_categoryService.DeleteCategory(id));
+        return Ok(_ticketService.DeleteTicket(id));
     }
-
 
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
-    /// <param name="categoryDto">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="ticketDto">Objeto com os campos necessários para criação de um filme</param>
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
-    /// <response code="201">Caso inserção seja feita com sucesso</response>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<CategoryUpdateDTO> categoryDto)
+    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
     {
-        return Ok(_categoryService.UpdateCategory(id, categoryDto));
+        return Ok(_ticketService.UpdateTicket(id, ticketDto));
     }
 }

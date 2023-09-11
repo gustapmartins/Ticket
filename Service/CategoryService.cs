@@ -59,11 +59,21 @@ public class CategoryService: ICategoryService
     {
         try
         {
-            Category category = _mapper.Map<Category>(CategoryDto);
-            _ticketContext.Categorys.Add(category);
-            _ticketContext.SaveChanges();   
-            return CategoryDto;
-        }catch(Exception ex)
+            var categoryExist = _ticketContext.Categorys.FirstOrDefault(category => category.Name == CategoryDto.Name);
+
+            if(categoryExist == null)
+            {
+                
+                Category category = _mapper.Map<Category>(CategoryDto);
+                _ticketContext.Categorys.Add(category);
+                _ticketContext.SaveChanges();
+                return CategoryDto;
+            }
+
+            throw new StudentNotFoundException("This value exist");
+
+        }
+        catch(Exception ex)
         {
             throw new StudentNotFoundException("Error in the request", ex);
         }
@@ -73,7 +83,7 @@ public class CategoryService: ICategoryService
     {
         try
         {
-            var category = _ticketContext.Categorys.FirstOrDefault(endereco => endereco.Id == id);
+            var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
             if (category == null)
             {
                 throw new StudentNotFoundException("This value does not exist");

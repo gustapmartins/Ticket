@@ -12,5 +12,7 @@ public class Tickets
 
     public int Quantity { get; set; }
 
+    public int? ShowId { get; set; } // Chave estrangeira
+
     public virtual Show Show { get; set; }
 }
