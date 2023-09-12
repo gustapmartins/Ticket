@@ -6,9 +6,10 @@ namespace Ticket.Interface;
 
 public interface IShowService
 {
-    IEnumerable<Show> FindAll();
+    List<Show> FindAll();
 
     Show FindId(int id);
+
     ShowCreateDto CreateShow(ShowCreateDto showDto);
 
     Show DeleteShow(int Id);

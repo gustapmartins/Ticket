@@ -1,4 +1,6 @@
-﻿namespace Ticket.DTO.Show;
+﻿using Ticket.Model;
+
+namespace Ticket.DTO.Show;
 
 public class ShowUpdateDto
 {
@@ -10,5 +12,7 @@ public class ShowUpdateDto
    
     public string? Local { get; set; }
 
-    public string? Category { get; set; }
+    public decimal Price { get; set; }
+
+    public string? CategoryName { get; set; }
 }

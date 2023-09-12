@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Show;
 using Ticket.Interface;
 using Ticket.Model;
+using Ticket.Service;
 
 namespace Ticket.Controllers;
 
@@ -24,9 +25,9 @@ public class ShowController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IEnumerable<Show> FindAllShow()
+    public IActionResult FindAllShow()
     {
-        return _showService.FindAll();
+        return Ok(_showService.FindAll());
     }
 
     /// <summary>
@@ -58,27 +59,27 @@ public class ShowController : ControllerBase
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
-    /// <param name="ticketDto">Objeto com os campos necessários para criação de um filme</param>
-    /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="Id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpPatch("{id}")]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateShow([FromRoute] int id, [FromBody] JsonPatchDocument<ShowUpdateDto> ticketDto)
+    public IActionResult DeleteShow(int Id)
     {
-        return Ok(_showService.UpdateShow(id, ticketDto));
+        return Ok(_showService.DeleteShow(Id));
     }
 
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
-    /// <param name="Id">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="showDto">Objeto com os campos necessários para criação de um filme</param>
+    /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
-    /// <response code="204">Caso inserção seja feita com sucesso</response>
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult CreateShow(int Id)
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult UpdateShow([FromRoute] int id, [FromBody] JsonPatchDocument<ShowUpdateDto> showDto)
     {
-        return Ok(_showService.DeleteShow(Id));
+        return Ok(_showService.UpdateShow(id, showDto));
     }
 }

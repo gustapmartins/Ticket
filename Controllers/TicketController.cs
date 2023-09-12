@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Ticket;
-using Ticket.Model;
-using Ticket.Service;
+using Ticket.Interface;
 
 namespace Ticket.Controllers;
 
@@ -11,9 +10,9 @@ namespace Ticket.Controllers;
 public class TicketController : ControllerBase
 {
 
-    private readonly TicketService _ticketService;
+    private readonly ITicketService _ticketService;
 
-    public TicketController(TicketService ticketService)
+    public TicketController(ITicketService ticketService)
     {
         _ticketService = ticketService;
     }
@@ -25,9 +24,9 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Tickets> FindAll()
+    public IActionResult FindAll()
     {
-        return _ticketService.FindAll();
+        return Ok(_ticketService.FindAll());
     }
 
     /// <summary>
@@ -38,9 +37,9 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public Tickets FindId(int id)
+    public IActionResult FindId(int id)
     {
-        return _ticketService.FindId(id);
+        return Ok(_ticketService.FindId(id));
     }
 
     /// <summary>

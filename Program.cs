@@ -9,7 +9,6 @@ using Ticket.Service;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddNewtonsoftJson();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -18,7 +17,7 @@ var connectionString = builder.Configuration.GetConnectionString("TicketConnecti
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IShowService, ShowService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.AddDbContext<TicketContext>(opts =>
     opts.UseLazyLoadingProxies().UseNpgsql(connectionString));

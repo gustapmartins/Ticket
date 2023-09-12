@@ -54,10 +54,10 @@ public class CategoryController: ControllerBase
     /// </summary>
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
-    /// <response code="204">Caso inserção seja feita com sucesso</response>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult DeleteCategory(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult DeleteCategory([FromRoute] int id)
     {
         return Ok(_categoryService.DeleteCategory(id));
     }

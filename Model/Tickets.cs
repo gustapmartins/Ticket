@@ -12,7 +12,5 @@ public class Tickets
 
     public decimal Price { get; set; }
 
-    public int? ShowId { get; set; }
-
     public virtual Show Show { get; set; }
 }

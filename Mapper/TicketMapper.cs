@@ -11,8 +11,8 @@ public class TicketMapper: Profile
     public TicketMapper()
     {
         CreateMap<TicketCreateDto, Tickets>();
+        CreateMap<Tickets, TicketViewDto>();
         CreateMap<TicketUpdateDto, Tickets>();
-        CreateMap<Tickets, TicketViewDto>()
-        .ForMember(tickets => tickets.ShowId, opt => opt.MapFrom(tickets => tickets.ShowId));
+       
     }
 }

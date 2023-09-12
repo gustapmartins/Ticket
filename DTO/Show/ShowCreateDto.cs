@@ -19,6 +19,6 @@ public class ShowCreateDto
     [Required(ErrorMessage = "price é obrigatório")]
     public decimal Price { get; set; }
 
-    [Required(ErrorMessage = "Category é obrigatório")]
+    [Required(ErrorMessage = "CategoryName é obrigatório")]
     public string? CategoryName { get; set; }
 }

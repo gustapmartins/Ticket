@@ -74,28 +74,20 @@ public class CategoryService : ICategoryService
 
     public Category DeleteCategory(int id)
     {
-        try
+        var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
+        if (category == null)
         {
-            var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
-            if (category == null)
-            {
-                throw new StudentNotFoundException("This value does not exist");
-            }
-            _ticketContext.Remove(category);
-            _ticketContext.SaveChanges();
-            return category;
+            throw new StudentNotFoundException("This value does not exist");
         }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+        _ticketContext.Remove(category);
+        _ticketContext.SaveChanges();
+        return category;
     }
 
     public CategoryUpdateDto UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDto> categoryDto)
     {
         try
         {
-            // Exemplo hipotético de busca da categoria pelo ID (isso varia de acordo com sua lógica):
             var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
 
             if (category == null)

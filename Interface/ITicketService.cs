@@ -1,8 +1,14 @@
-﻿using Ticket.Model;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Ticket.DTO.Ticket;
+using Ticket.Model;
 
 namespace Ticket.Interface;
 
 public interface ITicketService
 {
-    IEnumerable<Tickets> FindAllTicket();
+    List<Tickets> FindAll();
+    Tickets FindId(int id);
+    TicketCreateDto CreateTicket(TicketCreateDto ticketDto);
+    Tickets DeleteTicket(int id);
+    TicketUpdateDto UpdateTicket(int id, JsonPatchDocument<TicketUpdateDto> ticketDto);
 }

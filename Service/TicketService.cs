@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.JsonPatch;
 using Ticket.Data;
 using Ticket.DTO.Ticket;
 using Ticket.ExceptionFilter;
+using Ticket.Interface;
 using Ticket.Model;
 
 namespace Ticket.Service;
 
-public class TicketService
+public class TicketService: ITicketService
 {
     private readonly TicketContext _ticketContext;
     private readonly IMapper _mapper;
@@ -20,49 +21,25 @@ public class TicketService
 
     public List<Tickets> FindAll()
     {
-        try
-        {
-            var find = _ticketContext.Tickets.ToList();
+        var ticket = _ticketContext.Tickets.ToList(); 
 
-            if (find.Count == 0)
-            {
-                throw new StudentNotFoundException("The list is empty");
-            }
-            return find;
-        }
-        catch (Exception ex)
+        if (ticket.Count == 0)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            throw new StudentNotFoundException("The list is empty");
         }
+
+        return ticket;
     }
 
     public Tickets FindId(int id)
     {
-        var ticket = _ticketContext.Tickets.FirstOrDefault(filme => filme.Id == id);
+        var ticket = _ticketContext.Tickets.FirstOrDefault(tickets => tickets.Id == id);
 
         if (ticket == null)
         {
             throw new StudentNotFoundException("The list is empty");
         }
         return ticket;
-    }
-
-    public IEnumerable<Tickets> FindAllTicket()
-    {
-        try
-        {
-            var ticketFind = _ticketContext.Tickets.ToList();
-
-            if (ticketFind.Count == 0)
-            {
-                throw new StudentNotFoundException("The list is empty");
-            }
-            return ticketFind;
-        }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
     }
 
     public TicketCreateDto CreateTicket(TicketCreateDto ticketDto)
@@ -74,10 +51,12 @@ public class TicketService
             throw new StudentNotFoundException("A categoria especificada não existe.");
         }
 
+        decimal totalPrice = show.Price * ticketDto.QuantityTickets;
+
         var tickets = new Tickets
         {
-            Price = ticketDto.Price,
-            QuantityTickets = ticketDto.Quantity,
+            Price = totalPrice,
+            QuantityTickets = ticketDto.QuantityTickets,
             Show = show,
         };
 
@@ -91,6 +70,7 @@ public class TicketService
         try
         {
             var ticket = _ticketContext.Tickets.FirstOrDefault(ticket => ticket.Id == id);
+
             if (ticket == null)
             {
                 throw new StudentNotFoundException("This value does not exist");

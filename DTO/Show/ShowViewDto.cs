@@ -1,5 +1,5 @@
-﻿
-using Ticket.Model;
+﻿using Ticket.DTO.Category;
+using Ticket.DTO.Ticket;
 
 namespace Ticket.DTO.Show;
 
@@ -13,7 +13,7 @@ public class ShowViewDto
 
     public string? Local { get; set; }
 
-    public string? Category { get; set; }
+    public decimal Price { get; set; }
 
-    public ICollection<Tickets> Tickets { get; set; }
+    public CategoryViewDto? Category { get; set; }
 }

@@ -8,7 +8,7 @@ using Ticket.Model;
 
 namespace Ticket.Service;
 
-public class ShowService : IShowService
+public class ShowService: IShowService
 {
     private readonly TicketContext _ticketContext;
     private readonly IMapper _mapper;
@@ -19,40 +19,33 @@ public class ShowService : IShowService
         _mapper = mapper;
     }
 
-    public IEnumerable<Show> FindAll()
+    public List<Show> FindAll()
     {
-        try
-        {
-            var find = _ticketContext.Shows.ToList();
+        var show = _ticketContext.Shows.ToList();
 
-            if (find.Count == 0)
-            {
-                throw new StudentNotFoundException("The list is empty");
-            }
-            return find;
-        }
-        catch (Exception ex)
+        if (show.Count == 0)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            throw new StudentNotFoundException("Está lista está vazia");
         }
+
+        return show;
     }
 
     public Show FindId(int id)
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(category =>
-                category.Id == id);
+            var show = _ticketContext.Shows.FirstOrDefault(category => category.Id == id);
 
             if (show == null)
             {
                 throw new StudentNotFoundException("The list is empty");
             }
+
             return show;
-        }
-        catch (Exception ex)
+        }catch(Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            throw new StudentNotFoundException("The list is empty");
         }
     }
 
@@ -65,7 +58,7 @@ public class ShowService : IShowService
         {
             throw new StudentNotFoundException("A categoria especificada não existe.");
         }
-        // Crie o novo Show com a categoria existente
+
         var show = new Show
         {
             Name = showDto.Name,
@@ -73,7 +66,7 @@ public class ShowService : IShowService
             Price = showDto.Price,
             Date = showDto.Date,
             Local = showDto.Local,
-            Category = category // Associate the existing category with the Show
+            Category = category
         };
 
         _ticketContext.Shows.Add(show);
@@ -101,28 +94,21 @@ public class ShowService : IShowService
         }
     }
 
-    public ShowUpdateDto UpdateShow(int id, JsonPatchDocument<ShowUpdateDto> showDto)
+    public ShowUpdateDto UpdateShow(int Id, JsonPatchDocument<ShowUpdateDto> showDto)
     {
-        try
+        var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
+
+        if (show == null)
         {
-            var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == id);
-
-            if (show == null)
-            {
-                throw new StudentNotFoundException("This value does not exist");
-            }
-
-            var categoryView = _mapper.Map<ShowUpdateDto>(show);
-
-            showDto.ApplyTo(categoryView);
-
-            _mapper.Map(categoryView, show);
-            _ticketContext.SaveChanges();
-            return categoryView;
+            throw new StudentNotFoundException("This value does not exist");
         }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+
+        var showView = _mapper.Map<ShowUpdateDto>(show);
+
+        showDto.ApplyTo(showView);
+
+        _mapper.Map(showView, show);
+        _ticketContext.SaveChanges();
+        return showView;
     }
 }
