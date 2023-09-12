@@ -58,30 +58,44 @@ public class CategoryService : ICategoryService
 
     public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
     {
-        var categoryExist = _ticketContext.Categorys.Any(category =>
+        try
+        {
+            var categoryExist = _ticketContext.Categorys.Any(category =>
             category.Name == categoryDto.Name);
 
-        if (categoryExist)
-        {
-            throw new StudentNotFoundException("This category already exists");
-        }
+            if (categoryExist)
+            {
+                throw new StudentNotFoundException("This category already exists");
+            }
 
-        Category category = _mapper.Map<Category>(categoryDto);
-        _ticketContext.Categorys.Add(category);
-        _ticketContext.SaveChanges();
-        return categoryDto;
+            Category category = _mapper.Map<Category>(categoryDto);
+            _ticketContext.Categorys.Add(category);
+            _ticketContext.SaveChanges();
+            return categoryDto;
+        }
+        catch (Exception ex)
+        {
+            throw new StudentNotFoundException("Error in the request", ex);
+        }
     }
 
     public Category DeleteCategory(int id)
     {
-        var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
-        if (category == null)
+        try
         {
-            throw new StudentNotFoundException("This value does not exist");
+            var category = _ticketContext.Categorys.FirstOrDefault(category => category.Id == id);
+            if (category == null)
+            {
+                throw new StudentNotFoundException("This value does not exist");
+            }
+            _ticketContext.Remove(category);
+            _ticketContext.SaveChanges();
+            return category;
         }
-        _ticketContext.Remove(category);
-        _ticketContext.SaveChanges();
-        return category;
+        catch (Exception ex)
+        {
+            throw new StudentNotFoundException("Error in the request", ex);
+        }
     }
 
     public CategoryUpdateDto UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDto> categoryDto)

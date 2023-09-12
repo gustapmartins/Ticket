@@ -24,7 +24,4 @@ public class RegisterDTO
 
     [Required(ErrorMessage = "YearsOld is required")]
     public int YearsOld { get; set; }
-
-    [Required(ErrorMessage = "Role is required")]
-    public string? Role { get; set; }
 }

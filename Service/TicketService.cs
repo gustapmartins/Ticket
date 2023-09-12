@@ -21,48 +21,69 @@ public class TicketService: ITicketService
 
     public List<Tickets> FindAll()
     {
-        var ticket = _ticketContext.Tickets.ToList(); 
-
-        if (ticket.Count == 0)
+        try
         {
-            throw new StudentNotFoundException("The list is empty");
-        }
+            var ticket = _ticketContext.Tickets.ToList();
 
-        return ticket;
+            if (ticket.Count == 0)
+            {
+                throw new StudentNotFoundException("The list is empty");
+            }
+
+            return ticket;
+        }
+        catch (Exception ex)
+        {
+            throw new StudentNotFoundException("Error in the request", ex);
+        }
     }
 
     public Tickets FindId(int id)
     {
-        var ticket = _ticketContext.Tickets.FirstOrDefault(tickets => tickets.Id == id);
-
-        if (ticket == null)
+        try
         {
-            throw new StudentNotFoundException("The list is empty");
+            var ticket = _ticketContext.Tickets.FirstOrDefault(tickets => tickets.Id == id);
+
+            if (ticket == null)
+            {
+                throw new StudentNotFoundException("The list is empty");
+            }
+            return ticket;
         }
-        return ticket;
+        catch (Exception ex)
+        {
+            throw new StudentNotFoundException("Error in the request", ex);
+        }
     }
 
     public TicketCreateDto CreateTicket(TicketCreateDto ticketDto)
     {
-        var show = _ticketContext.Shows.FirstOrDefault(ticket => ticket.Id == ticketDto.ShowId);
-
-        if (show == null)
+        try
         {
-            throw new StudentNotFoundException("A categoria especificada não existe.");
+            var show = _ticketContext.Shows.FirstOrDefault(ticket => ticket.Id == ticketDto.ShowId);
+
+            if (show == null)
+            {
+                throw new StudentNotFoundException("A categoria especificada não existe.");
+            }
+
+            decimal totalPrice = show.Price * ticketDto.QuantityTickets;
+
+            var tickets = new Tickets
+            {
+                Price = totalPrice,
+                QuantityTickets = ticketDto.QuantityTickets,
+                Show = show,
+            };
+
+            _ticketContext.Tickets.Add(tickets);
+            _ticketContext.SaveChanges();
+            return ticketDto;
         }
-
-        decimal totalPrice = show.Price * ticketDto.QuantityTickets;
-
-        var tickets = new Tickets
+        catch (Exception ex)
         {
-            Price = totalPrice,
-            QuantityTickets = ticketDto.QuantityTickets,
-            Show = show,
-        };
-
-        _ticketContext.Tickets.Add(tickets);
-        _ticketContext.SaveChanges();
-        return ticketDto;
+            throw new StudentNotFoundException("Error in the request", ex);
+        }
     }
 
     public Tickets DeleteTicket(int id)

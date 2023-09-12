@@ -22,7 +22,8 @@ builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddDbContext<TicketContext>(opts =>
     opts.UseLazyLoadingProxies().UseNpgsql(connectionString));
 
-builder.Services.AddIdentity<Users, IdentityRole>()
+builder.Services
+    .AddIdentity<Users, IdentityRole>()
     .AddEntityFrameworkStores<TicketContext>()
     .AddDefaultTokenProviders();
 
