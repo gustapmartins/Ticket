@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Show;
 using Ticket.Interface;
-using Ticket.Model;
-using Ticket.Service;
 
 namespace Ticket.Controllers;
 
+[Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class ShowController : ControllerBase
 {
     private readonly IShowService _showService;

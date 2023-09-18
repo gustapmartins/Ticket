@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Category;
 using Ticket.Interface;
@@ -6,8 +7,9 @@ using Ticket.Model;
 
 namespace Ticket.Controles;
 
+[Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class CategoryController: ControllerBase
 {
     private readonly ICategoryService _categoryService;
@@ -29,7 +31,12 @@ public class CategoryController: ControllerBase
         return _categoryService.FindAll();
     }
 
-
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
+    /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet("{id}")]
     public IActionResult FindIdCategory( int id)
     {

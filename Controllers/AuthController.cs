@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.User;
+using Ticket.Interface;
 using Ticket.Model;
-using Ticket.Service;
 
 namespace Ticket.Controles;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
-    public AuthController(AuthService authService)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
     }
@@ -38,8 +38,8 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> LoginAsync(LoginDTO loginDto)
     {
-        await _authService.Login(loginDto);
-        return Ok("Logado");
+        var token = await _authService.Login(loginDto);
+        return Ok(new { token });
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿    using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Ticket.DTO.User;
 using Ticket.ExceptionFilter;
@@ -9,14 +9,17 @@ namespace Ticket.Service;
 
 public class AuthService: IAuthService
 {
-    private UserManager<Users> _userManager;
-    private SignInManager<Users> _signInManager;
-    private IMapper _mapper;
-    public AuthService(UserManager<Users> userManager, IMapper mapper, SignInManager<Users> signInManager)
+    private readonly UserManager<Users> _userManager;
+    private readonly SignInManager<Users> _signInManager;
+    private readonly IMapper _mapper;
+    private TokenService _tokenService;
+
+    public AuthService(UserManager<Users> userManager, IMapper mapper, SignInManager<Users> signInManager, TokenService tokenService)
     {
         _userManager = userManager;
         _mapper = mapper;
         _signInManager = signInManager;
+        _tokenService = tokenService;
     }
 
     public List<Users> FindAll()
@@ -35,17 +38,6 @@ public class AuthService: IAuthService
         }
     }
 
-    public async Task Login(LoginDTO loginDto)
-    {
-
-        var result = await _signInManager.PasswordSignInAsync(loginDto.Username, loginDto.Password, false, false);
-
-        if (!result.Succeeded)
-        {
-            throw new StudentNotFoundException("Unauthenticated user");
-        }
-    }
-
     public async Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto)
     {
         var existEmail = await _userManager.FindByEmailAsync(registerDto.Email);
@@ -61,11 +53,43 @@ public class AuthService: IAuthService
         }
 
         Users user = _mapper.Map<Users>(registerDto);
-
+        
         IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password);
 
         if (!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
 
         return registerDto;
+    }
+
+    public async Task<string> Login(LoginDTO loginDto)
+    {
+
+        var email = await _userManager.FindByEmailAsync(loginDto.Email);
+
+        if (email == null)
+        {
+            throw new StudentNotFoundException("This email already exists");
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(email, loginDto.Password, false, false);
+
+        if (!result.Succeeded)
+        {
+            throw new StudentNotFoundException("Unauthenticated user");
+        }
+
+        var user = _signInManager
+            .UserManager
+            .Users
+            .FirstOrDefault(user => user.NormalizedEmail == loginDto.Email.ToUpper());
+
+        if(user == null)
+        {
+            throw new StudentNotFoundException("User is null");
+        }
+
+        var token = _tokenService.GenerateToken(user);
+
+        return token;
     }
 }
