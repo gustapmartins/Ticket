@@ -1,6 +1,6 @@
 ﻿using Ticket.Data;
-using Ticket.DTO.Category;
 using Ticket.Model;
+using Ticket.Repository.Dao;
 
 namespace Ticket.Repository.EfCore;
 
@@ -13,19 +13,19 @@ public class CategoryDaoComEfCore: ICategoryDao
         _ticketContext = ticketContext;
     }
 
-    public IEnumerable<Category> FindAllCategorys()
+    public List<Category> FindAll()
     {
         return _ticketContext.Categorys.ToList();
     }
 
-    public Category FindIdCategory(int Id)
+    public Category FindId(int Id)
     {
         return _ticketContext.Categorys.FirstOrDefault(category => category.Id == Id);
     }
 
-    public bool CategoryExistName(CategoryCreateDto categoryDto)
+    public bool ExistName(string Name)
     {
-        return _ticketContext.Categorys.Any(category => category.Name == categoryDto.Name);
+        return _ticketContext.Categorys.Any(category => category.Name == Name);
     }
 
     public void Add(Category category)

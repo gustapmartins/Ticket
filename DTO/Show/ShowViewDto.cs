@@ -1,5 +1,4 @@
 ﻿using Ticket.DTO.Category;
-using Ticket.DTO.Ticket;
 
 namespace Ticket.DTO.Show;
 

@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Ticket.Commons;
 using Ticket.Model;
 
 namespace Ticket.Service;
@@ -17,7 +18,7 @@ public class TokenService
             new Claim("Id", user.Id),
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ASIOMNINK234GSDMASDMIN21I3NFBNASDUBDUBAS"));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.Key));
 
         var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

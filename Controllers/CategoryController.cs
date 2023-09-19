@@ -26,9 +26,9 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IEnumerable<Category> FindAllCategory()
+    public List<Category> FindAllCategory()
     {
-        return _categoryService.FindAll();
+        return _categoryService.FindAllCategory();
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class CategoryController: ControllerBase
     [HttpGet("{id}")]
     public IActionResult FindIdCategory( int id)
     {
-        return Ok(_categoryService.FindId(id));
+        return Ok(_categoryService.FindIdCategory(id));
     }
 
     /// <summary>

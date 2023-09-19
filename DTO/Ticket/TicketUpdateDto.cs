@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Ticket.DTO.Ticket;
+﻿namespace Ticket.DTO.Ticket;
 
 public class TicketUpdateDto
 {

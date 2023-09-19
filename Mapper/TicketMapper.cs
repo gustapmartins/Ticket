@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Ticket.DTO.Category;
-using Ticket.DTO.Show;
 using Ticket.DTO.Ticket;
 using Ticket.Model;
 

@@ -6,8 +6,8 @@ namespace Ticket.Interface;
 
 public interface ICategoryService
 {
-    IEnumerable<Category> FindAll();
-    Category FindId(int id);
+    List<Category> FindAllCategory();
+    Category FindIdCategory(int id);
     CategoryCreateDto CreateCategory(CategoryCreateDto CategoryDto);
     Category DeleteCategory(int id);
     CategoryUpdateDto UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDto> categoryDto);

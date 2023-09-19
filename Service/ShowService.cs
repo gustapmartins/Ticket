@@ -19,7 +19,7 @@ public class ShowService: IShowService
         _mapper = mapper;
     }
 
-    public List<Show> FindAll()
+    public List<Show> FindAllShow()
     {
         try
         {
@@ -37,7 +37,7 @@ public class ShowService: IShowService
         }
     }
 
-    public Show FindId(int id)
+    public Show FindIdShow(int id)
     {
         try
         {

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Ticket.DTO.Category;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;
-using Microsoft.AspNetCore.JsonPatch;
-using Ticket.Repository;
+using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
@@ -19,13 +19,13 @@ public class CategoryService : ICategoryService
         _categoryDao = categoryDao;
     }
 
-    public IEnumerable<Category> FindAll()
+    public List<Category> FindAllCategory()
     {
         try
         {
-            var find = _categoryDao.FindAllCategorys();
+            var find = _categoryDao.FindAll();
 
-            if (find.Count() == 0)
+            if (find.Count == 0)
             {
                 throw new StudentNotFoundException("The list is empty");
             }
@@ -37,11 +37,11 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public Category FindId(int Id)
+    public Category FindIdCategory(int Id)
     {
         try
         {
-            var categorys = _categoryDao.FindIdCategory(Id);
+            var categorys = _categoryDao.FindId(Id);
 
             if (categorys == null)
             {
@@ -58,32 +58,25 @@ public class CategoryService : ICategoryService
 
     public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
     {
-        try
+        var categoryExist = _categoryDao.ExistName(categoryDto.Name);
+
+        if (categoryExist)
         {
-            var categoryExist = _categoryDao.CategoryExistName(categoryDto);
-
-            if (categoryExist)
-            {
-                throw new StudentNotFoundException("This category already exists");
-            }
-
-            Category category = _mapper.Map<Category>(categoryDto);
-
-            _categoryDao.Add(category);
-
-            return categoryDto;
+            throw new StudentNotFoundException("This category already exists");
         }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+
+        Category category = _mapper.Map<Category>(categoryDto);
+
+        _categoryDao.Add(category);
+
+        return categoryDto;
     }
 
     public Category DeleteCategory(int Id)
     {
         try
         {
-            var category = _categoryDao.FindIdCategory(Id);
+            var category = _categoryDao.FindId(Id);
             if (category == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
@@ -102,7 +95,7 @@ public class CategoryService : ICategoryService
     {
         try
         {
-            var category = _categoryDao.FindIdCategory(Id);
+            var category = _categoryDao.FindId(Id);
 
             if (category == null)
             {
