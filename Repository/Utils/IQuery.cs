@@ -1,10 +1,8 @@
-﻿namespace Ticket.Repository.Dao;
+﻿namespace Ticket.Repository.Utils;
 
 public interface IQuery<T>
 {
     List<T> FindAll();
 
     T FindId(int Id);
-
-    bool ExistName(string? Name);
 }

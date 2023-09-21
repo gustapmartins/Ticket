@@ -1,21 +1,21 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
-using Ticket.Data;
 using Ticket.DTO.Show;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;
+using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
 public class ShowService: IShowService
 {
-    private readonly TicketContext _ticketContext;
     private readonly IMapper _mapper;
+    private readonly IShowDao _showDao;
 
-    public ShowService(TicketContext ticketContext, IMapper mapper)
+    public ShowService(IShowDao showDao, IMapper mapper)
     {
-        _ticketContext = ticketContext;
+        _showDao = showDao;
         _mapper = mapper;
     }
 
@@ -23,7 +23,7 @@ public class ShowService: IShowService
     {
         try
         {
-            var show = _ticketContext.Shows.ToList();
+            var show = _showDao.FindAll();
 
             if (show.Count == 0)
             {
@@ -41,7 +41,7 @@ public class ShowService: IShowService
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(category => category.Id == id);
+            var show = _showDao.FindId(id);
 
             if (show == null)
             {
@@ -58,55 +58,46 @@ public class ShowService: IShowService
 
     public ShowCreateDto CreateShow(ShowCreateDto showDto)
     {
-        try
+        var category = _showDao.FindByCategoryName(showDto.CategoryName);
+
+        if (category == null)
         {
-            var category = _ticketContext.Categorys.FirstOrDefault(category =>
-                category.Name == showDto.CategoryName);
-
-            var nameExist = _ticketContext.Shows.FirstOrDefault(show => show.Name == showDto.Name);
-
-            if (category == null)
-            {
-                throw new StudentNotFoundException("The specified category does not exist.");
-            }
-
-            if(nameExist != null)
-            {
-                throw new StudentNotFoundException("This show already exists");
-            }
-
-            var show = new Show
-            {
-                Name = showDto.Name,
-                Description = showDto.Description,
-                Price = showDto.Price,
-                Date = showDto.Date,
-                Local = showDto.Local,
-                Category = category
-            };
-
-            _ticketContext.Shows.Add(show);
-            _ticketContext.SaveChanges();
-            return showDto;
+            throw new StudentNotFoundException("The specified category does not exist.");
         }
-        catch (Exception ex)
+
+        var nameExist = _showDao.FindByName(showDto.Name);
+
+        if (nameExist != null)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            throw new StudentNotFoundException("This show already exists");
         }
+
+        var show = new Show
+        {
+            Name = showDto.Name,
+            Description = showDto.Description,
+            Price = showDto.Price,
+            Date = showDto.Date,
+            Local = showDto.Local,
+            Category = category
+        };
+
+        _showDao.Add(show);
+        return showDto;
+
     }
 
     public Show DeleteShow(int Id)
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
+            var show = _showDao.FindId(Id);
 
             if (show == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
             }
-            _ticketContext.Remove(show);
-            _ticketContext.SaveChanges();
+            _showDao.Remove(show);
             return show;
         }
         catch (Exception ex)
@@ -119,7 +110,7 @@ public class ShowService: IShowService
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
+            var show = _showDao.FindId(Id);
 
             if (show == null)
             {
@@ -131,7 +122,7 @@ public class ShowService: IShowService
             showDto.ApplyTo(showView);
 
             _mapper.Map(showView, show);
-            _ticketContext.SaveChanges();
+            _showDao.SaveChanges();
             return showView;
         }
         catch (Exception ex)

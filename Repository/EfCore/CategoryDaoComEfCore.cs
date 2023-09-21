@@ -23,9 +23,9 @@ public class CategoryDaoComEfCore: ICategoryDao
         return _ticketContext.Categorys.FirstOrDefault(category => category.Id == Id);
     }
 
-    public bool ExistName(string Name)
+    public Category FindByName(string Name)
     {
-        return _ticketContext.Categorys.Any(category => category.Name == Name);
+        return _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name);
     }
 
     public void Add(Category category)

@@ -8,7 +8,7 @@ using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
-public class CategoryService : ICategoryService
+public class CategoryService :  ICategoryService
 {
     private readonly IMapper _mapper;
     private readonly ICategoryDao _categoryDao;
@@ -58,9 +58,9 @@ public class CategoryService : ICategoryService
 
     public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
     {
-        var categoryExist = _categoryDao.ExistName(categoryDto.Name);
+        var categoryExist = _categoryDao.FindByName(categoryDto.Name);
 
-        if (categoryExist)
+        if (categoryExist != null)
         {
             throw new StudentNotFoundException("This category already exists");
         }

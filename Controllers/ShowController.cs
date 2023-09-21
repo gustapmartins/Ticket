@@ -27,7 +27,7 @@ public class ShowController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult FindAllShow()
     {
-        return Ok(_showService.FindAll());
+        return Ok(_showService.FindAllShow());
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class ShowController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult FindId(int id)
     {
-        return Ok(_showService.FindId(id));
+        return Ok(_showService.FindIdShow(id));
     }
 
     /// <summary>

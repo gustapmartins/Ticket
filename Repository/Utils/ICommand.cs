@@ -1,4 +1,4 @@
-﻿namespace Ticket.Repository.Dao;
+﻿namespace Ticket.Repository.Utils;
 
 public interface ICommand<T>
 {

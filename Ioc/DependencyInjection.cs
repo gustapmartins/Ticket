@@ -40,11 +40,16 @@ public class DependencyInjection
 
         // Register your services here
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<TokenService>();
+        services.AddScoped<TokenService>(); 
+
         services.AddScoped<IShowService, ShowService>();
+        services.AddTransient<IShowDao, ShowDaoComEfCore>();
+
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddTransient<ICategoryDao, CategoryDaoComEfCore>();
+
         services.AddScoped<ITicketService, TicketService>();
+        services.AddTransient<ITicketDao, TicketDaoComEfCore>();
 
         Authentication.ConfigureAuth(services);
     }
