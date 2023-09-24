@@ -3,11 +3,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Ticket.Commons;
+using Ticket.Interface;
 using Ticket.Model;
 
 namespace Ticket.Service;
 
-public class TokenService
+public class TokenService: ITokenService
 {   
     public string GenerateToken(Users user)
     {

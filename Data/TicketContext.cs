@@ -20,4 +20,5 @@ public class TicketContext: IdentityDbContext<Users>
     public DbSet<Category> Categorys { get; set; }
     public DbSet<Tickets> Tickets { get; set; }
     public DbSet<Show> Shows { get; set; }   
+    public DbSet<PasswordReset> PasswordResets { get; set; }
 }

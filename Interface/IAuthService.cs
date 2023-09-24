@@ -10,4 +10,10 @@ public interface IAuthService
     Task<string> Login(LoginDTO loginDto);
 
     Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto);
+
+    Task<string> ForgetPasswordAsync(string email);
+
+    Task<string> ResetPassword(PasswordResetDto passwordResetDto);
+
+    string GenerateHash();
 }

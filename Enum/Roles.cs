@@ -3,15 +3,8 @@ using Ticket.Model;
 
 namespace Ticket.Enum;
 
-public class Roles
+public enum Roles
 {
-    [Key]
-    [Required]
-    public int Id { get; set; }
-
-    public decimal Price { get; set; }
-
-    public int Quantity { get; set; }
-
-    public virtual Show Show { get; set; }
+    Admin,
+    User,
 }

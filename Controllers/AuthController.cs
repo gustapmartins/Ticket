@@ -54,4 +54,31 @@ public class AuthController : ControllerBase
     {
         return Ok(await _authService.RegisterAsync(registerDto));
     }
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
+    /// <param name="email">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpPost("forget-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ForgetPassword([FromHeader] string email)
+    {
+        return Ok(await _authService.ForgetPasswordAsync(email));
+    }
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
+    /// <param name="PasswordReset">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ForgetPassword([FromBody] PasswordResetDto PasswordReset)
+    {
+        return Ok(await _authService.ResetPassword(PasswordReset));
+    }
+
 }

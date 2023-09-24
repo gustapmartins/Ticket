@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+using Ticket.Data;
 using Ticket.DTO.User;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
@@ -10,16 +14,27 @@ namespace Ticket.Service;
 public class AuthService: IAuthService
 {
     private readonly UserManager<Users> _userManager;
+    private readonly TicketContext _ticketContext;
     private readonly SignInManager<Users> _signInManager;
+    private readonly IEmailService _emailService;
     private readonly IMapper _mapper;
-    private TokenService _tokenService;
+    private ITokenService _tokenService;
 
-    public AuthService(UserManager<Users> userManager, IMapper mapper, SignInManager<Users> signInManager, TokenService tokenService)
+    public AuthService(
+        UserManager<Users> userManager,
+        TicketContext ticketContext,
+        IMapper mapper, 
+        SignInManager<Users> signInManager, 
+        ITokenService tokenService,
+        IEmailService emailService
+    )
     {
         _userManager = userManager;
+        _ticketContext = ticketContext;
         _mapper = mapper;
         _signInManager = signInManager;
         _tokenService = tokenService;
+        _emailService = emailService;
     }
 
     public List<Users> FindAll()
@@ -68,7 +83,7 @@ public class AuthService: IAuthService
 
         if (email == null)
         {
-            throw new StudentNotFoundException("This email already exists");
+            throw new StudentNotFoundException($"This {email} already exists");
         }
 
         var result = await _signInManager.PasswordSignInAsync(email, loginDto.Password, false, false);
@@ -81,7 +96,7 @@ public class AuthService: IAuthService
         var user = _signInManager
             .UserManager
             .Users
-            .FirstOrDefault(user => user.NormalizedEmail == loginDto.Email.ToUpper());
+            .FirstOrDefault(user => user.NormalizedEmail == loginDto.Email!.ToUpper());
 
         if(user == null)
         {
@@ -91,5 +106,89 @@ public class AuthService: IAuthService
         var token = _tokenService.GenerateToken(user);
 
         return token;
+    }
+
+    public async Task<string> ForgetPasswordAsync(string email)
+    {
+        try
+        {
+            var findEmail = await _userManager.FindByEmailAsync(email);
+
+            if (findEmail == null) 
+            {
+                throw new StudentNotFoundException($"This {email} is not valid");
+            }
+
+            var token = GenerateHash();
+
+            var PasswordReset = new PasswordReset
+            {
+                Token = token,
+                Email = email,
+                TokenExpire = DateTime.UtcNow.AddMinutes(10),
+            };
+
+            _ticketContext.PasswordResets.Add(PasswordReset);
+            _ticketContext.SaveChanges();
+
+            _emailService.SendMail(
+                  email,
+                  "Redefinição da sua senha",
+                  $"Verifique sua conta, com essa token: {token}"
+               );
+
+            return "Um e-mail de redefinição de senha foi enviado para o seu endereço de e-mail";
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new StudentNotFoundException($"This is user not exist {ex}");
+        }
+    }
+
+    public async Task<string> ResetPassword(PasswordResetDto passwordResetDto)
+    {
+        var passwordReset = _ticketContext.PasswordResets.FirstOrDefault(reset => 
+            reset.Token == passwordResetDto.Token);
+
+        if(passwordReset == null)
+        {
+            throw new StudentNotFoundException($"This is not exist token: {passwordResetDto.Token}");
+        }
+
+        var user = await _userManager.FindByEmailAsync(passwordReset.Email);
+
+        if(user == null)
+        {
+            throw new StudentNotFoundException($"This is user not exist");
+        }
+
+        if(passwordResetDto.Password != passwordResetDto.ConfirmPassword)
+        {
+            throw new StudentNotFoundException($"The password must be the same");
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        var result = await _userManager.ResetPasswordAsync(user, token, passwordResetDto.Password);
+
+        if (!result.Succeeded)
+        {
+            throw new StudentNotFoundException($"Failed to reset the password: {string.Join(", ", result.Errors)}");
+        }
+
+        _ticketContext.PasswordResets.Remove(passwordReset);
+        await _ticketContext.SaveChangesAsync();
+
+        return "Senha redefinida com sucesso";
+    }
+
+    public string GenerateHash()
+    {
+        string randomValue = Guid.NewGuid().ToString();
+        SHA256 sha256 = SHA256.Create();
+        byte[] bytes = Encoding.UTF8.GetBytes(randomValue);
+        byte[] hashBytes = sha256.ComputeHash(bytes);
+        string hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        return hash;
     }
 }

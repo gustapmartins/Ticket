@@ -20,7 +20,12 @@ public class TicketDaoComEfCore: ITicketDao
 
     public Tickets FindId(int Id)
     {
-        return _ticketContext.Tickets.FirstOrDefault(show => show.Id == Id);
+        return _ticketContext.Tickets.FirstOrDefault(ticket => ticket.Id == Id);
+    }
+
+    public Show FindByShowId(int Id)
+    {
+        return _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
     }
 
     public void Add(Tickets show)
@@ -38,5 +43,10 @@ public class TicketDaoComEfCore: ITicketDao
     public void SaveChanges()
     {
         _ticketContext.SaveChanges();
+    }
+
+    public virtual Tickets FindByName(string name) 
+    {
+        return null;
     }
 }

@@ -5,25 +5,26 @@ using Ticket.DTO.Ticket;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;
+using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
 public class TicketService: ITicketService
 {
-    private readonly TicketContext _ticketContext;
     private readonly IMapper _mapper;
+    private readonly ITicketDao _ticketDao;
 
-    public TicketService(TicketContext ticketContext, IMapper mapper)
+    public TicketService(ITicketDao ticketDao, IMapper mapper)
     {
-        _ticketContext = ticketContext;
         _mapper = mapper;
+        _ticketDao = ticketDao;
     }
 
     public List<Tickets> FindAll()
     {
         try
         {
-            var ticket = _ticketContext.Tickets.ToList();
+            var ticket = _ticketDao.FindAll();
 
             if (ticket.Count == 0)
             {
@@ -42,7 +43,7 @@ public class TicketService: ITicketService
     {
         try
         {
-            var ticket = _ticketContext.Tickets.FirstOrDefault(tickets => tickets.Id == id);
+            var ticket = _ticketDao.FindId(id);
 
             if (ticket == null)
             {
@@ -60,7 +61,7 @@ public class TicketService: ITicketService
     {
         try
         {
-            var show = _ticketContext.Shows.FirstOrDefault(ticket => ticket.Id == ticketDto.ShowId);
+            var show = _ticketDao.FindByShowId(ticketDto.ShowId);
 
             if (show == null)
             {
@@ -76,8 +77,7 @@ public class TicketService: ITicketService
                 Show = show,
             };
 
-            _ticketContext.Tickets.Add(tickets);
-            _ticketContext.SaveChanges();
+            _ticketDao.Add(tickets);
             return ticketDto;
         }
         catch (Exception ex)
@@ -86,18 +86,17 @@ public class TicketService: ITicketService
         }
     }
 
-    public Tickets DeleteTicket(int id)
+    public Tickets DeleteTicket(int Id)
     {
         try
         {
-            var ticket = _ticketContext.Tickets.FirstOrDefault(ticket => ticket.Id == id);
+            var ticket = _ticketDao.FindId(Id);
 
             if (ticket == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
             }
-            _ticketContext.Remove(ticket);
-            _ticketContext.SaveChanges();
+            _ticketDao.Remove(ticket);
             return ticket;
         }
         catch (Exception ex)
@@ -110,7 +109,7 @@ public class TicketService: ITicketService
     {
         try
         {
-            var ticket = _ticketContext.Tickets.FirstOrDefault(category => category.Id == id);
+            var ticket = _ticketDao.FindId(id);
 
             if (ticket == null)
             {
@@ -122,7 +121,7 @@ public class TicketService: ITicketService
             ticketDto.ApplyTo(ticketView);
 
             _mapper.Map(ticketView, ticket);
-            _ticketContext.SaveChanges();
+            _ticketDao.SaveChanges();
             return ticketView;
         }
         catch (Exception ex)

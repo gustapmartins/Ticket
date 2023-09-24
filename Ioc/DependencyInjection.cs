@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using Ticket.Data;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
@@ -23,7 +26,19 @@ public class DependencyInjection
 
         services.AddEndpointsApiExplorer();
 
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("v1", new OpenApiSecurityScheme
+            {
+                Description = "Description project",
+                In = ParameterLocation.Header,
+                Name = "Tickets",
+                Type = SecuritySchemeType.ApiKey,
+                
+            });
+
+            c.OperationFilter<SecurityRequirementsOperationFilter>();
+        });
 
         services.AddHttpContextAccessor();
 
@@ -38,9 +53,12 @@ public class DependencyInjection
        .AddEntityFrameworkStores<TicketContext>()
        .AddDefaultTokenProviders();
 
-        // Register your services here
+
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<TokenService>(); 
+
+        services.AddScoped<ITokenService, TokenService>();
+
+        services.AddScoped<IEmailService, EmailService>();
 
         services.AddScoped<IShowService, ShowService>();
         services.AddTransient<IShowDao, ShowDaoComEfCore>();
@@ -50,6 +68,7 @@ public class DependencyInjection
 
         services.AddScoped<ITicketService, TicketService>();
         services.AddTransient<ITicketDao, TicketDaoComEfCore>();
+
 
         Authentication.ConfigureAuth(services);
     }
