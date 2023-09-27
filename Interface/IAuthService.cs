@@ -13,7 +13,9 @@ public interface IAuthService
 
     Task<string> ForgetPasswordAsync(string email);
 
-    Task<string> ResetPassword(PasswordResetDto passwordResetDto);
+    Task<string> ResetPasswordAsync(PasswordResetDto passwordResetDto);
+
+    Task<BuyTicketDto> BuyTicketsAsync(BuyTicketDto buyTicket);
 
     string GenerateHash();
 }

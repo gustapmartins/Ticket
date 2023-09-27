@@ -14,9 +14,10 @@ public class TokenService: ITokenService
     {
         Claim[] claims = new Claim[]
         {
-            new Claim("Username", user.UserName),
-            new Claim("Email", user.Email),
-            new Claim("Id", user.Id),
+            new Claim("username", user.UserName),
+            new Claim("email", user.Email),
+            new Claim("id", user.Id),
+            new Claim("role", user.Role!),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.Key));

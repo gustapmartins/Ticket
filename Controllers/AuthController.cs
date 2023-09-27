@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.User;
 using Ticket.Interface;
 using Ticket.Model;
@@ -76,9 +77,22 @@ public class AuthController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ForgetPassword([FromBody] PasswordResetDto PasswordReset)
+    public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto PasswordReset)
     {
-        return Ok(await _authService.ResetPassword(PasswordReset));
+        return Ok(await _authService.ResetPasswordAsync(PasswordReset));
+    }
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
+    /// <param name="buyTicket">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpPost("buyTicket")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> BuyTickets([FromBody] BuyTicketDto buyTicket)
+    {
+        return Ok(await _authService.BuyTicketsAsync(buyTicket));
     }
 
 }

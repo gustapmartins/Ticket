@@ -49,7 +49,7 @@ public class CategoryController: ControllerBase
     /// <param name="categoryDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
-    [HttpPost]
+    [HttpPost, Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public CreatedAtActionResult CreateFilme([FromBody] CategoryCreateDto categoryDto)
     {
@@ -62,7 +62,7 @@ public class CategoryController: ControllerBase
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult DeleteCategory([FromRoute] int id)
     {
@@ -77,7 +77,7 @@ public class CategoryController: ControllerBase
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
-    [HttpPatch("{id}")]
+    [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<CategoryUpdateDto> categoryDto)
     {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Ticket.DTO.Category;
+using Ticket.Enum;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;

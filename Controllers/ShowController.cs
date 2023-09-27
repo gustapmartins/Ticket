@@ -49,7 +49,7 @@ public class ShowController : ControllerBase
     /// <param name="showDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
-    [HttpPost]
+    [HttpPost, Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public CreatedAtActionResult CreateShow([FromBody] ShowCreateDto showDto)
     {
@@ -62,7 +62,7 @@ public class ShowController : ControllerBase
     /// <param name="Id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult DeleteShow(int Id)
     {
@@ -76,7 +76,7 @@ public class ShowController : ControllerBase
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpPatch("{id}")]
+    [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult UpdateShow([FromRoute] int id, [FromBody] JsonPatchDocument<ShowUpdateDto> showDto)
     {

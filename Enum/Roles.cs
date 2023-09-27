@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Ticket.Model;
-
-namespace Ticket.Enum;
+﻿namespace Ticket.Enum;
 
 public enum Roles
 {
