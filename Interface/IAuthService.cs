@@ -15,7 +15,5 @@ public interface IAuthService
 
     Task<string> ResetPasswordAsync(PasswordResetDto passwordResetDto);
 
-    Task<BuyTicketDto> BuyTicketsAsync(BuyTicketDto buyTicket);
-
     string GenerateHash();
 }

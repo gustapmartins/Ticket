@@ -221,9 +221,6 @@ namespace Ticket.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -310,6 +307,9 @@ namespace Ticket.Migrations
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");

@@ -76,7 +76,6 @@ public class ShowService: IShowService
         {
             Name = showDto.Name,
             Description = showDto.Description,
-            Price = showDto.Price,
             Date = showDto.Date,
             Local = showDto.Local,
             Category = category
@@ -122,7 +121,9 @@ public class ShowService: IShowService
             showDto.ApplyTo(showView);
 
             _mapper.Map(showView, show);
+
             _showDao.SaveChanges();
+
             return showView;
         }
         catch (Exception ex)

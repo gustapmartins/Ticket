@@ -8,4 +8,5 @@ public class Users: IdentityUser
     public int YearsOld { get; set; }
     public string? Role {  get; set; }
     public virtual List<Tickets>? Tickets { get; set; }
+    public decimal TotalPrice { get; set; }
 }

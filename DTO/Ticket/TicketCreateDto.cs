@@ -10,4 +10,7 @@ public class TicketCreateDto
 
     [Required(ErrorMessage = "ShowId é obrigatório")]
     public int ShowId { get; set; }
+
+    [Required(ErrorMessage = "Price é obrigatório")]
+    public decimal Price { get; set; }
 }

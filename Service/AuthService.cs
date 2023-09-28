@@ -182,43 +182,6 @@ public class AuthService: IAuthService
         return "Senha redefinida com sucesso";
     }
 
-        public async Task<BuyTicketDto> BuyTicketsAsync(BuyTicketDto buyTicket)
-        {
-
-            //busca o ticket que o usuario está informando o id
-            Tickets findTicket = await _ticketContext.Tickets.FirstAsync(ticket => ticket.Id == buyTicket.TicketId);
-
-            if (findTicket == null)
-            {
-                throw new StudentNotFoundException($"This ticket does not exist");
-            }
-
-            Users findUser = await _userManager.Users.FirstAsync(user => user.Email == buyTicket.Email);
-
-            if (findUser == null)
-            {
-                throw new StudentNotFoundException($"This user does not exist");
-            }
-
-            if(findTicket.QuantityTickets > 0)
-            {
-                var subtraiQuantity = findTicket.QuantityTickets - buyTicket.QuantityTickets;
-            }
-
-            //verifica se os tickets do usuarios já existem
-            var ticketIdExist = findUser.Tickets!.Find(ticketId => ticketId.Id == findTicket.Id);
-
-            if (ticketIdExist != null)
-            {
-                throw new StudentNotFoundException($"This tickets already exists");
-            }
-
-            findUser.Tickets.Add(findTicket);
-            _ticketContext.SaveChanges();
-
-            return buyTicket;
-        }
-
     public string GenerateHash()
     {
         string randomValue = Guid.NewGuid().ToString();

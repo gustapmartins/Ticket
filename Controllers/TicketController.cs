@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Ticket;
+using Ticket.DTO.User;
 using Ticket.Interface;
 
 namespace Ticket.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 public class TicketController : ControllerBase
@@ -60,6 +60,19 @@ public class TicketController : ControllerBase
     /// <summary>
     ///     Adiciona um filme ao banco de dados
     /// </summary>
+    /// <param name="buyTicket">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpPost("buyTicket")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> BuyTickets([FromBody] BuyTicketDto buyTicket)
+    {
+        return Ok(await _ticketService.BuyTicketsAsync(buyTicket));
+    }
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="204">Caso inserção seja feita com sucesso</response>
@@ -79,8 +92,8 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateTicket([FromRoute] int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
+    public IActionResult UpdateTicket(int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
     {
         return Ok(_ticketService.UpdateTicket(id, ticketDto));
-    }
+    } 
 }

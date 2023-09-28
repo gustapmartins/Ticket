@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20230912203307_Create tables")]
-    partial class Createtables
+    [Migration("20230928191248_TotalPrice")]
+    partial class TotalPrice
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -179,6 +179,28 @@ namespace Ticket.Migrations
                     b.ToTable("Categorys");
                 });
 
+            modelBuilder.Entity("Ticket.Model.PasswordReset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("TokenExpire")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PasswordResets");
+                });
+
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
                     b.Property<int>("Id")
@@ -201,9 +223,6 @@ namespace Ticket.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -229,9 +248,14 @@ namespace Ticket.Migrations
                     b.Property<int>("ShowId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ShowId");
+
+                    b.HasIndex("UsersId");
 
                     b.ToTable("Tickets");
                 });
@@ -281,8 +305,14 @@ namespace Ticket.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Role")
+                        .HasColumnType("text");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
@@ -374,7 +404,16 @@ namespace Ticket.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Ticket.Model.Users", null)
+                        .WithMany("Tickets")
+                        .HasForeignKey("UsersId");
+
                     b.Navigation("Show");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Users", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

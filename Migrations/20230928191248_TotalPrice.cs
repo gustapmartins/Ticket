@@ -5,23 +5,24 @@
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class RoleAdmin : Migration
+    public partial class TotalPrice : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Role",
+            migrationBuilder.AddColumn<decimal>(
+                name: "TotalPrice",
                 table: "AspNetUsers",
-                type: "text",
-                nullable: true);
+                type: "numeric",
+                nullable: false,
+                defaultValue: 0m);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Role",
+                name: "TotalPrice",
                 table: "AspNetUsers");
         }
     }
