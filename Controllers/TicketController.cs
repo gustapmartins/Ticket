@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Ticket;
-using Ticket.DTO.User;
 using Ticket.Interface;
 
 namespace Ticket.Controllers;
@@ -63,7 +62,7 @@ public class TicketController : ControllerBase
     /// <param name="buyTicket">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpPost("buyTicket")]
+    [HttpPost("buyTicket"), Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> BuyTickets([FromBody] BuyTicketDto buyTicket)
     {
@@ -78,9 +77,22 @@ public class TicketController : ControllerBase
     /// <response code="204">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult DeleteTicket(int id)
+    public IActionResult DeleteTicket([FromRoute] int id)
     {
         return Ok(_ticketService.DeleteTicket(id));
+    }
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
+    /// <param name="removeTicket">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpDelete("RemoveTicket"), Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemoveTicketsAsync([FromBody] RemoveTicketDto removeTicket)
+    {
+        return Ok(await _ticketService.RemoveTicketsAsync(removeTicket));
     }
 
     /// <summary>
@@ -92,7 +104,7 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateTicket(int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
+    public IActionResult UpdateTicket([FromRoute] int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
     {
         return Ok(_ticketService.UpdateTicket(id, ticketDto));
     } 

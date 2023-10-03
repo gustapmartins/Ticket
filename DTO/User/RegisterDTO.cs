@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ticket.DTO.User;
+namespace Ticket.DTO.Ticket;
 
 public class RegisterDTO
 {

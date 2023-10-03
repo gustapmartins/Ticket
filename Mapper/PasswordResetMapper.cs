@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Ticket.DTO.User;
+using Ticket.DTO.Ticket;
 using Ticket.Model;
 
 namespace Ticket.Mapper;

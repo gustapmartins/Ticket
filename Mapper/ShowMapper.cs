@@ -12,5 +12,6 @@ public class ShowMapper: Profile
         CreateMap<Show, ShowViewDto>()
             .ForMember(showDto => showDto.Category, opt => opt.MapFrom(show => show.Category));
         CreateMap<ShowUpdateDto, Show>();
+        CreateMap<Show, ShowUpdateDto>();
     }
 }

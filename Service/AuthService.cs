@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using Ticket.Data;
-using Ticket.DTO.User;
+using Ticket.DTO.Ticket;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;

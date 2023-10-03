@@ -11,6 +11,6 @@ public class TicketMapper: Profile
         CreateMap<TicketCreateDto, Tickets>();
         CreateMap<Tickets, TicketViewDto>();
         CreateMap<TicketUpdateDto, Tickets>();
-       
+        CreateMap<Tickets, TicketUpdateDto>();
     }
 }

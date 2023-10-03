@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Ticket.DTO.Ticket;
-using Ticket.DTO.User;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;
@@ -172,5 +171,27 @@ public class TicketService: ITicketService
         _ticketDao.SaveChanges();
 
         return buyTicket;
+    }
+
+    public async Task<Tickets> RemoveTicketsAsync(RemoveTicketDto removeTicket)
+    {
+        Tickets findTicket = _ticketDao.FindId(removeTicket.TicketId);
+
+        if (findTicket == null)
+        {
+            throw new StudentNotFoundException($"This ticket does not exist");
+        }
+
+        Users findUser = await _userManager.Users.FirstAsync(user => user.Email == removeTicket.Email);
+
+        if (findUser == null)
+        {
+            throw new StudentNotFoundException($"This user does not exist");
+        }
+
+        findUser.Tickets!.Remove(findTicket);
+        _ticketDao.SaveChanges();
+
+        return findTicket;
     }
 }
