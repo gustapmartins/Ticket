@@ -23,7 +23,7 @@ public class ShowService: IShowService
     {
         try
         {
-            var show = _showDao.FindAll();
+            List<Show> show = _showDao.FindAll();
 
             if (show.Count == 0)
             {
@@ -41,7 +41,7 @@ public class ShowService: IShowService
     {
         try
         {
-            var show = _showDao.FindId(id);
+            Show show = _showDao.FindId(id);
 
             if (show == null)
             {
@@ -58,28 +58,22 @@ public class ShowService: IShowService
 
     public ShowCreateDto CreateShow(ShowCreateDto showDto)
     {
-        var category = _showDao.FindByCategoryName(showDto.CategoryName);
+        Category category = _showDao.FindByCategoryName(showDto.CategoryName);
 
         if (category == null)
         {
             throw new StudentNotFoundException("The specified category does not exist.");
         }
 
-        var nameExist = _showDao.FindByName(showDto.Name);
+        Show nameExist = _showDao.FindByName(showDto.Name);
 
         if (nameExist != null)
         {
             throw new StudentNotFoundException("This show already exists");
         }
 
-        var show = new Show
-        {
-            Name = showDto.Name,
-            Description = showDto.Description,
-            Date = showDto.Date,
-            Local = showDto.Local,
-            Category = category
-        };
+        var show = _mapper.Map<Show>(showDto);
+        show.Category = category;
 
         _showDao.Add(show);
         return showDto;
@@ -90,7 +84,7 @@ public class ShowService: IShowService
     {
         try
         {
-            var show = _showDao.FindId(Id);
+            Show show = _showDao.FindId(Id);
 
             if (show == null)
             {
@@ -109,7 +103,7 @@ public class ShowService: IShowService
     {
         try
         {
-            var show = _showDao.FindId(Id);
+            Show show = _showDao.FindId(Id);
 
             if (show == null)
             {

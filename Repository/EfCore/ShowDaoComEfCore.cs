@@ -15,12 +15,12 @@ public class ShowDaoComEfCore: IShowDao
 
     public List<Show> FindAll()
     {
-        return _ticketContext.Shows.ToList();
+        return _ticketContext.Shows.OrderByDescending(show => show.Id).ToList();
     }
 
     public Show FindId(int Id)
     {
-        return _ticketContext.Shows.FirstOrDefault(show => show.Id == Id);
+        return _ticketContext.Shows.FirstOrDefault(show => show.Id == Id)!;
     }
 
     public Category FindByCategoryName(string Name)
@@ -30,7 +30,7 @@ public class ShowDaoComEfCore: IShowDao
 
     public Show FindByName(string Name)
     {
-        return _ticketContext.Shows.FirstOrDefault(show => show.Name == Name);
+        return _ticketContext.Shows.FirstOrDefault(show => show.Name == Name)!;
     }
 
     public void Add(Show show)

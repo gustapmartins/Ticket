@@ -5,17 +5,17 @@ namespace Ticket.DTO.Show;
 public class ShowCreateDto
 {
     [Required(ErrorMessage = "Name é obrigatório")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     [Required(ErrorMessage = "Description é obrigatório")]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     [Required(ErrorMessage = "Date é obrigatório")]
     public DateTime Date { get; set; }
 
     [Required(ErrorMessage = "Local é obrigatório")]
-    public string? Local { get; set; }
+    public string Local { get; set; }
 
     [Required(ErrorMessage = "CategoryName é obrigatório")]
-    public string? CategoryName { get; set; }
+    public string CategoryName { get; set; }
 }

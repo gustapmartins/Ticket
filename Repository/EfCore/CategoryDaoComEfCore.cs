@@ -15,17 +15,17 @@ public class CategoryDaoComEfCore: ICategoryDao
 
     public List<Category> FindAll()
     {
-        return _ticketContext.Categorys.ToList();
+        return _ticketContext.Categorys.OrderByDescending(category => category.Name).Distinct().ToList();
     }
 
     public Category FindId(int Id)
     {
-        return _ticketContext.Categorys.FirstOrDefault(category => category.Id == Id);
+        return _ticketContext.Categorys.FirstOrDefault(category => category.Id == Id)!;
     }
 
     public Category FindByName(string Name)
     {
-        return _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name);
+        return _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name)!;
     }
 
     public void Add(Category category)

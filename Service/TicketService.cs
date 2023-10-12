@@ -27,7 +27,7 @@ public class TicketService: ITicketService
     {
         try
         {
-            var ticket = _ticketDao.FindAll();
+            List<Tickets> ticket = _ticketDao.FindAll();
 
             if (ticket.Count == 0)
             {
@@ -46,7 +46,7 @@ public class TicketService: ITicketService
     {
         try
         {
-            var ticket = _ticketDao.FindId(id);
+            Tickets ticket = _ticketDao.FindId(id);
 
             if (ticket == null)
             {
@@ -59,21 +59,24 @@ public class TicketService: ITicketService
             throw new StudentNotFoundException("Error in the request", ex);
         }
     }
+    
+    public List<Show> SearchTicket(string name)
+    {
+        return _ticketDao.FindByShowName(name);
+    } 
 
     public TicketCreateDto CreateTicket(TicketCreateDto ticketDto)
     {
         try
         {
-            var show = _ticketDao.FindByShowId(ticketDto.ShowId);
+            Show show = _ticketDao.FindByShowId(ticketDto.ShowId);
 
             if (show == null)
             {
                 throw new StudentNotFoundException("A categoria especificada não existe.");
             }
 
-            //decimal totalPrice = show.Price * ticketDto.QuantityTickets;
-
-            var tickets = new Tickets
+            Tickets tickets = new()
             {
                 Price = ticketDto.Price,
                 QuantityTickets = ticketDto.QuantityTickets,
@@ -93,7 +96,7 @@ public class TicketService: ITicketService
     {
         try
         {
-            var ticket = _ticketDao.FindId(Id);
+            Tickets ticket = _ticketDao.FindId(Id);
 
             if (ticket == null)
             {
@@ -112,7 +115,7 @@ public class TicketService: ITicketService
     {
         try
         {
-            var ticket = _ticketDao.FindId(id);
+            Tickets ticket = _ticketDao.FindId(id);
 
             if (ticket == null)
             {
@@ -156,11 +159,11 @@ public class TicketService: ITicketService
         }
 
         var subtraiQuantity = findTicket.QuantityTickets - buyTicket.QuantityTickets;
-        findUser.TotalPrice = findTicket.Price * buyTicket.QuantityTickets;
         findTicket.QuantityTickets = subtraiQuantity;
-
+        findUser.TotalPrice = findTicket.Price * buyTicket.QuantityTickets;
+        
         //verifica se os tickets do usuarios já existem
-        var ticketIdExist = findUser.Tickets!.Find(ticketId => ticketId.Id == findTicket.Id);
+        Tickets ticketIdExist = findUser.Tickets!.Find(ticketId => ticketId.Id == findTicket.Id)!;
 
         if (ticketIdExist != null)
         {

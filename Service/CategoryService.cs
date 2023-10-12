@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Ticket.DTO.Category;
-using Ticket.Enum;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;
@@ -24,7 +23,7 @@ public class CategoryService :  ICategoryService
     {
         try
         {
-            var find = _categoryDao.FindAll();
+            List<Category> find = _categoryDao.FindAll();
 
             if (find.Count == 0)
             {
@@ -42,7 +41,7 @@ public class CategoryService :  ICategoryService
     {
         try
         {
-            var categorys = _categoryDao.FindId(Id);
+            Category categorys = _categoryDao.FindId(Id);
 
             if (categorys == null)
             {
@@ -59,7 +58,7 @@ public class CategoryService :  ICategoryService
 
     public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
     {
-        var categoryExist = _categoryDao.FindByName(categoryDto.Name);
+        Category categoryExist = _categoryDao.FindByName(categoryDto.Name);
 
         if (categoryExist != null)
         {
@@ -77,7 +76,7 @@ public class CategoryService :  ICategoryService
     {
         try
         {
-            var category = _categoryDao.FindId(Id);
+            Category category = _categoryDao.FindId(Id);
             if (category == null)
             {
                 throw new StudentNotFoundException("This value does not exist");
@@ -96,7 +95,7 @@ public class CategoryService :  ICategoryService
     {
         try
         {
-            var category = _categoryDao.FindId(Id);
+            Category category = _categoryDao.FindId(Id);
 
             if (category == null)
             {

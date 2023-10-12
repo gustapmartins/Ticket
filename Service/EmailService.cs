@@ -11,7 +11,7 @@ public class EmailService: IEmailService
     {
         string mail = "gustavopereirafacal@gmail.com";
 
-        var client = new SmtpClient("sandbox.smtp.mailtrap.io", 2525)
+        SmtpClient client = new SmtpClient("sandbox.smtp.mailtrap.io", 2525)
         {
             Credentials = new NetworkCredential("b6ccf0df5b6e1f", "de255eb01c2e93"),
             EnableSsl = true

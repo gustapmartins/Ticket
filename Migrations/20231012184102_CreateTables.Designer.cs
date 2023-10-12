@@ -12,7 +12,7 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20230927210713_CreateTables")]
+    [Migration("20231012184102_CreateTables")]
     partial class CreateTables
     {
         /// <inheritdoc />
@@ -245,7 +245,7 @@ namespace Ticket.Migrations
                     b.Property<int>("QuantityTickets")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ShowId")
+                    b.Property<int?>("ShowId")
                         .HasColumnType("integer");
 
                     b.Property<string>("UsersId")
@@ -310,6 +310,9 @@ namespace Ticket.Migrations
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
@@ -397,9 +400,7 @@ namespace Ticket.Migrations
                 {
                     b.HasOne("Ticket.Model.Show", "Show")
                         .WithMany()
-                        .HasForeignKey("ShowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ShowId");
 
                     b.HasOne("Ticket.Model.Users", null)
                         .WithMany("Tickets")

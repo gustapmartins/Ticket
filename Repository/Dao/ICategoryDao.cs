@@ -5,4 +5,5 @@ namespace Ticket.Repository.Dao;
 
 public interface ICategoryDao: ICommand<Category>, IQuery<Category>
 {
+    Category FindByName(string Name);
 }

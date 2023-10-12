@@ -34,6 +34,7 @@ namespace Ticket.Migrations
                     Cpf = table.Column<string>(type: "text", nullable: true),
                     YearsOld = table.Column<int>(type: "integer", nullable: false),
                     Role = table.Column<string>(type: "text", nullable: true),
+                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -219,7 +220,7 @@ namespace Ticket.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     QuantityTickets = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    ShowId = table.Column<int>(type: "integer", nullable: false),
+                    ShowId = table.Column<int>(type: "integer", nullable: true),
                     UsersId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -234,8 +235,7 @@ namespace Ticket.Migrations
                         name: "FK_Tickets_Shows_ShowId",
                         column: x => x.ShowId,
                         principalTable: "Shows",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
