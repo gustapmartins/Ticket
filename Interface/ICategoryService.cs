@@ -10,5 +10,5 @@ public interface ICategoryService
     Category FindIdCategory(int id);
     CategoryCreateDto CreateCategory(CategoryCreateDto CategoryDto);
     Category DeleteCategory(int id);
-    CategoryUpdateDto UpdateCategory(int id, JsonPatchDocument<CategoryUpdateDto> categoryDto);
+    Category UpdateCategory(int id, CategoryUpdateDto categoryDto);
 }

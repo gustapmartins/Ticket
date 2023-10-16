@@ -79,7 +79,7 @@ public class CategoryController: ControllerBase
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] JsonPatchDocument<CategoryUpdateDto> categoryDto)
+    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] CategoryUpdateDto categoryDto)
     {
         return Ok(_categoryService.UpdateCategory(id, categoryDto));
     }

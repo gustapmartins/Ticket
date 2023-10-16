@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ticket", "Ticket.csproj", "{7E76F70A-9A4E-490E-AC78-3BB322D16215}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketTest", "..\TicketTest\TicketTest.csproj", "{FD004C2B-6EED-4088-8884-2527A31914C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{7E76F70A-9A4E-490E-AC78-3BB322D16215}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E76F70A-9A4E-490E-AC78-3BB322D16215}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E76F70A-9A4E-490E-AC78-3BB322D16215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD004C2B-6EED-4088-8884-2527A31914C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD004C2B-6EED-4088-8884-2527A31914C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD004C2B-6EED-4088-8884-2527A31914C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD004C2B-6EED-4088-8884-2527A31914C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

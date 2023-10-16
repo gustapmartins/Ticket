@@ -1,4 +1,5 @@
 ﻿using Ticket.Data;
+using Ticket.DTO.Category;
 using Ticket.Model;
 using Ticket.Repository.Dao;
 
@@ -42,6 +43,20 @@ public class CategoryDaoComEfCore: ICategoryDao
 
     public void SaveChanges()
     {
+        _ticketContext.SaveChanges();
+    }
+
+    public void Update(Category category, CategoryUpdateDto updatedCategoryDto)
+    {
+        if (updatedCategoryDto.Name != null)
+        {
+            category.Name = updatedCategoryDto.Name;
+        }
+        if (updatedCategoryDto.Description != null)
+        {
+            category.Description = updatedCategoryDto.Description;
+        }
+
         _ticketContext.SaveChanges();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.JsonPatch;
 using Ticket.DTO.Category;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
@@ -8,7 +7,7 @@ using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
-public class CategoryService :  ICategoryService
+public class CategoryService : ICategoryService
 {
     private readonly IMapper _mapper;
     private readonly ICategoryDao _categoryDao;
@@ -91,7 +90,7 @@ public class CategoryService :  ICategoryService
         }
     }
 
-    public CategoryUpdateDto UpdateCategory(int Id, JsonPatchDocument<CategoryUpdateDto> categoryDto)
+    public Category UpdateCategory(int Id, CategoryUpdateDto categoryDto)
     {
         try
         {
@@ -102,15 +101,9 @@ public class CategoryService :  ICategoryService
                 throw new StudentNotFoundException("This value does not exist");
             }
 
-            var categoryView = _mapper.Map<CategoryUpdateDto>(category);
+            _categoryDao.Update(category, categoryDto);
 
-            categoryDto.ApplyTo(categoryView);
-
-            _mapper.Map(categoryView, category);
-
-            _categoryDao.SaveChanges();
-
-            return categoryView;
+            return category;
         }
         catch (Exception ex)
         {
