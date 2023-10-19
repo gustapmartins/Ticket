@@ -10,9 +10,6 @@ public class ShowCreateDto
     [Required(ErrorMessage = "Description é obrigatório")]
     public string Description { get; set; }
 
-    [Required(ErrorMessage = "Date é obrigatório")]
-    public DateTime Date { get; set; }
-
     [Required(ErrorMessage = "Local é obrigatório")]
     public string Local { get; set; }
 

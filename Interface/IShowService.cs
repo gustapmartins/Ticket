@@ -10,7 +10,7 @@ public interface IShowService
 
     Show FindIdShow(int id);
 
-    ShowCreateDto CreateShow(ShowCreateDto showDto);
+    Show CreateShow(ShowCreateDto showDto);
 
     Show DeleteShow(int Id);
 

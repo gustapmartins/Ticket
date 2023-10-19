@@ -13,10 +13,10 @@ public class ShowService: IShowService
     private readonly IMapper _mapper;
     private readonly IShowDao _showDao;
 
-    public ShowService(IShowDao showDao, IMapper mapper)
+    public ShowService(IMapper mapper, IShowDao showDao)
     {
-        _showDao = showDao;
         _mapper = mapper;
+        _showDao = showDao;
     }
 
     public List<Show> FindAllShow()
@@ -56,7 +56,7 @@ public class ShowService: IShowService
         }
     }
 
-    public ShowCreateDto CreateShow(ShowCreateDto showDto)
+    public Show CreateShow(ShowCreateDto showDto)
     {
         Category category = _showDao.FindByCategoryName(showDto.CategoryName);
 
@@ -73,10 +73,13 @@ public class ShowService: IShowService
         }
 
         var show = _mapper.Map<Show>(showDto);
+
         show.Category = category;
+        show.Date = DateTime.Now.ToUniversalTime();
 
         _showDao.Add(show);
-        return showDto;
+
+        return show;
 
     }
 
