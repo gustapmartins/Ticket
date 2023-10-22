@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.JsonPatch;
 using Ticket.DTO.Show;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
@@ -93,7 +92,9 @@ public class ShowService: IShowService
             {
                 throw new StudentNotFoundException("This value does not exist");
             }
+
             _showDao.Remove(show);
+            
             return show;
         }
         catch (Exception ex)
@@ -102,7 +103,7 @@ public class ShowService: IShowService
         }
     }
 
-    public ShowUpdateDto UpdateShow(int Id, JsonPatchDocument<ShowUpdateDto> showDto)
+    public Show UpdateShow(int Id, ShowUpdateDto showDto)
     {
         try
         {
@@ -113,15 +114,9 @@ public class ShowService: IShowService
                 throw new StudentNotFoundException("This value does not exist");
             }
 
-            var showView = _mapper.Map<ShowUpdateDto>(show);
+            _showDao.Update(show, showDto);
 
-            showDto.ApplyTo(showView);
-
-            _mapper.Map(showView, show);
-
-            _showDao.SaveChanges();
-
-            return showView;
+            return show;
         }
         catch (Exception ex)
         {

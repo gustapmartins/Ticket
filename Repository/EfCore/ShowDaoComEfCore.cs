@@ -1,4 +1,5 @@
 ﻿using Ticket.Data;
+using Ticket.DTO.Show;
 using Ticket.Model;
 using Ticket.Repository.Dao;
 
@@ -25,7 +26,7 @@ public class ShowDaoComEfCore: IShowDao
 
     public Category FindByCategoryName(string Name)
     {
-        return _ticketContext.Categorys.First(category => category.Name == Name);
+        return _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name)!;
     }
 
     public Show FindByName(string Name)
@@ -42,6 +43,29 @@ public class ShowDaoComEfCore: IShowDao
     public void Remove(Show show)
     {
         _ticketContext.Remove(show);
+        _ticketContext.SaveChanges();
+    }
+
+    public void Update(Show show, ShowUpdateDto showUpdateDto)
+    {
+        if (showUpdateDto.Name != null)
+        {
+            show.Name = showUpdateDto.Name;
+        }
+        if (showUpdateDto.Description != null)
+        {
+            show.Description = showUpdateDto.Description;
+        }
+        if(showUpdateDto.Local != null)
+        {
+            show.Local = showUpdateDto.Local;
+        }
+        if(showUpdateDto.CategoryName != null)
+        {
+            Category category = FindByCategoryName(showUpdateDto.CategoryName);
+            show.Category = category;
+        }
+
         _ticketContext.SaveChanges();
     }
 

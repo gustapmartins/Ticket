@@ -14,5 +14,5 @@ public interface IShowService
 
     Show DeleteShow(int Id);
 
-    ShowUpdateDto UpdateShow(int Id, JsonPatchDocument<ShowUpdateDto> showtDto);
+    Show UpdateShow(int Id, ShowUpdateDto showtDto);
 }

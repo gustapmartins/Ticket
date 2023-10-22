@@ -78,7 +78,7 @@ public class ShowController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateShow([FromRoute] int id, [FromBody] JsonPatchDocument<ShowUpdateDto> showDto)
+    public IActionResult UpdateShow([FromRoute] int id, [FromBody] ShowUpdateDto showDto)
     {
         return Ok(_showService.UpdateShow(id, showDto));
     }
