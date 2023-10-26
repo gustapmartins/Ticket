@@ -23,7 +23,7 @@ public class TicketService: ITicketService
         _userManager = userManager;
     }
 
-    public List<Tickets> FindAll()
+    public List<Tickets> FindAllTicket()
     {
         try
         {
@@ -42,7 +42,7 @@ public class TicketService: ITicketService
         }
     }
 
-    public Tickets FindId(int id)
+    public Tickets FindIdTicket(int id)
     {
         try
         {

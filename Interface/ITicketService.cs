@@ -6,8 +6,8 @@ namespace Ticket.Interface;
 
 public interface ITicketService
 {
-    List<Tickets> FindAll();
-    Tickets FindId(int id);
+    List<Tickets> FindAllTicket();
+    Tickets FindIdTicket(int id);
     TicketCreateDto CreateTicket(TicketCreateDto ticketDto);
     Tickets DeleteTicket(int id);
     Task<BuyTicketDto> BuyTicketsAsync(BuyTicketDto buyTicket);

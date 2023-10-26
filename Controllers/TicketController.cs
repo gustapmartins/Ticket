@@ -27,7 +27,7 @@ public class TicketController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult FindAll()
     {
-        return Ok(_ticketService.FindAll());
+        return Ok(_ticketService.FindAllTicket());
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class TicketController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult FindId(int id)
     {
-        return Ok(_ticketService.FindId(id));
+        return Ok(_ticketService.FindIdTicket(id));
     }
 
     /// <summary>
