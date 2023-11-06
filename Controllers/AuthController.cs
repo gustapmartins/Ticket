@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;

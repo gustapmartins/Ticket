@@ -4,7 +4,7 @@ using Ticket.Repository.Utils;
 
 namespace Ticket.Repository.Dao;
 
-public interface ICategoryDao : ICommand<Category>, IQuery<Category>, ObjectHandler<Category, CategoryUpdateDto>
+public interface ICategoryDao : ICommand<Category>, ObjectHandler<Category, CategoryUpdateDto>
 {
     Category FindByName(string Name);
 }

@@ -7,7 +7,7 @@ using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
-public class ShowService: IShowService
+public class ShowService: TicketBase, IShowService
 {
     private readonly IMapper _mapper;
     private readonly IShowDao _showDao;
@@ -30,29 +30,21 @@ public class ShowService: IShowService
             }
 
             return show;
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             throw new StudentNotFoundException("Error in the request", ex);
         }
     }
 
-    public Show FindIdShow(int id)
+    public async Task<Show> FindIdShow(int id)
     {
-        try
-        {
-            Show show = _showDao.FindId(id);
+        return await HandleErrorAsync(async () => await _showDao.FindId(id));
+    }
 
-            if (show == null)
-            {
-                throw new StudentNotFoundException("The list is empty");
-            }
-
-            return show;
-        }
-        catch(Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+    public async Task<List<Show>> SearchShow(string name)
+    {
+        return await _showDao.FindByShowNameList(name);
     }
 
     public Show CreateShow(ShowCreateDto showDto)
@@ -79,19 +71,13 @@ public class ShowService: IShowService
         _showDao.Add(show);
 
         return show;
-
     }
 
-    public Show DeleteShow(int Id)
+    public async Task<Show> DeleteShow(int Id)
     {
         try
         {
-            Show show = _showDao.FindId(Id);
-
-            if (show == null)
-            {
-                throw new StudentNotFoundException("This value does not exist");
-            }
+            var show = await HandleErrorAsync(async () => await _showDao.FindId(Id));
 
             _showDao.Remove(show);
             
@@ -103,16 +89,11 @@ public class ShowService: IShowService
         }
     }
 
-    public Show UpdateShow(int Id, ShowUpdateDto showDto)
+    public async Task<Show> UpdateShow(int Id, ShowUpdateDto showDto)
     {
         try
         {
-            Show show = _showDao.FindId(Id);
-
-            if (show == null)
-            {
-                throw new StudentNotFoundException("This value does not exist");
-            }
+            var show = await HandleErrorAsync(async () => await _showDao.FindId(Id));
 
             _showDao.Update(show, showDto);
 

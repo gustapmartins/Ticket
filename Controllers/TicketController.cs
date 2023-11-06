@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Ticket;
 using Ticket.Interface;
@@ -12,10 +11,12 @@ public class TicketController : ControllerBase
 {
 
     private readonly ITicketService _ticketService;
+    private readonly ICachingService _cachingService;
 
-    public TicketController(ITicketService ticketService)
+    public TicketController(ITicketService ticketService, ICachingService cacheService)
     {
         _ticketService = ticketService;
+        _cachingService = cacheService;
     }
 
     /// <summary>
@@ -38,9 +39,13 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult FindId(int id)
+    public async Task<IActionResult> FindIdTicket(int id)
     {
-        return Ok(_ticketService.FindIdTicket(id));
+        string chaveRedis = $"Ticket:FindIdTicket:{id}";
+
+        return Ok(await _cachingService.StringGetSet(chaveRedis, async () => 
+            await _ticketService.FindIdTicket(id)
+        ));
     }
 
     /// <summary>
@@ -64,9 +69,9 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPost("buyTicket"), Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> BuyTickets([FromBody] BuyTicketDto buyTicket)
+    public IActionResult BuyTickets([FromBody] BuyTicketDto buyTicket)
     {
-        return Ok(await _ticketService.BuyTicketsAsync(buyTicket));
+        return Ok(_ticketService.BuyTicketsAsync(buyTicket));
     }
 
     /// <summary>
@@ -90,9 +95,9 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpDelete("RemoveTicket"), Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> RemoveTicketsAsync([FromBody] RemoveTicketDto removeTicket)
+    public IActionResult RemoveTicketsAsync([FromBody] RemoveTicketDto removeTicket)
     {
-        return Ok(await _ticketService.RemoveTicketsAsync(removeTicket));
+        return Ok(_ticketService.RemoveTicketsAsync(removeTicket));
     }
 
     /// <summary>
@@ -104,7 +109,7 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateTicket([FromRoute] int id, [FromBody] JsonPatchDocument<TicketUpdateDto> ticketDto)
+    public IActionResult UpdateTicket([FromRoute] int id, [FromBody] TicketUpdateDto ticketDto)
     {
         return Ok(_ticketService.UpdateTicket(id, ticketDto));
     } 

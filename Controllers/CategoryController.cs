@@ -12,10 +12,12 @@ namespace Ticket.Controles;
 public class CategoryController: ControllerBase
 {
     private readonly ICategoryService _categoryService;
+    private readonly ICachingService _cachingService;
 
-    public CategoryController(ICategoryService categoryService)
+    public CategoryController(ICategoryService categoryService, ICachingService cachingService)
     {
         _categoryService = categoryService;
+        _cachingService = cachingService;
     }
 
     /// <summary>
@@ -37,9 +39,13 @@ public class CategoryController: ControllerBase
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet("{id}")]
-    public IActionResult FindIdCategory( int id)
+    public async Task<IActionResult> FindIdCategory(int id)
     {
-        return Ok(_categoryService.FindIdCategory(id));
+        string chaveRedis = $"Category:FindIdCategory:{id}";
+
+        return Ok(await _cachingService.StringGetSet(chaveRedis, async () => 
+            await _categoryService.FindIdCategory(id)
+        ));
     }
 
     /// <summary>
@@ -63,9 +69,9 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult DeleteCategory([FromRoute] int id)
+    public async Task<IActionResult> DeleteCategory([FromRoute] int id)
     {
-        return Ok(_categoryService.DeleteCategory(id));
+        return Ok(await _categoryService.DeleteCategory(id));
     }
 
 
@@ -78,8 +84,8 @@ public class CategoryController: ControllerBase
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] CategoryUpdateDto categoryDto)
+    public async Task<IActionResult> UpdateCategory([FromRoute] int id, [FromBody] CategoryUpdateDto categoryDto)
     {
-        return Ok(_categoryService.UpdateCategory(id, categoryDto));
+        return Ok(await _categoryService.UpdateCategory(id, categoryDto));
     }
 }

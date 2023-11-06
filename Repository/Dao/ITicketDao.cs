@@ -1,12 +1,16 @@
 ﻿
+using Ticket.DTO.Show;
+using Ticket.DTO.Ticket;
 using Ticket.Model;
 using Ticket.Repository.Utils;
 
 namespace Ticket.Repository.Dao;
 
-public interface ITicketDao: ICommand<Tickets>, IQuery<Tickets>
+public interface ITicketDao : ICommand<Tickets>, ObjectHandler<Tickets, TicketUpdateDto>
 {
-    Show FindByShowId(int showId);
+    Show FindByShowName(string showName);
 
-    List<Show> FindByShowName(string nome);
+    Users FindByUserEmail(string email);
+        
+    Tickets TicketIdExist(Users findUser, int idUser);
 }

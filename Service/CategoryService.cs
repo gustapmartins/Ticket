@@ -7,21 +7,25 @@ using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
-public class CategoryService : ICategoryService
+public class CategoryService : TicketBase, ICategoryService
 {
     private readonly IMapper _mapper;
     private readonly ICategoryDao _categoryDao;
+    private readonly IMessagePublisher _messagePublisher;
 
-    public CategoryService(IMapper mapper, ICategoryDao categoryDao)
+    public CategoryService(IMapper mapper, ICategoryDao categoryDao, IMessagePublisher messagePublisher)
     {
         _mapper = mapper;
         _categoryDao = categoryDao;
+        _messagePublisher = messagePublisher;
     }
 
     public List<Category> FindAllCategory()
     {
         try
         {
+            _messagePublisher.Publish("Hello");
+
             List<Category> find = _categoryDao.FindAll();
 
             if (find.Count == 0)
@@ -36,23 +40,9 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public Category FindIdCategory(int Id)
+    public async Task<Category> FindIdCategory(int Id)
     {
-        try
-        {
-            Category categorys = _categoryDao.FindId(Id);
-
-            if (categorys == null)
-            {
-                throw new StudentNotFoundException("This value does not exist");
-            }
-
-            return categorys;
-        }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+        return await HandleErrorAsync(async () => await _categoryDao.FindId(Id));
     }
 
     public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
@@ -71,15 +61,12 @@ public class CategoryService : ICategoryService
         return categoryDto;
     }
 
-    public Category DeleteCategory(int Id)
+    public async Task<Category> DeleteCategory(int Id)
     {
         try
         {
-            Category category = _categoryDao.FindId(Id);
-            if (category == null)
-            {
-                throw new StudentNotFoundException("This value does not exist");
-            }
+            var category = await HandleErrorAsync(async () => await _categoryDao.FindId(Id));
+
             _categoryDao.Remove(category);
 
             return category;
@@ -90,16 +77,11 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public Category UpdateCategory(int Id, CategoryUpdateDto categoryDto)
+    public async Task<Category> UpdateCategory(int Id, CategoryUpdateDto categoryDto)
     {
         try
         {
-            Category category = _categoryDao.FindId(Id);
-
-            if (category == null)
-            {
-                throw new StudentNotFoundException("This value does not exist");
-            }
+            var category = await HandleErrorAsync(async () => await _categoryDao.FindId(Id));
 
             _categoryDao.Update(category, categoryDto);
 

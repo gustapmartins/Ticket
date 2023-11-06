@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using ServiceStack.Redis;
 using Swashbuckle.AspNetCore.Filters;
 using Ticket.Data;
 using Ticket.ExceptionFilter;
@@ -60,6 +61,8 @@ public class DependencyInjection
 
         services.AddScoped<IEmailService, EmailService>();
 
+        services.AddScoped<ICachingService, CachingService>();
+
         services.AddScoped<IShowService, ShowService>();
         services.AddTransient<IShowDao, ShowDaoComEfCore>();
 
@@ -69,6 +72,11 @@ public class DependencyInjection
         services.AddScoped<ITicketService, TicketService>();
         services.AddTransient<ITicketDao, TicketDaoComEfCore>();
 
+        services.AddScoped<ICachingService, CachingService>();
+
+        services.AddSingleton<IMessagePublisher>(sp => new MessagePublisher(configuration["RabbitMQ:Host"]));
+
+        services.AddSingleton<IRedisClient>(c => new RedisClient(configuration["Redis:Host"], int.Parse(configuration["Redis:Port"])));
 
         Authentication.ConfigureAuth(services);
     }

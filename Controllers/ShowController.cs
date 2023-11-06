@@ -1,21 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Show;
 using Ticket.Interface;
 
 namespace Ticket.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 public class ShowController : ControllerBase
 {
     private readonly IShowService _showService;
+    private readonly ICachingService _cachingService;
 
-    public ShowController(IShowService showService)
+    public ShowController(IShowService showService, ICachingService cacheService)
     {
         _showService = showService;
+        _cachingService = cacheService;
     }
 
     /// <summary>
@@ -36,11 +36,27 @@ public class ShowController : ControllerBase
     /// </summary>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpGet("{id}")]
+    [HttpGet("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult FindId(int id)
+    public async Task<IActionResult> FindIdShow(int id)
     {
-        return Ok(_showService.FindIdShow(id));
+        string chaveRedis = $"Show:FindIdShow:{id}";
+
+        return Ok(await _cachingService.StringGetSet(chaveRedis, async () =>
+                await _showService.FindIdShow(id)
+         ));
+    }
+
+    /// <summary>
+    ///     Adiciona um filme ao banco de dados
+    /// </summary>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult SearchShows([FromHeader] string name)
+    {
+        return Ok(_showService.SearchShow(name));
     }
 
     /// <summary>

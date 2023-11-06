@@ -1,24 +1,24 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using System.Text;
-using Ticket.Data;
-using Ticket.DTO.Ticket;
 using Ticket.ExceptionFilter;
+using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
+using System.Text;
+using Ticket.Data;
+using AutoMapper;
 
 namespace Ticket.Service;
 
-public class AuthService: IAuthService
+public class AuthService: TicketBase, IAuthService
 {
     private readonly UserManager<Users> _userManager;
     private readonly TicketContext _ticketContext;
     private readonly SignInManager<Users> _signInManager;
     private readonly IEmailService _emailService;
     private readonly IMapper _mapper;
-    private ITokenService _tokenService;
+    private readonly ITokenService _tokenService;
 
     public AuthService(
         UserManager<Users> userManager,
@@ -83,7 +83,7 @@ public class AuthService: IAuthService
 
         if (email == null)
         {
-            throw new StudentNotFoundException($"This {email} already exists");
+            throw new StudentNotFoundException($"This {loginDto.Email} already exists");
         }
 
         var result = await _signInManager.PasswordSignInAsync(email, loginDto.Password, false, false);

@@ -1,5 +1,7 @@
-﻿using Ticket.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticket.Data;
 using Ticket.DTO.Category;
+using Ticket.ExceptionFilter;
 using Ticket.Model;
 using Ticket.Repository.Dao;
 
@@ -19,14 +21,18 @@ public class CategoryDaoComEfCore: ICategoryDao
         return _ticketContext.Categorys.OrderByDescending(category => category.Name).Distinct().ToList();
     }
 
-    public Category FindId(int Id)
+    public async Task<Category> FindId(int Id)
     {
-        return _ticketContext.Categorys.FirstOrDefault(category => category.Id == Id)!;
+        return await _ticketContext.Categorys.FirstAsync(category => category.Id == Id);
     }
 
     public Category FindByName(string Name)
     {
-        return _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name)!;
+        var response = _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name);
+
+        if (response == null) throw new StudentNotFoundException("this value does not exist");
+
+        return response;
     }
 
     public void Add(Category category)
