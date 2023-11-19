@@ -12,5 +12,5 @@ public interface ITicketDao : ICommand<Tickets>, ObjectHandler<Tickets, TicketUp
 
     Users FindByUserEmail(string email);
         
-    Tickets TicketIdExist(Users findUser, int idUser);
+    Tickets TicketIdExist(Users findUser, int idTicket);
 }

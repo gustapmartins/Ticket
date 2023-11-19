@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Ticket.DTO.Ticket;
+using Ticket.DTO.User;
 using Ticket.Interface;
 using Ticket.Model;
 
@@ -25,7 +26,7 @@ public class AuthController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Users> FindAllAuth()
+    public List<UserViewDTO> FindAllAuth()
     {
         return _authService.FindAll();
     }

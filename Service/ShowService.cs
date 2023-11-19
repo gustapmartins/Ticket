@@ -37,9 +37,9 @@ public class ShowService: TicketBase, IShowService
         }
     }
 
-    public async Task<Show> FindIdShow(int id)
+    public Show FindIdShow(int id)
     {
-        return await HandleErrorAsync(async () => await _showDao.FindId(id));
+        return HandleErrorAsync(() => _showDao.FindId(id));
     }
 
     public async Task<List<Show>> SearchShow(string name)
@@ -73,11 +73,11 @@ public class ShowService: TicketBase, IShowService
         return show;
     }
 
-    public async Task<Show> DeleteShow(int Id)
+    public Show DeleteShow(int Id)
     {
         try
         {
-            var show = await HandleErrorAsync(async () => await _showDao.FindId(Id));
+            var show = HandleErrorAsync(() => _showDao.FindId(Id));
 
             _showDao.Remove(show);
             
@@ -89,11 +89,11 @@ public class ShowService: TicketBase, IShowService
         }
     }
 
-    public async Task<Show> UpdateShow(int Id, ShowUpdateDto showDto)
+    public Show UpdateShow(int Id, ShowUpdateDto showDto)
     {
         try
         {
-            var show = await HandleErrorAsync(async () => await _showDao.FindId(Id));
+            var show = HandleErrorAsync(() => _showDao.FindId(Id));
 
             _showDao.Update(show, showDto);
 

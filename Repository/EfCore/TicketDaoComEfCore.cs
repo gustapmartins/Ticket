@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ticket.Data;
+﻿using Ticket.Repository.Dao;
 using Ticket.DTO.Ticket;
-using Ticket.ExceptionFilter;
+using Ticket.Data;
 using Ticket.Model;
-using Ticket.Repository.Dao;
 
 namespace Ticket.Repository.EfCore;
 
@@ -22,27 +20,19 @@ public class TicketDaoComEfCore: ITicketDao
         return _ticketContext.Tickets.OrderByDescending(ticket => ticket.Id).ToList();
     }
 
-    public async Task<Tickets> FindId(int Id)
+    public Tickets FindId(int Id)
     {
-        return await _ticketContext.Tickets.FirstAsync(ticket => ticket.Id == Id);
+        return _ticketContext.Tickets.FirstOrDefault(ticket => ticket.Id == Id)!; 
     }
 
     public Show FindByShowName(string name)
     {
-        var response = _ticketContext.Shows.FirstOrDefault(show => show.Name == name);
-
-        if (response == null) throw new StudentNotFoundException("this value does not exist");
-
-        return response;
+        return _ticketContext.Shows.FirstOrDefault(show => show.Name == name)!;
     }
 
     public Users FindByUserEmail(string email)
     {
-        var response = _ticketContext.Users.FirstOrDefault(user => user.Email == email);
-
-        if (response == null) throw new StudentNotFoundException("this value does not exist");
-
-        return response;
+       return _ticketContext.Users.FirstOrDefault(user => user.Email == email)!;
     }
 
     public Tickets TicketIdExist(Users findUser, int findTicketId)
@@ -58,7 +48,7 @@ public class TicketDaoComEfCore: ITicketDao
 
     public void Remove(Tickets show)
     {
-        _ticketContext.Remove(show);
+        _ticketContext.Tickets.Remove(show);
         _ticketContext.SaveChanges();
     }
 

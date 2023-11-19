@@ -44,7 +44,7 @@ public class TicketController : ControllerBase
         string chaveRedis = $"Ticket:FindIdTicket:{id}";
 
         return Ok(await _cachingService.StringGetSet(chaveRedis, async () => 
-            await _ticketService.FindIdTicket(id)
+            _ticketService.FindIdTicket(id)
         ));
     }
 

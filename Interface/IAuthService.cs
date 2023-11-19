@@ -1,11 +1,11 @@
 ﻿using Ticket.DTO.Ticket;
-using Ticket.Model;
+using Ticket.DTO.User;
 
 namespace Ticket.Interface;
 
 public interface IAuthService
 {
-    List<Users> FindAll();
+    List<UserViewDTO> FindAll();
 
     Task<string> Login(LoginDTO loginDto);
 

@@ -11,27 +11,24 @@ public class CategoryService : TicketBase, ICategoryService
 {
     private readonly IMapper _mapper;
     private readonly ICategoryDao _categoryDao;
-    private readonly IMessagePublisher _messagePublisher;
 
-    public CategoryService(IMapper mapper, ICategoryDao categoryDao, IMessagePublisher messagePublisher)
+    public CategoryService(IMapper mapper,  ICategoryDao categoryDao)
     {
         _mapper = mapper;
         _categoryDao = categoryDao;
-        _messagePublisher = messagePublisher;
     }
 
     public List<Category> FindAllCategory()
     {
         try
         {
-            _messagePublisher.Publish("Hello");
-
             List<Category> find = _categoryDao.FindAll();
 
             if (find.Count == 0)
             {
                 throw new StudentNotFoundException("The list is empty");
             }
+
             return find;
         }
         catch (Exception ex)
@@ -40,9 +37,9 @@ public class CategoryService : TicketBase, ICategoryService
         }
     }
 
-    public async Task<Category> FindIdCategory(int Id)
+    public Category FindIdCategory(int Id)
     {
-        return await HandleErrorAsync(async () => await _categoryDao.FindId(Id));
+        return HandleErrorAsync(() => _categoryDao.FindId(Id));
     }
 
     public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
@@ -61,11 +58,11 @@ public class CategoryService : TicketBase, ICategoryService
         return categoryDto;
     }
 
-    public async Task<Category> DeleteCategory(int Id)
+    public Category DeleteCategory(int Id)
     {
         try
         {
-            var category = await HandleErrorAsync(async () => await _categoryDao.FindId(Id));
+            var category = HandleErrorAsync(() =>  _categoryDao.FindId(Id));
 
             _categoryDao.Remove(category);
 
@@ -77,11 +74,11 @@ public class CategoryService : TicketBase, ICategoryService
         }
     }
 
-    public async Task<Category> UpdateCategory(int Id, CategoryUpdateDto categoryDto)
+    public Category UpdateCategory(int Id, CategoryUpdateDto categoryDto)
     {
         try
         {
-            var category = await HandleErrorAsync(async () => await _categoryDao.FindId(Id));
+            var category = HandleErrorAsync(() => _categoryDao.FindId(Id));
 
             _categoryDao.Update(category, categoryDto);
 

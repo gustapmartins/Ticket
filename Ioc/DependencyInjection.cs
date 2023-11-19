@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using ServiceStack.Redis;
 using Swashbuckle.AspNetCore.Filters;
+using System.Text.Json.Serialization;
 using Ticket.Data;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
@@ -54,6 +56,7 @@ public class DependencyInjection
        .AddEntityFrameworkStores<TicketContext>()
        .AddDefaultTokenProviders();
 
+        services.AddSingleton<IMessagePublisher, MessagePublisher>();
 
         services.AddScoped<IAuthService, AuthService>();
 
@@ -74,9 +77,13 @@ public class DependencyInjection
 
         services.AddScoped<ICachingService, CachingService>();
 
-        services.AddSingleton<IMessagePublisher>(sp => new MessagePublisher(configuration["RabbitMQ:Host"]));
-
         services.AddSingleton<IRedisClient>(c => new RedisClient(configuration["Redis:Host"], int.Parse(configuration["Redis:Port"])));
+
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        {
+            Formatting = Newtonsoft.Json.Formatting.Indented,
+            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+        };
 
         Authentication.ConfigureAuth(services);
     }

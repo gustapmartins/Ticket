@@ -11,13 +11,15 @@ public class TicketService: TicketBase, ITicketService
 {
     private readonly IMapper _mapper;
     private readonly ITicketDao _ticketDao;
-
+    private readonly IMessagePublisher _messagePublisher;
     public TicketService(
         ITicketDao ticketDao, 
-        IMapper mapper)
+        IMapper mapper,
+        IMessagePublisher messagePublisher)
     {
         _mapper = mapper;
         _ticketDao = ticketDao;
+        _messagePublisher = messagePublisher;
     }
 
     public List<Tickets> FindAllTicket()
@@ -46,9 +48,9 @@ public class TicketService: TicketBase, ITicketService
         }
     }
 
-    public async Task<Tickets> FindIdTicket(int id)
+    public Tickets FindIdTicket(int id)
     {
-        return await HandleErrorAsync(async () => await _ticketDao.FindId(id));
+        return HandleErrorAsync(() => _ticketDao.FindId(id));
     }
    
     public Tickets CreateTicket(TicketCreateDto ticketDto)
@@ -81,32 +83,20 @@ public class TicketService: TicketBase, ITicketService
         }
     }
 
-    public async Task<Tickets> DeleteTicket(int Id)
+    public Tickets DeleteTicket(int Id)
     {
-        try
-        {
-            var ticket = await HandleErrorAsync(async () => await _ticketDao.FindId(Id));
+        var ticket = HandleErrorAsync(() => _ticketDao.FindId(Id));
 
-            _ticketDao.Remove(ticket);
+        _ticketDao.Remove(ticket);
 
-            return ticket;
-        }
-        catch (Exception ex)
-        {
-            if(ex is StudentNotFoundException)
-            {
-                throw;
-            }
-
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+        return ticket;
     }
 
-    public async Task<Tickets> UpdateTicket(int id, TicketUpdateDto ticketDto)
+    public Tickets UpdateTicket(int Id, TicketUpdateDto ticketDto)
     {
         try
         {
-            var ticket = await HandleErrorAsync(async () => await _ticketDao.FindId(id));
+            var ticket = HandleErrorAsync(() => _ticketDao.FindId(Id));
 
             _ticketDao.Update(ticket, ticketDto);
 
@@ -118,22 +108,12 @@ public class TicketService: TicketBase, ITicketService
         }
     }
 
-    public async Task<BuyTicketDto> BuyTicketsAsync(BuyTicketDto buyTicket)
+    public BuyTicketDto BuyTicketsAsync(BuyTicketDto buyTicket)
     {
         //busca o ticket que o usuario está informando o id
-        Tickets findTicket = await _ticketDao.FindId(buyTicket.TicketId);
+        Tickets findTicket = HandleErrorAsync(() => _ticketDao.FindId(buyTicket.TicketId));
 
-        if (findTicket == null)
-        {
-            throw new StudentNotFoundException($"This ticket does not exist");
-        }
-
-        Users findUser = _ticketDao.FindByUserEmail(buyTicket.Email);
-
-        if (findUser == null)
-        {
-            throw new StudentNotFoundException($"This user does not exist");
-        }
+        Users findUser = HandleErrorAsync(() => _ticketDao.FindByUserEmail(buyTicket.Email));
 
         Tickets ticketIdExist = _ticketDao.TicketIdExist(findUser, findTicket.Id);
 
@@ -151,21 +131,16 @@ public class TicketService: TicketBase, ITicketService
         findTicket.QuantityTickets = subtraiQuantity;
         findUser.TotalPrice = findTicket.Price * buyTicket.QuantityTickets;
 
+        _messagePublisher.Publish(findTicket);
+
         findUser.Tickets.Add(findTicket);
         _ticketDao.SaveChanges();
 
         return buyTicket;
     }
 
-    public async Task<Tickets> RemoveTicketsAsync(RemoveTicketDto removeTicket)
+    public Tickets RemoveTicketsAsync(RemoveTicketDto removeTicket)
     {
-        Tickets findTicket = await _ticketDao.FindId(removeTicket.TicketId);
-
-        if (findTicket == null)
-        {
-            throw new StudentNotFoundException($"This ticket does not exist");
-        }
-
         Users findUser = _ticketDao.FindByUserEmail(removeTicket.Email);
 
         if (findUser == null)
@@ -173,9 +148,16 @@ public class TicketService: TicketBase, ITicketService
             throw new StudentNotFoundException($"This user does not exist");
         }
 
-        findUser.Tickets.Remove(findTicket);
+        var result = findUser.Tickets.Find(ticket => ticket.Id == removeTicket.TicketId);
+
+        if(result == null) 
+        {
+            throw new StudentNotFoundException($"Tickets not exist");
+        }
+
+        findUser.Tickets.Remove(result);
         _ticketDao.SaveChanges();
 
-        return findTicket;
+        return result;
     }
 }

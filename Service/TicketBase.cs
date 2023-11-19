@@ -4,11 +4,11 @@ namespace Ticket.Service;
 
 public abstract class TicketBase
 {
-    protected async Task<TResult> HandleErrorAsync<TResult>(Func<Task<TResult>> serviceMethod)
+    protected TResult HandleErrorAsync<TResult>(Func<TResult> serviceMethod)
     {
         try
         {
-            TResult result = await serviceMethod.Invoke();
+            TResult result = serviceMethod.Invoke();
 
             if (result == null)
             {

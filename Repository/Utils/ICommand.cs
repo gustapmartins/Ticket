@@ -4,7 +4,7 @@ public interface ICommand<T>
 {
     List<T> FindAll();
 
-    Task<T> FindId(int Id);
+    T FindId(int Id);
 
     void Add(T category);
 

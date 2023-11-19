@@ -44,7 +44,7 @@ public class CategoryController: ControllerBase
         string chaveRedis = $"Category:FindIdCategory:{id}";
 
         return Ok(await _cachingService.StringGetSet(chaveRedis, async () => 
-            await _categoryService.FindIdCategory(id)
+             _categoryService.FindIdCategory(id)
         ));
     }
 
@@ -69,9 +69,9 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteCategory([FromRoute] int id)
+    public IActionResult DeleteCategory([FromRoute] int id)
     {
-        return Ok(await _categoryService.DeleteCategory(id));
+        return Ok(_categoryService.DeleteCategory(id));
     }
 
 
@@ -84,8 +84,8 @@ public class CategoryController: ControllerBase
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateCategory([FromRoute] int id, [FromBody] CategoryUpdateDto categoryDto)
+    public IActionResult UpdateCategory([FromRoute] int id, [FromBody] CategoryUpdateDto categoryDto)
     {
-        return Ok(await _categoryService.UpdateCategory(id, categoryDto));
+        return Ok(_categoryService.UpdateCategory(id, categoryDto));
     }
 }

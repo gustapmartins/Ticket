@@ -8,6 +8,7 @@ using Ticket.Model;
 using System.Text;
 using Ticket.Data;
 using AutoMapper;
+using Ticket.DTO.User;
 
 namespace Ticket.Service;
 
@@ -37,7 +38,7 @@ public class AuthService: TicketBase, IAuthService
         _emailService = emailService;
     }
 
-    public List<Users> FindAll()
+    public List<UserViewDTO> FindAll()
     {
         try
         {
@@ -45,7 +46,9 @@ public class AuthService: TicketBase, IAuthService
 
             if (find.Count == 0) throw new StudentNotFoundException("The list is empty");
 
-            return find;
+            var userView = _mapper.Map<List<UserViewDTO>>(find);
+
+            return userView;
         }
         catch (Exception ex)
         {

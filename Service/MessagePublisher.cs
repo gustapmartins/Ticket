@@ -1,29 +1,37 @@
 ﻿using Ticket.Interface;
 using RabbitMQ.Client;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Ticket.Service;
 
 public class MessagePublisher : IMessagePublisher
 {
-    private readonly ConnectionFactory _connectionFactory;
+    private readonly IConnection _factory;
+    private readonly IConfiguration _configuration;
+    private readonly IModel _channel;
 
-    public MessagePublisher(string hostName)
+    public MessagePublisher(IConfiguration configuration)
     {
-        _connectionFactory = new ConnectionFactory
+        _configuration = configuration;
+        _factory = new ConnectionFactory()
         {
-            HostName = hostName,
-        };
+            HostName = _configuration["RabbitMQ:Host"],
+            Port = int.Parse(_configuration["RabbitMQ:Port"]),
+        }.CreateConnection();
+
+        _channel = _factory.CreateModel();
     }
 
-    public void Publish(string message)
+
+    public void Publish<TResult>(TResult message)
     {
-        var channel = _connectionFactory.CreateConnection().CreateModel();
+        _channel.QueueDeclare(queue: Commons.Constants.RABBITMQ_TICKETS, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-        channel.QueueDeclare(queue: Commons.Constants.RABBITMQ_TICKETS, durable: false, exclusive: false, autoDelete: false, arguments: null);
+        var result = JsonConvert.SerializeObject(message);
 
-        var body = Encoding.UTF8.GetBytes(message);
+        var body = Encoding.UTF8.GetBytes(result);
 
-        channel.BasicPublish(exchange: string.Empty, routingKey: Commons.Constants.RABBITMQ_TICKETS, basicProperties: null, body: body);
+        _channel.BasicPublish(exchange: string.Empty, routingKey: Commons.Constants.RABBITMQ_TICKETS, basicProperties: null, body: body);
     }
 }

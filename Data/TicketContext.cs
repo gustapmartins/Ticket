@@ -14,6 +14,7 @@ public class TicketContext: IdentityDbContext<Users>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
     }
 
     public DbSet<Category> Categorys { get; set; }

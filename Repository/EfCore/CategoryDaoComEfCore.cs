@@ -21,18 +21,14 @@ public class CategoryDaoComEfCore: ICategoryDao
         return _ticketContext.Categorys.OrderByDescending(category => category.Name).Distinct().ToList();
     }
 
-    public async Task<Category> FindId(int Id)
+    public Category FindId(int Id)
     {
-        return await _ticketContext.Categorys.FirstAsync(category => category.Id == Id);
+        return _ticketContext.Categorys.FirstOrDefault(category => category.Id == Id)!;
     }
 
     public Category FindByName(string Name)
     {
-        var response = _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name);
-
-        if (response == null) throw new StudentNotFoundException("this value does not exist");
-
-        return response;
+        return _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name)!;
     }
 
     public void Add(Category category)
@@ -43,7 +39,7 @@ public class CategoryDaoComEfCore: ICategoryDao
 
     public void Remove(Category category)
     {
-        _ticketContext.Remove(category);
+        _ticketContext.Categorys.Remove(category);
         _ticketContext.SaveChanges();
     }
 

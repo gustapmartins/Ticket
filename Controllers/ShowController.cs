@@ -43,7 +43,7 @@ public class ShowController : ControllerBase
         string chaveRedis = $"Show:FindIdShow:{id}";
 
         return Ok(await _cachingService.StringGetSet(chaveRedis, async () =>
-                await _showService.FindIdShow(id)
+                _showService.FindIdShow(id)
          ));
     }
 

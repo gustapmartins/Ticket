@@ -14,16 +14,29 @@ public class CachingService : ICachingService
 
     public async Task<Output> StringGetSet<Output>(string key, Func<Task<Output>> function)
     {
-        string resultCache = _redisClient.Get<string>(key);
+        var result = await FeatureToggle();
 
-        if (resultCache != null)
-            return JsonConvert.DeserializeObject<Output>(resultCache);
+
+        if (result)
+        {
+            string resultCache = _redisClient.Get<string>(key);
+
+            if (resultCache != null)
+                return JsonConvert.DeserializeObject<Output>(resultCache);
         
-        Output register = await function.Invoke();
+            Output register = await function.Invoke();
 
-        if (register != null)
-            _redisClient.Set(key, JsonConvert.SerializeObject(register), TimeSpan.FromHours(1));
+            if (register != null)
+                _redisClient.Set(key, JsonConvert.SerializeObject(register), TimeSpan.FromHours(1));
+            
+            return register;
+        }
 
-        return register;
+        return await function.Invoke();
+    }
+
+    public async Task<bool> FeatureToggle()
+    {
+        return true;
     }
 }

@@ -2,5 +2,5 @@
 
 public interface IMessagePublisher
 {
-    void Publish(string message);
+    void Publish<TResult>(TResult message);
 }
