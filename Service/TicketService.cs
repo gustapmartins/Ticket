@@ -5,6 +5,7 @@ using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
 using AutoMapper;
+using Ticket.DTO.Cart;
 
 namespace Ticket.Service;
 
@@ -112,27 +113,5 @@ public class TicketService: TicketBase, ITicketService
         //_ticketDao.SaveChanges();
 
         return buyTicket;
-    }
-
-    public Tickets RemoveTicketsAsync(RemoveTicketDto removeTicket)
-    {
-        Users findUser = _ticketDao.FindByUserEmail(removeTicket.Email);
-
-        if (findUser == null)
-        {
-            throw new StudentNotFoundException($"This user does not exist");
-        }
-
-        var result = findUser.Tickets.Find(ticket => ticket.Id == removeTicket.TicketId);
-
-        if(result == null) 
-        {
-            throw new StudentNotFoundException($"Tickets not exist");
-        }
-
-        findUser.Tickets.Remove(result);
-        _ticketDao.SaveChanges();
-
-        return result;
     }
 }

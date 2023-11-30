@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Ticket;
-using Ticket.DTO.User;
 using Ticket.Interface;
+using Ticket.DTO.User;
 
 namespace Ticket.Controles;
 

@@ -1,8 +1,8 @@
-﻿using Ticket.Repository.Dao;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticket.Repository.Dao;
 using Ticket.DTO.Ticket;
 using Ticket.Data;
 using Ticket.Model;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ticket.Repository.EfCore;
 

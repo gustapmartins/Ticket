@@ -1,4 +1,5 @@
-﻿using Ticket.DTO.Ticket;
+﻿using Ticket.DTO.Cart;
+using Ticket.DTO.Ticket;
 using Ticket.Model;
 
 namespace Ticket.Interface;
@@ -10,6 +11,5 @@ public interface ITicketService
     TicketCreateDto CreateTicket(TicketCreateDto ticketDto);
     Tickets DeleteTicket(string id);
     BuyTicketDto BuyTicketsAsync(BuyTicketDto buyTicket);
-    Tickets RemoveTicketsAsync(RemoveTicketDto removeTicket);
     Tickets UpdateTicket(string id, TicketUpdateDto ticketDto);
 }

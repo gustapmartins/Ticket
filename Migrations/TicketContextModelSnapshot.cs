@@ -426,7 +426,7 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Tickets", b =>
                 {
                     b.HasOne("Ticket.Model.Cart", null)
-                        .WithMany("Tickets")
+                        .WithMany("TicketsCart")
                         .HasForeignKey("CartId");
 
                     b.HasOne("Ticket.Model.Show", "Show")
@@ -444,7 +444,7 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.Cart", b =>
                 {
-                    b.Navigation("Tickets");
+                    b.Navigation("TicketsCart");
                 });
 
             modelBuilder.Entity("Ticket.Model.Users", b =>

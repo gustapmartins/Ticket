@@ -5,7 +5,7 @@ namespace Ticket.Model;
 
 public class Tickets
 {
-    public Tickets() 
+    public Tickets()
     {
         Id = Guid.NewGuid().ToString();
     }

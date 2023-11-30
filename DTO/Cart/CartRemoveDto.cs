@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ticket.DTO.Ticket;
+namespace Ticket.DTO.Cart;
 
-public class RemoveTicketDto
+public class CartRemoveDto
 {
-    [Required(ErrorMessage = "O email do usuario é obrigatório")]
-    public string Email { get; set; }
+    [Required(ErrorMessage = "O CartId do carrinho é obrigatório")]
+    public string CartId { get; set; }
 
     [Required(ErrorMessage = "O ticketId do usuario é obrigatório")]
     public string TicketId { get; set; }

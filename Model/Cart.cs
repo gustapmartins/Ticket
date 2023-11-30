@@ -14,7 +14,8 @@ public class Cart
     [Required]
     public string Id { get; set; }
 
+    public virtual List<Tickets> TicketsCart { get; set; }
+
     public virtual Users Users { get; set; }
 
-    public virtual List<Tickets> Tickets { get; set; }
 }

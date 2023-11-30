@@ -26,8 +26,22 @@ public class CartController : ControllerBase
     /// <response code="404">Caso inserção não seja feita com sucesso</response>
     [HttpPost("addTicketToCart")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult AddTicketToCart([FromBody] CartAddDto CartDto)
+    public IActionResult AddTicketToCart([FromBody] CartAddDto CartAddDto)
     {
-        return Ok(_cartService.AddTicketToCart(CartDto));
+        return Ok(_cartService.AddTicketToCart(CartAddDto));
+    }
+
+    /// <summary>
+    ///     Faz 
+    /// </summary>
+    /// <param name="CartDto">Objeto com os campos necessários para criação</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    /// <response code="404">Caso inserção não seja feita com sucesso</response>
+    [HttpPost("removeTicketToCart")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult RemoveTicketToCart([FromBody] CartRemoveDto CartRemoveDto)
+    {
+        return Ok(_cartService.RemoveTickets(CartRemoveDto));
     }
 }

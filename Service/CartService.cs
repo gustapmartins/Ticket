@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Ticket.Repository.Dao;
 using Ticket.Validation;
-using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.DTO.Cart;
 using Ticket.Model;
@@ -28,18 +27,18 @@ public class CartService : TicketBase, ICartService
 
     public CartAddDto AddTicketToCart(CartAddDto CartDto)
     {
-        Users user = _userManager.Users.FirstOrDefault(user => user.Id == CartDto.UserId);
+        Users user = _userManager.Users.FirstOrDefault(user => user.Id == CartDto.UserId)!;
         //se o carrinho do usuario não existir ele cria um novo
         if (user != null)
         {
             Cart cart = _cartDao.FindId(user.Id);
 
-            if(cart == null) {
-
+            if (cart == null)
+            {
                 cart = new Cart
                 {
                     Users = user,
-                    Tickets = new List<Tickets>()
+                    TicketsCart = new List<Tickets>()
                 };
             }
 
@@ -47,16 +46,28 @@ public class CartService : TicketBase, ICartService
             {
                 Tickets ticket = _ticketDao.FindId(ticketId);
 
-                if (ticket != null && !cart.Tickets.Contains(ticket))
+                if (ticket != null && !cart.TicketsCart.Contains(ticket))
                 {
-                    cart.Tickets.Add(ticket);
+                    cart.TicketsCart.Add(ticket);
                 }
             }
-                
+
             _cartDao.Add(cart);
         }
 
         return CartDto;
+    }
+
+    public Tickets RemoveTickets(CartRemoveDto cartRemoveDto)
+    {
+        Cart cart = HandleErrorAsync(() => _cartDao.FindId(cartRemoveDto.CartId));
+
+        var ticketId = cart.TicketsCart.Find(ticket => ticket.Id == cartRemoveDto.TicketId);
+
+        cart.TicketsCart.Remove(ticketId);
+        _cartDao.SaveChanges();
+
+        return ticketId;
     }
 
     public void ClearCart(string userId)
@@ -65,13 +76,10 @@ public class CartService : TicketBase, ICartService
 
         if (cart != null)
         {
-            cart.Tickets.Clear();
+            cart.TicketsCart.Clear();
             _cartDao.Add(cart);
         }
     }
 
-    public Tickets RemoveTicketsAsync(RemoveTicketDto removeTicket)
-    {
-        throw new NotImplementedException();
-    }
+
 }

@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231130000111_TableDB")]
-    partial class TableDB
+    [Migration("20231130005455_TicketTableTickets")]
+    partial class TicketTableTickets
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -429,7 +429,7 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Tickets", b =>
                 {
                     b.HasOne("Ticket.Model.Cart", null)
-                        .WithMany("Tickets")
+                        .WithMany("TicketsCart")
                         .HasForeignKey("CartId");
 
                     b.HasOne("Ticket.Model.Show", "Show")
@@ -447,7 +447,7 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.Cart", b =>
                 {
-                    b.Navigation("Tickets");
+                    b.Navigation("TicketsCart");
                 });
 
             modelBuilder.Entity("Ticket.Model.Users", b =>
