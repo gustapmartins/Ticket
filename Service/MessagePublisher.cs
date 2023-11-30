@@ -1,7 +1,7 @@
 ﻿using Ticket.Interface;
 using RabbitMQ.Client;
-using System.Text;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Ticket.Service;
 

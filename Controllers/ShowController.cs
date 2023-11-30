@@ -38,11 +38,11 @@ public class ShowController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> FindIdShow(int id)
+    public async Task<IActionResult> FindIdShow(string id)
     {
         string chaveRedis = $"Show:FindIdShow:{id}";
 
-        return Ok(await _cachingService.StringGetSet(chaveRedis, async () =>
+        return Ok(await _cachingService.StringGetSet(chaveRedis, () =>
                 _showService.FindIdShow(id)
          ));
     }
@@ -80,7 +80,7 @@ public class ShowController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult DeleteShow(int Id)
+    public IActionResult DeleteShow(string Id)
     {
         return Ok(_showService.DeleteShow(Id));
     }
@@ -94,7 +94,7 @@ public class ShowController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateShow([FromRoute] int id, [FromBody] ShowUpdateDto showDto)
+    public IActionResult UpdateShow([FromRoute] string id, [FromBody] ShowUpdateDto showDto)
     {
         return Ok(_showService.UpdateShow(id, showDto));
     }

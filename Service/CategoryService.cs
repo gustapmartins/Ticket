@@ -1,9 +1,10 @@
-﻿using AutoMapper;
-using Ticket.DTO.Category;
+﻿using Ticket.DTO.Category;
+using Ticket.Repository.Dao;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
 using Ticket.Model;
-using Ticket.Repository.Dao;
+using AutoMapper;
+using Ticket.Validation;
 
 namespace Ticket.Service;
 
@@ -37,7 +38,7 @@ public class CategoryService : TicketBase, ICategoryService
         }
     }
 
-    public Category FindIdCategory(int Id)
+    public Category FindIdCategory(string Id)
     {
         return HandleErrorAsync(() => _categoryDao.FindId(Id));
     }
@@ -58,7 +59,7 @@ public class CategoryService : TicketBase, ICategoryService
         return categoryDto;
     }
 
-    public Category DeleteCategory(int Id)
+    public Category DeleteCategory(string Id)
     {
         try
         {
@@ -74,7 +75,7 @@ public class CategoryService : TicketBase, ICategoryService
         }
     }
 
-    public Category UpdateCategory(int Id, CategoryUpdateDto categoryDto)
+    public Category UpdateCategory(string Id, CategoryUpdateDto categoryDto)
     {
         try
         {

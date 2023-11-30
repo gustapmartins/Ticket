@@ -1,6 +1,6 @@
 ﻿using Ticket.ExceptionFilter;
 
-namespace Ticket.Service;
+namespace Ticket.Validation;
 
 public abstract class TicketBase
 {
@@ -12,19 +12,19 @@ public abstract class TicketBase
 
             if (result == null)
             {
-                throw new StudentNotFoundException("Este valor não existe");
+                throw new StudentNotFoundException("this value does not exist");
             }
-               
+
             return result;
         }
         catch (Exception ex)
         {
-            if(ex is StudentNotFoundException)
+            if (ex is StudentNotFoundException)
             {
-                throw;   
+                throw;
             }
 
-            throw new StudentNotFoundException("Erro na solicitação", ex);
+            throw new StudentNotFoundException("Error in the request", ex);
         }
     }
 }

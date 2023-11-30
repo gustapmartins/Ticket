@@ -75,6 +75,9 @@ public class DependencyInjection
         services.AddScoped<ITicketService, TicketService>();
         services.AddTransient<ITicketDao, TicketDaoComEfCore>();
 
+        services.AddScoped<ICartService, CartService>();
+        services.AddTransient<ICartDao, CartDaoComEfCore>();
+
         services.AddScoped<ICachingService, CachingService>();
 
         services.AddSingleton<IRedisClient>(c => new RedisClient(configuration["Redis:Host"], int.Parse(configuration["Redis:Port"])));

@@ -1,6 +1,4 @@
-﻿
-using Ticket.DTO.Show;
-using Ticket.DTO.Ticket;
+﻿using Ticket.DTO.Ticket;
 using Ticket.Model;
 using Ticket.Repository.Utils;
 
@@ -12,5 +10,5 @@ public interface ITicketDao : ICommand<Tickets>, ObjectHandler<Tickets, TicketUp
 
     Users FindByUserEmail(string email);
         
-    Tickets TicketIdExist(Users findUser, int idTicket);
+    Tickets TicketIdExist(Users findUser, string idTicket);
 }

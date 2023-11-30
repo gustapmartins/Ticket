@@ -7,8 +7,8 @@ namespace Ticket.Interface;
 public interface ICategoryService
 {
     List<Category> FindAllCategory();
-    Category FindIdCategory(int id);
+    Category FindIdCategory(string id);
     CategoryCreateDto CreateCategory(CategoryCreateDto CategoryDto);
-    Category DeleteCategory(int id);
-    Category UpdateCategory(int id, CategoryUpdateDto categoryDto);
+    Category DeleteCategory(string id);
+    Category UpdateCategory(string id, CategoryUpdateDto categoryDto);
 }

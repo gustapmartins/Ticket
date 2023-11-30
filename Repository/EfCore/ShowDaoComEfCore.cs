@@ -19,7 +19,7 @@ public class ShowDaoComEfCore: IShowDao
         return _ticketContext.Shows.OrderByDescending(show => show.Id).ToList();
     }
 
-    public Show FindId(int Id) 
+    public Show FindId(string Id) 
     {
         return _ticketContext.Shows.FirstOrDefault(show => show.Id == Id)!;
     }

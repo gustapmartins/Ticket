@@ -4,7 +4,7 @@ public interface ICommand<T>
 {
     List<T> FindAll();
 
-    T FindId(int Id);
+    T FindId(string Id);
 
     void Add(T category);
 

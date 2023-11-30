@@ -1,5 +1,6 @@
 ﻿using Ticket.ExceptionFilter;
 using Ticket.Repository.Dao;
+using Ticket.Validation;
 using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
@@ -39,51 +40,32 @@ public class TicketService: TicketBase, ITicketService
         {
             if (ex is StudentNotFoundException)
             {
-                throw; // Re-lança a exceção original
-            }
-            else
-            {
-                throw new StudentNotFoundException("Error in the request", ex);
-            }
-        }
-    }
-
-    public Tickets FindIdTicket(int id)
-    {
-        return HandleErrorAsync(() => _ticketDao.FindId(id));
-    }
-   
-    public Tickets CreateTicket(TicketCreateDto ticketDto)
-    {
-        try
-        {
-            Show show = _ticketDao.FindByShowName(ticketDto.ShowName);
-
-            if (show == null)
-            {
-                throw new StudentNotFoundException("the specified show does not exist");
-            }
-
-            Tickets ticket = _mapper.Map<Tickets>(ticketDto);
-
-            ticket.Show = show;
-
-            _ticketDao.Add(ticket);
-
-            return ticket;
-        }
-        catch (Exception ex)
-        {
-            if( ex is StudentNotFoundException)
-            {
                 throw;
             }
-
+          
             throw new StudentNotFoundException("Error in the request", ex);
         }
     }
 
-    public Tickets DeleteTicket(int Id)
+    public Tickets FindIdTicket(string id)
+    {
+        return HandleErrorAsync(() => _ticketDao.FindId(id));
+    }
+   
+    public TicketCreateDto CreateTicket(TicketCreateDto ticketDto)
+    {
+        Show show = HandleErrorAsync(() => _ticketDao.FindByShowName(ticketDto.ShowName));
+
+        Tickets ticket = _mapper.Map<Tickets>(ticketDto);
+
+        ticket.Show = show;
+
+        _ticketDao.Add(ticket);
+
+        return ticketDto;
+    }
+
+    public Tickets DeleteTicket(string Id)
     {
         var ticket = HandleErrorAsync(() => _ticketDao.FindId(Id));
 
@@ -92,25 +74,19 @@ public class TicketService: TicketBase, ITicketService
         return ticket;
     }
 
-    public Tickets UpdateTicket(int Id, TicketUpdateDto ticketDto)
+    public Tickets UpdateTicket(string Id, TicketUpdateDto ticketDto)
     {
-        try
-        {
-            var ticket = HandleErrorAsync(() => _ticketDao.FindId(Id));
+        var ticket = HandleErrorAsync(() => _ticketDao.FindId(Id));
 
-            _ticketDao.Update(ticket, ticketDto);
+        _ticketDao.Update(ticket, ticketDto);
 
-            return ticket;
-        }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+        return ticket;
     }
 
     public BuyTicketDto BuyTicketsAsync(BuyTicketDto buyTicket)
     {
-        //busca o ticket que o usuario está informando o id
+        //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
+
         Tickets findTicket = HandleErrorAsync(() => _ticketDao.FindId(buyTicket.TicketId));
 
         Users findUser = HandleErrorAsync(() => _ticketDao.FindByUserEmail(buyTicket.Email));
@@ -127,14 +103,13 @@ public class TicketService: TicketBase, ITicketService
             throw new StudentNotFoundException($"Tickets are out");
         }
 
-        var subtraiQuantity = findTicket.QuantityTickets - buyTicket.QuantityTickets;
-        findTicket.QuantityTickets = subtraiQuantity;
+        findTicket.QuantityTickets = findTicket.QuantityTickets - buyTicket.QuantityTickets;
         findUser.TotalPrice = findTicket.Price * buyTicket.QuantityTickets;
 
-        _messagePublisher.Publish(findTicket);
+        _messagePublisher.Publish(buyTicket);
 
-        findUser.Tickets.Add(findTicket);
-        _ticketDao.SaveChanges();
+        //findUser.Tickets.Add(findTicket);
+        //_ticketDao.SaveChanges();
 
         return buyTicket;
     }

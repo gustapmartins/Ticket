@@ -157,13 +157,25 @@ namespace Ticket.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Ticket.Model.Cart", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("Carts");
+                });
+
             modelBuilder.Entity("Ticket.Model.Category", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -202,14 +214,12 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("integer");
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
@@ -235,11 +245,11 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.Tickets", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("CartId")
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -247,13 +257,16 @@ namespace Ticket.Migrations
                     b.Property<int>("QuantityTickets")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ShowId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ShowId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("UsersId")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CartId");
 
                     b.HasIndex("ShowId");
 
@@ -390,26 +403,48 @@ namespace Ticket.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Ticket.Model.Cart", b =>
+                {
+                    b.HasOne("Ticket.Model.Users", "Users")
+                        .WithMany()
+                        .HasForeignKey("UsersId");
+
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
                     b.HasOne("Ticket.Model.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Ticket.Model.Tickets", b =>
                 {
+                    b.HasOne("Ticket.Model.Cart", null)
+                        .WithMany("Tickets")
+                        .HasForeignKey("CartId");
+
                     b.HasOne("Ticket.Model.Show", "Show")
                         .WithMany()
-                        .HasForeignKey("ShowId");
+                        .HasForeignKey("ShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Ticket.Model.Users", null)
                         .WithMany("Tickets")
                         .HasForeignKey("UsersId");
 
                     b.Navigation("Show");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Cart", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("Ticket.Model.Users", b =>

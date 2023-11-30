@@ -14,11 +14,11 @@ public class TicketContext: IdentityDbContext<Users>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
     }
 
     public DbSet<Category> Categorys { get; set; }
     public DbSet<Tickets> Tickets { get; set; }
-    public DbSet<Show> Shows { get; set; }   
+    public DbSet<Show> Shows { get; set; }
+    public DbSet<Cart> Carts { get; set; }
     public DbSet<PasswordReset> PasswordResets { get; set; }
 }

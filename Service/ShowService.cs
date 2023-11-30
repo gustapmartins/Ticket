@@ -1,9 +1,10 @@
-﻿using AutoMapper;
-using Ticket.DTO.Show;
+﻿using Ticket.Repository.Dao;
 using Ticket.ExceptionFilter;
 using Ticket.Interface;
+using Ticket.DTO.Show;
 using Ticket.Model;
-using Ticket.Repository.Dao;
+using AutoMapper;
+using Ticket.Validation;
 
 namespace Ticket.Service;
 
@@ -37,7 +38,7 @@ public class ShowService: TicketBase, IShowService
         }
     }
 
-    public Show FindIdShow(int id)
+    public Show FindIdShow(string id)
     {
         return HandleErrorAsync(() => _showDao.FindId(id));
     }
@@ -49,12 +50,7 @@ public class ShowService: TicketBase, IShowService
 
     public Show CreateShow(ShowCreateDto showDto)
     {
-        Category category = _showDao.FindByCategoryName(showDto.CategoryName);
-
-        if (category == null)
-        {
-            throw new StudentNotFoundException("The specified category does not exist.");
-        }
+        Category category = HandleErrorAsync(() => _showDao.FindByCategoryName(showDto.CategoryName));
 
         Show nameExist = _showDao.FindByName(showDto.Name);
 
@@ -73,35 +69,21 @@ public class ShowService: TicketBase, IShowService
         return show;
     }
 
-    public Show DeleteShow(int Id)
+    public Show DeleteShow(string Id)
     {
-        try
-        {
-            var show = HandleErrorAsync(() => _showDao.FindId(Id));
+        var show = HandleErrorAsync(() => _showDao.FindId(Id));
 
-            _showDao.Remove(show);
-            
-            return show;
-        }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+        _showDao.Remove(show);
+
+        return show;
     }
 
-    public Show UpdateShow(int Id, ShowUpdateDto showDto)
+    public Show UpdateShow(string Id, ShowUpdateDto showDto)
     {
-        try
-        {
-            var show = HandleErrorAsync(() => _showDao.FindId(Id));
+        var show = HandleErrorAsync(() => _showDao.FindId(Id));
 
-            _showDao.Update(show, showDto);
+        _showDao.Update(show, showDto);
 
-            return show;
-        }
-        catch (Exception ex)
-        {
-            throw new StudentNotFoundException("Error in the request", ex);
-        }
+        return show;
     }
 }

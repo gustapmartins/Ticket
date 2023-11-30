@@ -2,5 +2,5 @@
 
 public interface ICachingService
 {
-    Task<Output> StringGetSet<Output>(string key, Func<Task<Output>> function);
+    Task<Output> StringGetSet<Output>(string key, Func<Output> function);
 }

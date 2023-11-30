@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTables : Migration
+    public partial class TableDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,7 @@ namespace Ticket.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Cpf = table.Column<string>(type: "text", nullable: true),
                     YearsOld = table.Column<int>(type: "integer", nullable: false),
-                    Role = table.Column<string>(type: "text", nullable: true),
+                    Role = table.Column<string>(type: "text", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -59,10 +59,9 @@ namespace Ticket.Migrations
                 name: "Categorys",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -191,16 +190,32 @@ namespace Ticket.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Carts",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    UsersId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Carts_AspNetUsers_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Shows",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Local = table.Column<string>(type: "text", nullable: true),
-                    CategoryId = table.Column<int>(type: "integer", nullable: true)
+                    Local = table.Column<string>(type: "text", nullable: false),
+                    CategoryId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -209,18 +224,19 @@ namespace Ticket.Migrations
                         name: "FK_Shows_Categorys_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categorys",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Tickets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     QuantityTickets = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    ShowId = table.Column<int>(type: "integer", nullable: true),
+                    ShowId = table.Column<string>(type: "text", nullable: false),
+                    CartId = table.Column<string>(type: "text", nullable: true),
                     UsersId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -232,10 +248,16 @@ namespace Ticket.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
+                        name: "FK_Tickets_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Tickets_Shows_ShowId",
                         column: x => x.ShowId,
                         principalTable: "Shows",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -276,9 +298,19 @@ namespace Ticket.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Carts_UsersId",
+                table: "Carts",
+                column: "UsersId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Shows_CategoryId",
                 table: "Shows",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_CartId",
+                table: "Tickets",
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_ShowId",
@@ -319,10 +351,13 @@ namespace Ticket.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "Shows");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Categorys");

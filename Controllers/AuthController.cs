@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Ticket;
 using Ticket.DTO.User;
 using Ticket.Interface;
-using Ticket.Model;
 
 namespace Ticket.Controles;
 
@@ -20,7 +17,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///     busca todos os usuarios
     /// </summary>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
@@ -32,7 +29,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///     faz o login e retorna um token de acesso
     /// </summary>
     /// <param name="loginDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
@@ -46,7 +43,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///     Faz o registro de um novo usuario
     /// </summary>
     /// <param name="registerDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
@@ -59,7 +56,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///     Faz 
     /// </summary>
     /// <param name="email">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>

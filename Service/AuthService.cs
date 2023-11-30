@@ -9,6 +9,7 @@ using System.Text;
 using Ticket.Data;
 using AutoMapper;
 using Ticket.DTO.User;
+using Ticket.Validation;
 
 namespace Ticket.Service;
 

@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ticket.Data;
+﻿using Ticket.Data;
 using Ticket.DTO.Category;
-using Ticket.ExceptionFilter;
 using Ticket.Model;
 using Ticket.Repository.Dao;
 
@@ -21,7 +19,7 @@ public class CategoryDaoComEfCore: ICategoryDao
         return _ticketContext.Categorys.OrderByDescending(category => category.Name).Distinct().ToList();
     }
 
-    public Category FindId(int Id)
+    public Category FindId(string Id)
     {
         return _ticketContext.Categorys.FirstOrDefault(category => category.Id == Id)!;
     }

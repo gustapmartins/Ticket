@@ -39,11 +39,11 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> FindIdTicket(int id)
+    public async Task<IActionResult> FindIdTicket(string id)
     {
         string chaveRedis = $"Ticket:FindIdTicket:{id}";
 
-        return Ok(await _cachingService.StringGetSet(chaveRedis, async () => 
+        return Ok(await _cachingService.StringGetSet(chaveRedis, () => 
             _ticketService.FindIdTicket(id)
         ));
     }
@@ -82,7 +82,7 @@ public class TicketController : ControllerBase
     /// <response code="204">Caso inserção seja feita com sucesso</response>
     [HttpDelete("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult DeleteTicket([FromRoute] int id)
+    public IActionResult DeleteTicket([FromRoute] string id)
     {
         return Ok(_ticketService.DeleteTicket(id));
     }
@@ -109,7 +109,7 @@ public class TicketController : ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpPatch("{id}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult UpdateTicket([FromRoute] int id, [FromBody] TicketUpdateDto ticketDto)
+    public IActionResult UpdateTicket([FromRoute] string id, [FromBody] TicketUpdateDto ticketDto)
     {
         return Ok(_ticketService.UpdateTicket(id, ticketDto));
     } 

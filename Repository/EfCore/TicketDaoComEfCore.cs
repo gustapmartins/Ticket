@@ -2,6 +2,7 @@
 using Ticket.DTO.Ticket;
 using Ticket.Data;
 using Ticket.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ticket.Repository.EfCore;
 
@@ -20,14 +21,14 @@ public class TicketDaoComEfCore: ITicketDao
         return _ticketContext.Tickets.OrderByDescending(ticket => ticket.Id).ToList();
     }
 
-    public Tickets FindId(int Id)
+    public Tickets FindId(string Id)
     {
         return _ticketContext.Tickets.FirstOrDefault(ticket => ticket.Id == Id)!; 
     }
 
     public Show FindByShowName(string name)
     {
-        return _ticketContext.Shows.FirstOrDefault(show => show.Name == name)!;
+        return _ticketContext.Shows.Include(show => show.Category).FirstOrDefault(show => show.Name == name)!;
     }
 
     public Users FindByUserEmail(string email)
@@ -35,7 +36,7 @@ public class TicketDaoComEfCore: ITicketDao
        return _ticketContext.Users.FirstOrDefault(user => user.Email == email)!;
     }
 
-    public Tickets TicketIdExist(Users findUser, int findTicketId)
+    public Tickets TicketIdExist(Users findUser, string findTicketId)
     {
         return findUser.Tickets.Find(ticketId => ticketId.Id == findTicketId)!;
     }

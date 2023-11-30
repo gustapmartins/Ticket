@@ -8,13 +8,14 @@ public class Category
 
     public Category(string name, string description)
     {
+        Id = Guid.NewGuid().ToString();
         Name = name; 
         Description = description;
     }
 
     [Key]
     [Required]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     public string Name { get; set; }
 
