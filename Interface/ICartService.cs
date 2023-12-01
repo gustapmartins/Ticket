@@ -5,9 +5,11 @@ namespace Ticket.Interface;
 
 public interface ICartService
 {
-    CartAddDto AddTicketToCart(CartAddDto CartDto);
+    Cart ViewCartUserId(string id);
 
-    Tickets RemoveTickets(CartRemoveDto removeTicket);
+    Cart AddTicketToCart(CartAddDto CartDto);
+
+    Cart RemoveTickets(CartRemoveDto removeTicket);
 
     void ClearCart(string userId);
 }

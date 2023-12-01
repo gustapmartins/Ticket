@@ -10,6 +10,5 @@ public interface ITicketService
     Tickets FindIdTicket(string id);
     TicketCreateDto CreateTicket(TicketCreateDto ticketDto);
     Tickets DeleteTicket(string id);
-    BuyTicketDto BuyTicketsAsync(BuyTicketDto buyTicket);
     Tickets UpdateTicket(string id, TicketUpdateDto ticketDto);
 }

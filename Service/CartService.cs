@@ -5,6 +5,8 @@ using Ticket.Interface;
 using Ticket.DTO.Cart;
 using Ticket.Model;
 using AutoMapper;
+using Ticket.DTO.Ticket;
+using Ticket.ExceptionFilter;
 
 namespace Ticket.Service;
 
@@ -25,10 +27,16 @@ public class CartService : TicketBase, ICartService
         _userManager = userManager;
     }
 
-    public CartAddDto AddTicketToCart(CartAddDto CartDto)
+    public Cart ViewCartUserId(string id)
+    {
+        return HandleErrorAsync(() => _cartDao.FindCartUser(id));
+    }
+
+    public Cart AddTicketToCart(CartAddDto CartDto)
     {
         Users user = _userManager.Users.FirstOrDefault(user => user.Id == CartDto.UserId)!;
         //se o carrinho do usuario não existir ele cria um novo
+
         if (user != null)
         {
             Cart cart = _cartDao.FindId(user.Id);
@@ -53,12 +61,13 @@ public class CartService : TicketBase, ICartService
             }
 
             _cartDao.Add(cart);
+            return cart;
         }
 
-        return CartDto;
+        return null;
     }
 
-    public Tickets RemoveTickets(CartRemoveDto cartRemoveDto)
+    public Cart RemoveTickets(CartRemoveDto cartRemoveDto)
     {
         Cart cart = HandleErrorAsync(() => _cartDao.FindId(cartRemoveDto.CartId));
 
@@ -67,7 +76,7 @@ public class CartService : TicketBase, ICartService
         cart.TicketsCart.Remove(ticketId);
         _cartDao.SaveChanges();
 
-        return ticketId;
+        return cart;
     }
 
     public void ClearCart(string userId)
@@ -81,5 +90,34 @@ public class CartService : TicketBase, ICartService
         }
     }
 
+    public BuyTicketDto BuyTicketsAsync(BuyTicketDto buyTicket)
+    {
+        //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
 
+        Tickets findTicket = HandleErrorAsync(() => _ticketDao.FindId(buyTicket.TicketId));
+
+        Users findUser = HandleErrorAsync(() => _ticketDao.FindByUserEmail(buyTicket.Email));
+
+        //Tickets ticketIdExist = _ticketDao.TicketIdExist(findUser, findTicket.Id);
+
+        //if (ticketIdExist != null)
+        //{
+        //    throw new StudentNotFoundException($"This tickets already exists");
+        //}
+
+        if (findTicket.QuantityTickets <= 0 && findTicket.QuantityTickets < buyTicket.QuantityTickets)
+        {
+            throw new StudentNotFoundException($"Tickets are out");
+        }
+
+        findTicket.QuantityTickets = findTicket.QuantityTickets - buyTicket.QuantityTickets;
+        findUser.TotalPrice = findTicket.Price * buyTicket.QuantityTickets;
+
+        _messagePublisher.Publish(buyTicket);
+
+        //findUser.Tickets.Add(findTicket);
+        //_ticketDao.SaveChanges();
+
+        return buyTicket;
+    }
 }

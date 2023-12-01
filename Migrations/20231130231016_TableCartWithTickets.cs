@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class TicketTableTickets : Migration
+    public partial class TableCartWithTickets : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -194,7 +194,7 @@ namespace Ticket.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    UsersId = table.Column<string>(type: "text", nullable: true)
+                    UsersId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,7 +203,8 @@ namespace Ticket.Migrations
                         name: "FK_Carts_AspNetUsers_UsersId",
                         column: x => x.UsersId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -235,8 +236,9 @@ namespace Ticket.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     QuantityTickets = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    CartId = table.Column<string>(type: "text", nullable: false),
+                    CartId1 = table.Column<string>(type: "text", nullable: false),
                     ShowId = table.Column<string>(type: "text", nullable: false),
-                    CartId = table.Column<string>(type: "text", nullable: true),
                     UsersId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -251,7 +253,14 @@ namespace Ticket.Migrations
                         name: "FK_Tickets_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Carts_CartId1",
+                        column: x => x.CartId1,
+                        principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Tickets_Shows_ShowId",
                         column: x => x.ShowId,
@@ -311,6 +320,11 @@ namespace Ticket.Migrations
                 name: "IX_Tickets_CartId",
                 table: "Tickets",
                 column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_CartId1",
+                table: "Tickets",
+                column: "CartId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_ShowId",

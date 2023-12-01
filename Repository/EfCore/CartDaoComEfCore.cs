@@ -18,6 +18,17 @@ public class CartDaoComEfCore : ICartDao
         _ticketContext.SaveChanges();
     }
 
+    public Cart FindCartUser(string Id) 
+    {
+        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id);
+    }
+
+    public Tickets TicketIdExist(Cart cart, string findTicketId)
+    {
+        return cart.TicketsCart.Find(ticketId => ticketId.Id == findTicketId)!;
+    }
+
+
     public List<Cart> FindAll()
     {
         throw new NotImplementedException();

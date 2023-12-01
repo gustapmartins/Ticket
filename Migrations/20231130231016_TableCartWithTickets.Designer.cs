@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231130005455_TicketTableTickets")]
-    partial class TicketTableTickets
+    [Migration("20231130231016_TableCartWithTickets")]
+    partial class TableCartWithTickets
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,6 +166,7 @@ namespace Ticket.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("UsersId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -252,6 +253,11 @@ namespace Ticket.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CartId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CartId1")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
@@ -270,6 +276,8 @@ namespace Ticket.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
+
+                    b.HasIndex("CartId1");
 
                     b.HasIndex("ShowId");
 
@@ -410,7 +418,9 @@ namespace Ticket.Migrations
                 {
                     b.HasOne("Ticket.Model.Users", "Users")
                         .WithMany()
-                        .HasForeignKey("UsersId");
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Users");
                 });
@@ -430,7 +440,15 @@ namespace Ticket.Migrations
                 {
                     b.HasOne("Ticket.Model.Cart", null)
                         .WithMany("TicketsCart")
-                        .HasForeignKey("CartId");
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ticket.Model.Cart", "Cart")
+                        .WithMany()
+                        .HasForeignKey("CartId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Ticket.Model.Show", "Show")
                         .WithMany()
@@ -441,6 +459,8 @@ namespace Ticket.Migrations
                     b.HasOne("Ticket.Model.Users", null)
                         .WithMany("Tickets")
                         .HasForeignKey("UsersId");
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Show");
                 });
