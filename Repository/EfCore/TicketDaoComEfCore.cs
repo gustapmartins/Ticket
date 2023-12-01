@@ -36,11 +36,6 @@ public class TicketDaoComEfCore: ITicketDao
        return _ticketContext.Users.FirstOrDefault(user => user.Email == email)!;
     }
 
-    public Tickets TicketIdExist(Users findUser, string findTicketId)
-    {
-        return findUser.Tickets.Find(ticketId => ticketId.Id == findTicketId)!;
-    }
-
     public void Add(Tickets show)
     {
         _ticketContext.Tickets.Add(show);

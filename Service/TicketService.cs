@@ -5,7 +5,6 @@ using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
 using AutoMapper;
-using Ticket.DTO.Cart;
 
 namespace Ticket.Service;
 
@@ -82,36 +81,5 @@ public class TicketService: TicketBase, ITicketService
         _ticketDao.Update(ticket, ticketDto);
 
         return ticket;
-    }
-
-    public BuyTicketDto BuyTicketsAsync(BuyTicketDto buyTicket)
-    {
-        //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
-
-        Tickets findTicket = HandleErrorAsync(() => _ticketDao.FindId(buyTicket.TicketId));
-
-        Users findUser = HandleErrorAsync(() => _ticketDao.FindByUserEmail(buyTicket.Email));
-
-        Tickets ticketIdExist = _ticketDao.TicketIdExist(findUser, findTicket.Id);
-
-        if (ticketIdExist != null)
-        {
-            throw new StudentNotFoundException($"This tickets already exists");
-        }
-
-        if (findTicket.QuantityTickets <= 0 && findTicket.QuantityTickets < buyTicket.QuantityTickets)
-        {
-            throw new StudentNotFoundException($"Tickets are out");
-        }
-
-        findTicket.QuantityTickets = findTicket.QuantityTickets - buyTicket.QuantityTickets;
-        findUser.TotalPrice = findTicket.Price * buyTicket.QuantityTickets;
-
-        _messagePublisher.Publish(buyTicket);
-
-        //findUser.Tickets.Add(findTicket);
-        //_ticketDao.SaveChanges();
-
-        return buyTicket;
     }
 }
