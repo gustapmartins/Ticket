@@ -1,6 +1,7 @@
-﻿using ServiceStack.Redis;
-using Ticket.Interface;
+﻿
 using Newtonsoft.Json;
+using ServiceStack.Redis;
+using Ticket.Interface;
 
 namespace Ticket.Service;
 

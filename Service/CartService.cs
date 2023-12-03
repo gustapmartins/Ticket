@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Ticket.ExceptionFilter;
 using Ticket.Repository.Dao;
 using Ticket.Validation;
 using Ticket.Interface;
 using Ticket.DTO.Cart;
 using Ticket.Model;
 using AutoMapper;
-using Ticket.DTO.Ticket;
-using Ticket.ExceptionFilter;
 
 namespace Ticket.Service;
 
@@ -27,51 +26,55 @@ public class CartService : TicketBase, ICartService
         _userManager = userManager;
     }
 
-    public Cart ViewCartUserId(string id)
+    public Cart ViewCartUserId(string clientId)
     {
-        return HandleErrorAsync(() => _cartDao.FindCartUser(id));
+        return HandleErrorAsync(() => _cartDao.FindCartUser(clientId));
     }
 
-    public Cart AddTicketToCart(CartAddDto CartDto)
+    public Cart AddTicketToCart(List<CreateCartDto> ticketQuantityDto, string clientId)
     {
-        Users user = _userManager.Users.FirstOrDefault(user => user.Id == CartDto.UserId)!;
-        //se o carrinho do usuario não existir ele cria um novo
+        Users user = _userManager.Users.FirstOrDefault(user => user.Id == clientId)!;
 
-        if (user != null)
+        if (user == null)
         {
-            Cart cart = _cartDao.FindId(user.Id);
+            throw new StudentNotFoundException("This user does not exist");
+        }
 
-            if (cart == null)
+        Cart cart = _cartDao.FindCartUser(user.Id);
+
+        if (cart == null)
+        {
+            cart = new Cart
             {
-                cart = new Cart
-                {
-                    Users = user,
-                    TicketsCart = new List<Tickets>()
-                };
-            }
+                Users = user,
+                TicketsCart = new List<Tickets>()
+            };
+        }
 
-            foreach (var ticketId in CartDto.TicketsId)
+        foreach (var ticketQuantitId in ticketQuantityDto)
+        {
+            Tickets ticket = _ticketDao.FindId(ticketQuantitId.TicketId);
+
+            if (ticket != null)
             {
-                Tickets ticket = _ticketDao.FindId(ticketId);
-
-                if (ticket != null && !cart.TicketsCart.Contains(ticket))
+                if(ticketQuantitId.Quantity <= ticket.QuantityTickets)
                 {
+                    ticket.QuantityTickets -= ticketQuantitId.Quantity;
+
                     cart.TicketsCart.Add(ticket);
                 }
             }
-
-            _cartDao.Add(cart);
-            return cart;
         }
 
-        return null;
+        _cartDao.Add(cart);
+        return cart;
     }
 
-    public Cart RemoveTickets(CartRemoveDto cartRemoveDto)
+    public Cart RemoveTickets(string TicketId, string clientId)
     {
-        Cart cart = HandleErrorAsync(() => _cartDao.FindId(cartRemoveDto.CartId));
+        Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        var ticketId = cart.TicketsCart.Find(ticket => ticket.Id == cartRemoveDto.TicketId);
+        var ticketId = cart.TicketsCart.Find(ticket => ticket.Id == TicketId);
 
         cart.TicketsCart.Remove(ticketId);
         _cartDao.SaveChanges();
@@ -79,45 +82,29 @@ public class CartService : TicketBase, ICartService
         return cart;
     }
 
-    public void ClearCart(string userId)
+    public Cart ClearTicketsCart(string clientId)
     {
-        Cart cart = _cartDao.FindId(userId);
+        Cart cart = _cartDao.FindId(clientId);
 
         if (cart != null)
         {
             cart.TicketsCart.Clear();
             _cartDao.Add(cart);
         }
+
+        return cart;
     }
 
-    public BuyTicketDto BuyTicketsAsync(BuyTicketDto buyTicket)
+    public string BuyTicketsAsync(string clientId)
     {
         //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
+        Cart findCart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        Tickets findTicket = HandleErrorAsync(() => _ticketDao.FindId(buyTicket.TicketId));
+        _messagePublisher.Publish(findCart);
 
-        Users findUser = HandleErrorAsync(() => _ticketDao.FindByUserEmail(buyTicket.Email));
+        findCart.TicketsCart.Clear();
+        _cartDao.Add(findCart);
 
-        //Tickets ticketIdExist = _ticketDao.TicketIdExist(findUser, findTicket.Id);
-
-        //if (ticketIdExist != null)
-        //{
-        //    throw new StudentNotFoundException($"This tickets already exists");
-        //}
-
-        if (findTicket.QuantityTickets <= 0 && findTicket.QuantityTickets < buyTicket.QuantityTickets)
-        {
-            throw new StudentNotFoundException($"Tickets are out");
-        }
-
-        findTicket.QuantityTickets = findTicket.QuantityTickets - buyTicket.QuantityTickets;
-        findUser.TotalPrice = findTicket.Price * buyTicket.QuantityTickets;
-
-        _messagePublisher.Publish(buyTicket);
-
-        //findUser.Tickets.Add(findTicket);
-        //_ticketDao.SaveChanges();
-
-        return buyTicket;
+        return "Compra Finalizada";
     }
 }

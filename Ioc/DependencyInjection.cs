@@ -1,18 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using ServiceStack.Redis;
 using Swashbuckle.AspNetCore.Filters;
-using System.Text.Json.Serialization;
-using Ticket.Data;
-using Ticket.ExceptionFilter;
-using Ticket.Interface;
-using Ticket.Model;
-using Ticket.Repository.Dao;
+using Microsoft.OpenApi.Models;
 using Ticket.Repository.EfCore;
+using Ticket.ExceptionFilter;
+using Ticket.Repository.Dao;
+using ServiceStack.Redis;
+using Ticket.Interface;
+using Newtonsoft.Json;
 using Ticket.Service;
+using Ticket.Data;
+using Ticket.Model;
 
 namespace Ticket.Configure;
 
@@ -51,6 +49,8 @@ public class DependencyInjection
         {
             opts.Filters.Add<NotImplExceptionFilterAttribute>();
         });
+
+        services.AddCors();
 
         services.AddIdentity<Users, IdentityRole>()
        .AddEntityFrameworkStores<TicketContext>()

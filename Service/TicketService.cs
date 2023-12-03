@@ -52,7 +52,7 @@ public class TicketService: TicketBase, ITicketService
         return HandleErrorAsync(() => _ticketDao.FindId(id));
     }
    
-    public TicketCreateDto CreateTicket(TicketCreateDto ticketDto)
+    public Tickets CreateTicket(TicketCreateDto ticketDto)
     {
         Show show = HandleErrorAsync(() => _ticketDao.FindByShowName(ticketDto.ShowName));
 
@@ -62,7 +62,7 @@ public class TicketService: TicketBase, ITicketService
 
         _ticketDao.Add(ticket);
 
-        return ticketDto;
+        return ticket;
     }
 
     public Tickets DeleteTicket(string Id)

@@ -14,13 +14,23 @@ public class CartDaoComEfCore : ICartDao
 
     public void Add(Cart cart)
     {
-        _ticketContext.Carts.Add(cart);
+        var existingCart = _ticketContext.Carts.FirstOrDefault(c => c.Id == cart.Id);
+
+        if (existingCart == null)
+        {
+            _ticketContext.Carts.Add(cart);
+        }
+        else
+        {
+            existingCart.TicketsCart = cart.TicketsCart;
+        }
+
         _ticketContext.SaveChanges();
     }
 
     public Cart FindCartUser(string Id) 
     {
-        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id);
+        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id)!;
     }
 
     public Tickets TicketIdExist(Cart cart, string findTicketId)
@@ -36,7 +46,7 @@ public class CartDaoComEfCore : ICartDao
 
     public Cart FindId(string id)
     {
-        return _ticketContext.Carts.FirstOrDefault(cart => cart.Id == id);
+        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == id);
     }
 
     public void Remove(Cart category)
