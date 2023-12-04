@@ -7,5 +7,5 @@ public interface ICartDao : ICommand<Cart>
 {
     Cart FindCartUser(string Id);
 
-    Tickets TicketIdExist(Cart cart, string findTicketId);
+    //Tickets TicketIdExist(Cart cart, string findTicketId);
 }

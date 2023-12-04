@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ticket.Model;
 
+
+
 public class Tickets
 {
     public Tickets()

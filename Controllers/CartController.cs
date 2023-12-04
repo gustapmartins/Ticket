@@ -21,7 +21,6 @@ public class CartController : ControllerBase
     /// <summary>
     ///     Faz 
     /// </summary>
-    /// <param name="UserId">Objeto com os campos necessários para criação</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     /// <response code="404">Caso inserção não seja feita com sucesso</response>
@@ -38,7 +37,6 @@ public class CartController : ControllerBase
     /// <summary>
     ///     Faz 
     /// </summary>
-    /// <param name="TicketsId">Objeto com os campos necessários para criação</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     /// <response code="404">Caso inserção não seja feita com sucesso</response>

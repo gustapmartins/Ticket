@@ -22,7 +22,7 @@ public class CartDaoComEfCore : ICartDao
         }
         else
         {
-            existingCart.TicketsCart = cart.TicketsCart;
+            existingCart.TicketList = cart.TicketList;
         }
 
         _ticketContext.SaveChanges();
@@ -35,7 +35,7 @@ public class CartDaoComEfCore : ICartDao
 
     public Tickets TicketIdExist(Cart cart, string findTicketId)
     {
-        return cart.TicketsCart.Find(ticketId => ticketId.Id == findTicketId)!;
+        return cart.TicketList.FirstOrDefault(ticketId => ticketId.Id == findTicketId)!;
     }
 
 

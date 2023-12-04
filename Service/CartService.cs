@@ -31,7 +31,7 @@ public class CartService : TicketBase, ICartService
         return HandleErrorAsync(() => _cartDao.FindCartUser(clientId));
     }
 
-    public Cart AddTicketToCart(List<CreateCartDto> ticketQuantityDto, string clientId)
+    public Cart AddTicketToCart(List<CreateCartDto> CreateCartsDto, string clientId)
     {
         Users user = _userManager.Users.FirstOrDefault(user => user.Id == clientId)!;
 
@@ -47,21 +47,23 @@ public class CartService : TicketBase, ICartService
             cart = new Cart
             {
                 Users = user,
-                TicketsCart = new List<Tickets>()
+                TicketList = new List<Tickets>(),
+                TotalPrice = 0,
             };
         }
 
-        foreach (var ticketQuantitId in ticketQuantityDto)
+        foreach (var CreateCartDto in CreateCartsDto)
         {
-            Tickets ticket = _ticketDao.FindId(ticketQuantitId.TicketId);
+            Tickets ticket = _ticketDao.FindId(CreateCartDto.TicketId);
 
             if (ticket != null)
             {
-                if(ticketQuantitId.Quantity <= ticket.QuantityTickets)
+                if(CreateCartDto.Quantity <= ticket.QuantityTickets)
                 {
-                    ticket.QuantityTickets -= ticketQuantitId.Quantity;
+                    ticket.QuantityTickets -= CreateCartDto.Quantity;
+                    cart.TotalPrice = ticket.Price * ticket.QuantityTickets;
 
-                    cart.TicketsCart.Add(ticket);
+                    cart.TicketList.Add(ticket);
                 }
             }
         }
@@ -74,9 +76,9 @@ public class CartService : TicketBase, ICartService
     {
         Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        var ticketId = cart.TicketsCart.Find(ticket => ticket.Id == TicketId);
+        var ticketId = cart.TicketList.Find(ticket => ticket.Id == TicketId);
 
-        cart.TicketsCart.Remove(ticketId);
+        cart.TicketList.Remove(ticketId);
         _cartDao.SaveChanges();
 
         return cart;
@@ -88,7 +90,7 @@ public class CartService : TicketBase, ICartService
 
         if (cart != null)
         {
-            cart.TicketsCart.Clear();
+            cart.TicketList.Clear();
             _cartDao.Add(cart);
         }
 
@@ -102,7 +104,7 @@ public class CartService : TicketBase, ICartService
 
         _messagePublisher.Publish(findCart);
 
-        findCart.TicketsCart.Clear();
+        findCart.TicketList.Clear();
         _cartDao.Add(findCart);
 
         return "Compra Finalizada";
