@@ -59,12 +59,12 @@ public class CartController : ControllerBase
     /// <response code="404">Caso inserção não seja feita com sucesso</response>
     [HttpPost("removeTicketToCart")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult RemoveTicketToCart([FromBody] string TicketId)
+    public IActionResult RemoveTicketToCart([FromHeader] string CartId)
     {
         //Visualização através do JWT authenticado na aplicação
         string clientId = GetTokenId.GetClientIdFromToken(HttpContext);
 
-        return Ok(_cartService.RemoveTickets(TicketId, clientId));
+        return Ok(_cartService.RemoveTickets(CartId, clientId));
     }
 
     /// <summary>

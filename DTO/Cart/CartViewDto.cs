@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-namespace Ticket.Model;
+﻿using Ticket.Model;
 
-public class Cart
+namespace Ticket.DTO.Cart;
+
+public class CartViewDto
 {
-
-    [Key]
-    [Required]
     public string Id { get; set; }
 
     public virtual List<CartItem> CartList { get; set; }
@@ -14,5 +12,5 @@ public class Cart
 
     public decimal TotalPrice { get; set; }
 
-    public virtual Users Users { get; set; }
+    public string UserId { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using Ticket.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticket.Data;
 using Ticket.Model;
 using Ticket.Repository.Dao;
 
@@ -16,28 +17,21 @@ public class CartDaoComEfCore : ICartDao
     {
         var existingCart = _ticketContext.Carts.FirstOrDefault(c => c.Id == cart.Id);
 
-        if (existingCart == null)
+        if (existingCart != null)
         {
-            _ticketContext.Carts.Add(cart);
+            _ticketContext.SaveChanges();
         }
         else
         {
-            existingCart.TicketList = cart.TicketList;
+            _ticketContext.Carts.Add(cart);
+            _ticketContext.SaveChanges();
         }
-
-        _ticketContext.SaveChanges();
     }
 
     public Cart FindCartUser(string Id) 
     {
         return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id)!;
     }
-
-    public Tickets TicketIdExist(Cart cart, string findTicketId)
-    {
-        return cart.TicketList.FirstOrDefault(ticketId => ticketId.Id == findTicketId)!;
-    }
-
 
     public List<Cart> FindAll()
     {

@@ -26,9 +26,13 @@ public class CartService : TicketBase, ICartService
         _userManager = userManager;
     }
 
-    public Cart ViewCartUserId(string clientId)
+    public CartViewDto ViewCartUserId(string clientId)
     {
-        return HandleErrorAsync(() => _cartDao.FindCartUser(clientId));
+        var cart = HandleErrorAsync(() => _cartDao.FindCartUser(clientId));
+
+        var cartViewMapper = _mapper.Map<CartViewDto>(cart);
+
+        return cartViewMapper;
     }
 
     public Cart AddTicketToCart(List<CreateCartDto> CreateCartsDto, string clientId)
@@ -46,8 +50,9 @@ public class CartService : TicketBase, ICartService
         {
             cart = new Cart
             {
+                Id = Guid.NewGuid().ToString(),
                 Users = user,
-                TicketList = new List<Tickets>(),
+                CartList = new List<CartItem>(),
                 TotalPrice = 0,
             };
         }
@@ -63,25 +68,42 @@ public class CartService : TicketBase, ICartService
                     ticket.QuantityTickets -= CreateCartDto.Quantity;
                     cart.TotalPrice = ticket.Price * ticket.QuantityTickets;
 
-                    cart.TicketList.Add(ticket);
+                    var cartMapper = _mapper.Map<CartItem>(CreateCartDto);
+
+                    cart.CartList.Add(cartMapper);
                 }
             }
         }
 
         _cartDao.Add(cart);
+
         return cart;
     }
 
-    public Cart RemoveTickets(string TicketId, string clientId)
+    public CartViewDto RemoveTickets(string cartListId, string clientId)
     {
         Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        var ticketId = cart.TicketList.Find(ticket => ticket.Id == TicketId);
+        var ticketId = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartListId);
 
-        cart.TicketList.Remove(ticketId);
-        _cartDao.SaveChanges();
+        if (ticketId != null)
+        {
+            cart.CartList.Remove(ticketId);
 
-        return cart;
+            // Recupere a quantidade do ticket no carrinho
+            Tickets ticket = _ticketDao.FindId(ticketId.Ticket.Id);
+
+            if (ticket != null)
+            {
+                ticket.QuantityTickets += cart.Quantity;
+            }
+
+            _cartDao.SaveChanges();
+        }
+
+        var cartViewMapper = _mapper.Map<CartViewDto>(cart);
+
+        return cartViewMapper;
     }
 
     public Cart ClearTicketsCart(string clientId)
@@ -90,7 +112,7 @@ public class CartService : TicketBase, ICartService
 
         if (cart != null)
         {
-            cart.TicketList.Clear();
+            cart.CartList.Clear();
             _cartDao.Add(cart);
         }
 
@@ -104,7 +126,7 @@ public class CartService : TicketBase, ICartService
 
         _messagePublisher.Publish(findCart);
 
-        findCart.TicketList.Clear();
+        findCart.CartList.Clear();
         _cartDao.Add(findCart);
 
         return "Compra Finalizada";
