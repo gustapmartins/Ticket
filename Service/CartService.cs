@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Ticket.ExceptionFilter;
 using Ticket.Repository.Dao;
 using Ticket.Validation;
 using Ticket.Interface;
@@ -37,12 +36,7 @@ public class CartService : TicketBase, ICartService
 
     public Cart AddTicketToCart(List<CreateCartDto> CreateCartsDto, string clientId)
     {
-        Users user = _userManager.Users.FirstOrDefault(user => user.Id == clientId)!;
-
-        if (user == null)
-        {
-            throw new StudentNotFoundException("This user does not exist");
-        }
+        Users user = HandleErrorAsync(() => _userManager.Users.FirstOrDefault(user => user.Id == clientId)!);
 
         Cart cart = _cartDao.FindCartUser(user.Id);
 
@@ -61,17 +55,15 @@ public class CartService : TicketBase, ICartService
         {
             Tickets ticket = _ticketDao.FindId(CreateCartDto.TicketId);
 
-            if (ticket != null)
+            if (ticket != null && CreateCartDto.Quantity <= ticket.QuantityTickets)
             {
-                if(CreateCartDto.Quantity <= ticket.QuantityTickets)
-                {
-                    ticket.QuantityTickets -= CreateCartDto.Quantity;
-                    cart.TotalPrice = ticket.Price * ticket.QuantityTickets;
+                ticket.QuantityTickets -= CreateCartDto.Quantity;
+                cart.TotalPrice = ticket.Price * ticket.QuantityTickets;
 
-                    var cartMapper = _mapper.Map<CartItem>(CreateCartDto);
+                var cartMapper = _mapper.Map<CartItem>(CreateCartDto);
+                cartMapper.Ticket = ticket;
 
-                    cart.CartList.Add(cartMapper);
-                }
+                cart.CartList.Add(cartMapper);
             }
         }
 
@@ -122,12 +114,12 @@ public class CartService : TicketBase, ICartService
     public string BuyTicketsAsync(string clientId)
     {
         //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
-        Cart findCart = HandleErrorAsync(() => _cartDao.FindId(clientId));
+        Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        _messagePublisher.Publish(findCart);
+        _messagePublisher.Publish(cart);
 
-        findCart.CartList.Clear();
-        _cartDao.Add(findCart);
+        cart.CartList.Clear();
+        _cartDao.Add(cart);
 
         return "Compra Finalizada";
     }

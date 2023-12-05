@@ -17,15 +17,12 @@ public class CartDaoComEfCore : ICartDao
     {
         var existingCart = _ticketContext.Carts.FirstOrDefault(c => c.Id == cart.Id);
 
-        if (existingCart != null)
-        {
-            _ticketContext.SaveChanges();
-        }
-        else
+        if (existingCart == null)
         {
             _ticketContext.Carts.Add(cart);
-            _ticketContext.SaveChanges();
-        }
+        }    
+
+       _ticketContext.SaveChanges();
     }
 
     public Cart FindCartUser(string Id) 

@@ -14,6 +14,4 @@ public class CartItem
     public int Quantity { get; set; }
 
     public virtual Tickets Ticket { get; set; }
-
-   
 }
