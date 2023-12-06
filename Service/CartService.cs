@@ -58,7 +58,7 @@ public class CartService : TicketBase, ICartService
             if (ticket != null && CreateCartDto.Quantity <= ticket.QuantityTickets)
             {
                 ticket.QuantityTickets -= CreateCartDto.Quantity;
-                cart.TotalPrice = ticket.Price * ticket.QuantityTickets;
+                cart.TotalPrice += ticket.Price * CreateCartDto.Quantity;
 
                 var cartMapper = _mapper.Map<CartItem>(CreateCartDto);
                 cartMapper.Ticket = ticket;
@@ -72,14 +72,15 @@ public class CartService : TicketBase, ICartService
         return cart;
     }
 
-    public CartViewDto RemoveTickets(string cartListId, string clientId)
+    public CartViewDto RemoveTickets(string cartId, string clientId)
     {
         Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        var ticketId = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartListId);
+        var ticketId = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartId);
 
         if (ticketId != null)
         {
+
             cart.CartList.Remove(ticketId);
 
             // Recupere a quantidade do ticket no carrinho
@@ -87,6 +88,9 @@ public class CartService : TicketBase, ICartService
 
             if (ticket != null)
             {
+
+                cart.TotalPrice -= ticket.Price * ticket.QuantityTickets;
+
                 ticket.QuantityTickets += cart.Quantity;
             }
 
