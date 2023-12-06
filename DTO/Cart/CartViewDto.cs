@@ -8,8 +8,6 @@ public class CartViewDto
 
     public virtual List<CartItem> CartList { get; set; }
 
-    public int Quantity { get; set; }
-
     public decimal TotalPrice { get; set; }
 
     public string UserId { get; set; }

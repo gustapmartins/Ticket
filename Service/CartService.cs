@@ -76,21 +76,22 @@ public class CartService : TicketBase, ICartService
     {
         Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        var ticketId = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartId);
+        CartItem cartItemId = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartId);
 
-        if (ticketId != null)
+        if (cartItemId != null)
         {
-
-            cart.CartList.Remove(ticketId);
-
             // Recupere a quantidade do ticket no carrinho
-            Tickets ticket = _ticketDao.FindId(ticketId.Ticket.Id);
+            Tickets ticket = _ticketDao.FindId(cartItemId.Ticket.Id);
 
             if (ticket != null)
             {
-                cart.TotalPrice -= ticket.Price * ticket.QuantityTickets;
 
-                ticket.QuantityTickets += cart.Quantity;
+                cart.TotalPrice -= ticket.Price * cartItemId.Quantity;
+
+                ticket.QuantityTickets += cartItemId.Quantity;
+
+                cart.CartList.Remove(cartItemId);
+
             }
 
             _cartDao.SaveChanges();

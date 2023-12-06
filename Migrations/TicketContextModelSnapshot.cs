@@ -162,9 +162,6 @@ namespace Ticket.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
 

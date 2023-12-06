@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231204185731_Test")]
-    partial class Test
+    [Migration("20231206205948_CreateDb")]
+    partial class CreateDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,9 +165,6 @@ namespace Ticket.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
 
@@ -179,6 +176,30 @@ namespace Ticket.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Ticket.Model.CartItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CartId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TicketId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("CartItem");
                 });
 
             modelBuilder.Entity("Ticket.Model.Category", b =>
@@ -411,6 +432,21 @@ namespace Ticket.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("Ticket.Model.CartItem", b =>
+                {
+                    b.HasOne("Ticket.Model.Cart", null)
+                        .WithMany("CartList")
+                        .HasForeignKey("CartId");
+
+                    b.HasOne("Ticket.Model.Tickets", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
                     b.HasOne("Ticket.Model.Category", "Category")
@@ -431,6 +467,11 @@ namespace Ticket.Migrations
                         .IsRequired();
 
                     b.Navigation("Show");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Cart", b =>
+                {
+                    b.Navigation("CartList");
                 });
 #pragma warning restore 612, 618
         }
