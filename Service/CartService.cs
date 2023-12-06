@@ -88,7 +88,6 @@ public class CartService : TicketBase, ICartService
 
             if (ticket != null)
             {
-
                 cart.TotalPrice -= ticket.Price * ticket.QuantityTickets;
 
                 ticket.QuantityTickets += cart.Quantity;
