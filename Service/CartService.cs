@@ -116,18 +116,20 @@ public class CartService : TicketBase, ICartService
         return cart;
     }
 
-    public string BuyTicketsAsync(string clientId)
+    public void BuyTicketsAsync(string clientId)
     {
         //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
-        Carts cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
-
-        if(cart.statusPayment == Enum.StatusPayment.pedding)
+        try
         {
-            _messagePublisher.Publish(cart);
+            Carts cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-            return "Compra Efetuada";
+            if (cart.statusPayment == Enum.StatusPayment.pedding)
+            {
+                _messagePublisher.Publish(cart);
+            }
+        }catch(Exception ex)
+        {
+            throw new Exception($" {ex}");
         }
-
-        return "Não foi possivel fazer a compra";
     }
 }
