@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ticket.Data;
+﻿using Ticket.Data;
 using Ticket.Model;
 using Ticket.Repository.Dao;
 

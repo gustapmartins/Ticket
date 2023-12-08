@@ -13,6 +13,7 @@ public class TicketContext: IdentityDbContext<Users>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         base.OnModelCreating(modelBuilder);
     }
 

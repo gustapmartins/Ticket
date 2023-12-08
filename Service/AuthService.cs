@@ -59,57 +59,70 @@ public class AuthService: TicketBase, IAuthService
 
     public async Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto)
     {
-        var existEmail = await _userManager.FindByEmailAsync(registerDto.Email);
-
-        if (existEmail != null)
+        try
         {
-            throw new StudentNotFoundException("This email already exists");
-        }
+            var existEmail = await _userManager.FindByEmailAsync(registerDto.Email);
 
-        if (registerDto.YearsOld <= 16)
+            if (existEmail != null)
+            {
+                throw new StudentNotFoundException("This email already exists");
+            }
+
+            if (registerDto.YearsOld <= 16)
+            {
+                throw new StudentNotFoundException("This email already exists");
+            }
+
+            Users user = _mapper.Map<Users>(registerDto);
+
+            IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
+
+            return registerDto;
+        }catch
         {
-            throw new StudentNotFoundException("This email already exists");
+            throw;
         }
-
-        Users user = _mapper.Map<Users>(registerDto);
-        
-        IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password);
-
-        if (!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
-
-        return registerDto;
     }
 
     public async Task<string> Login(LoginDTO loginDto)
     {
 
-        var email = await _userManager.FindByEmailAsync(loginDto.Email);
-
-        if (email == null)
+        try
         {
-            throw new StudentNotFoundException($"This {loginDto.Email} already exists");
+            var email = await _userManager.FindByEmailAsync(loginDto.Email);
+
+            if (email == null)
+            {
+                throw new StudentNotFoundException($"This {loginDto.Email} already exists");
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(email, loginDto.Password, false, false);
+
+            if (!result.Succeeded)
+            {
+                throw new StudentNotFoundException("Unauthenticated user");
+            }
+
+            var user = _signInManager
+                .UserManager
+                .Users
+                .FirstOrDefault(user => user.NormalizedEmail == loginDto.Email!.ToUpper());
+
+            if (user == null)
+            {
+                throw new StudentNotFoundException("User is null");
+            }
+
+            var token = _tokenService.GenerateToken(user);
+
+            return token;
         }
-
-        var result = await _signInManager.PasswordSignInAsync(email, loginDto.Password, false, false);
-
-        if (!result.Succeeded)
+        catch
         {
-            throw new StudentNotFoundException("Unauthenticated user");
+            throw;
         }
-
-        var user = _signInManager
-            .UserManager
-            .Users
-            .FirstOrDefault(user => user.NormalizedEmail == loginDto.Email!.ToUpper());
-
-        if(user == null)
-        {
-            throw new StudentNotFoundException("User is null");
-        }
-
-        var token = _tokenService.GenerateToken(user);
-
-        return token;
     }
 
     public async Task<string> ForgetPasswordAsync(string email)
