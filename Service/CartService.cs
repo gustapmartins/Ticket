@@ -34,20 +34,21 @@ public class CartService : TicketBase, ICartService
         return cartViewMapper;
     }
 
-    public Cart AddTicketToCart(List<CreateCartDto> CreateCartsDto, string clientId)
+    public Carts AddTicketToCart(List<CreateCartDto> CreateCartsDto, string clientId)
     {
         Users user = HandleErrorAsync(() => _userManager.Users.FirstOrDefault(user => user.Id == clientId)!);
 
-        Cart cart = _cartDao.FindCartUser(user.Id);
+        Carts cart = _cartDao.FindCartUser(user.Id);
 
         if (cart == null)
         {
-            cart = new Cart
+            cart = new Carts
             {
                 Id = Guid.NewGuid().ToString(),
                 Users = user,
                 CartList = new List<CartItem>(),
                 TotalPrice = 0,
+                statusPayment = Enum.StatusPayment.pedding
             };
         }
 
@@ -72,25 +73,25 @@ public class CartService : TicketBase, ICartService
         return cart;
     }
 
-    public CartViewDto RemoveTickets(string cartId, string clientId)
+    public CartViewDto RemoveTickets(string cartItemId, string clientId)
     {
-        Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
+        Carts cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        CartItem cartItemId = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartId);
+        CartItem cartItem = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartItemId);
 
-        if (cartItemId != null)
+        if (cartItem != null)
         {
             // Recupere a quantidade do ticket no carrinho
-            Tickets ticket = _ticketDao.FindId(cartItemId.Ticket.Id);
+            Tickets ticket = _ticketDao.FindId(cartItem.Ticket.Id);
 
             if (ticket != null)
             {
 
-                cart.TotalPrice -= ticket.Price * cartItemId.Quantity;
+                cart.TotalPrice -= ticket.Price * cartItem.Quantity;
 
-                ticket.QuantityTickets += cartItemId.Quantity;
+                ticket.QuantityTickets += cartItem.Quantity;
 
-                cart.CartList.Remove(cartItemId);
+                cart.CartList.Remove(cartItem);
 
             }
 
@@ -102,9 +103,9 @@ public class CartService : TicketBase, ICartService
         return cartViewMapper;
     }
 
-    public Cart ClearTicketsCart(string clientId)
+    public Carts ClearTicketsCart(string clientId)
     {
-        Cart cart = _cartDao.FindId(clientId);
+        Carts cart = _cartDao.FindId(clientId);
 
         if (cart != null)
         {
@@ -118,13 +119,15 @@ public class CartService : TicketBase, ICartService
     public string BuyTicketsAsync(string clientId)
     {
         //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
-        Cart cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
+        Carts cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        _messagePublisher.Publish(cart);
+        if(cart.statusPayment == Enum.StatusPayment.pedding)
+        {
+            _messagePublisher.Publish(cart);
 
-        cart.CartList.Clear();
-        _cartDao.Add(cart);
+            return "Compra Efetuada";
+        }
 
-        return "Compra Finalizada";
+        return "Não foi possivel fazer a compra";
     }
 }

@@ -1,4 +1,5 @@
-﻿using Ticket.Model;
+﻿using Ticket.Enum;
+using Ticket.Model;
 
 namespace Ticket.DTO.Cart;
 
@@ -11,4 +12,6 @@ public class CartViewDto
     public decimal TotalPrice { get; set; }
 
     public string UserId { get; set; }
+
+    public StatusPayment statusPayment { get; set; }
 }

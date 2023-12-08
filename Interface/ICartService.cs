@@ -7,11 +7,11 @@ public interface ICartService
 {
     CartViewDto ViewCartUserId(string clientId);
 
-    Cart AddTicketToCart(List<CreateCartDto> ticketQuantityDt, string clientId);
+    Carts AddTicketToCart(List<CreateCartDto> ticketQuantityDt, string clientId);
 
     CartViewDto RemoveTickets(string TicketId, string clientId);
 
-    Cart ClearTicketsCart(string clientId);
+    Carts ClearTicketsCart(string clientId);
 
-    string BuyTicketsAsync(string clientId);
+    void BuyTicketsAsync(string clientId);
 }

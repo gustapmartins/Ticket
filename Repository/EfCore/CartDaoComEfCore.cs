@@ -12,7 +12,7 @@ public class CartDaoComEfCore : ICartDao
         _ticketContext = ticketContext;
     }
 
-    public void Add(Cart cart)
+    public void Add(Carts cart)
     {
         var existingCart = _ticketContext.Carts.FirstOrDefault(c => c.Id == cart.Id);
 
@@ -24,22 +24,22 @@ public class CartDaoComEfCore : ICartDao
        _ticketContext.SaveChanges();
     }
 
-    public Cart FindCartUser(string Id) 
+    public Carts FindCartUser(string Id) 
     {
         return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id)!;
     }
 
-    public List<Cart> FindAll()
+    public List<Carts> FindAll()
     {
         throw new NotImplementedException();
     }
 
-    public Cart FindId(string id)
+    public Carts FindId(string id)
     {
         return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == id);
     }
 
-    public void Remove(Cart category)
+    public void Remove(Carts category)
     {
         throw new NotImplementedException();
     }

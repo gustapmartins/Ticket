@@ -3,7 +3,7 @@ using Ticket.Repository.Utils;
 
 namespace Ticket.Repository.Dao;
 
-public interface ICartDao : ICommand<Cart>
+public interface ICartDao : ICommand<Carts>
 {
-    Cart FindCartUser(string Id);
+    Carts FindCartUser(string Id);
 }

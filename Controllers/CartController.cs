@@ -59,12 +59,12 @@ public class CartController : ControllerBase
     /// <response code="404">Caso inserção não seja feita com sucesso</response>
     [HttpPost("removeTicketToCart")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult RemoveTicketToCart([FromHeader] string CartId)
+    public IActionResult RemoveTicketToCart([FromHeader] string CartItemId)
     {
         //Visualização através do JWT authenticado na aplicação
         string clientId = GetTokenId.GetClientIdFromToken(HttpContext);
 
-        return Ok(_cartService.RemoveTickets(CartId, clientId));
+        return Ok(_cartService.RemoveTickets(CartItemId, clientId));
     }
 
     /// <summary>
@@ -92,11 +92,11 @@ public class CartController : ControllerBase
     /// <response code="404">Caso inserção não seja feita com sucesso</response>
     [HttpPost("buyTicketsAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult BuyTicketsAsync()
+    public void BuyTicketsAsync()
     {
         //Visualização através do JWT authenticado na aplicação
         string clientId = GetTokenId.GetClientIdFromToken(HttpContext);
 
-        return Ok(_cartService.BuyTicketsAsync(clientId));
+        _cartService.BuyTicketsAsync(clientId);
     }
 }
