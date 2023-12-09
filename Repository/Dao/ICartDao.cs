@@ -1,9 +1,10 @@
-﻿using Ticket.Model;
-using Ticket.Repository.Utils;
+﻿using Ticket.Repository.Utils;
+using Ticket.Model;
+using Ticket.Enum;
 
 namespace Ticket.Repository.Dao;
 
 public interface ICartDao : ICommand<Carts>
 {
-    Carts FindCartUser(string Id);
+    Carts FindCartPedding(string Id, StatusPayment statusPayment);
 }

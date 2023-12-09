@@ -4,6 +4,7 @@ using Ticket.Validation;
 using Ticket.Interface;
 using Ticket.DTO.Cart;
 using Ticket.Model;
+using Ticket.Enum;
 using AutoMapper;
 
 namespace Ticket.Service;
@@ -25,9 +26,9 @@ public class CartService : TicketBase, ICartService
         _userManager = userManager;
     }
 
-    public CartViewDto ViewCartUserId(string clientId)
+    public CartViewDto ViewCartPedding(string clientId, StatusPayment statusPayment)
     {
-        var cart = HandleErrorAsync(() => _cartDao.FindCartUser(clientId));
+        var cart = HandleErrorAsync(() => _cartDao.FindCartPedding(clientId, statusPayment));
 
         var cartViewMapper = _mapper.Map<CartViewDto>(cart);
 
@@ -38,7 +39,7 @@ public class CartService : TicketBase, ICartService
     {
         Users user = HandleErrorAsync(() => _userManager.Users.FirstOrDefault(user => user.Id == clientId)!);
 
-        Carts cart = _cartDao.FindCartUser(user.Id);
+        Carts cart = _cartDao.FindId(user.Id);
 
         if (cart == null)
         {
@@ -48,7 +49,6 @@ public class CartService : TicketBase, ICartService
                 Users = user,
                 CartList = new List<CartItem>(),
                 TotalPrice = 0,
-                statusPayment = Enum.StatusPayment.pedding
             };
         }
 
@@ -121,15 +121,14 @@ public class CartService : TicketBase, ICartService
         //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
         try
         {
-            Carts cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
+            Carts cart = HandleErrorAsync(() => 
+                _cartDao.FindCartPedding(clientId, StatusPayment.Pedding));
 
-            if (cart.statusPayment == Enum.StatusPayment.pedding)
-            {
-                _messagePublisher.Publish(cart);
-            }
-        }catch(Exception ex)
+            _messagePublisher.Publish(cart);
+        }
+        catch(Exception ex)
         {
-            throw new Exception($" {ex}");
+            throw new Exception($"Error {ex}");
         }
     }
 }

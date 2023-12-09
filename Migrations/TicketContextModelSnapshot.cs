@@ -172,6 +172,9 @@ namespace Ticket.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("statusPayment")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CartsId");
@@ -191,9 +194,6 @@ namespace Ticket.Migrations
 
                     b.Property<string>("UsersId")
                         .HasColumnType("text");
-
-                    b.Property<int>("statusPayment")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

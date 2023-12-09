@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231208152616_CreateStatusPayment")]
-    partial class CreateStatusPayment
+    [Migration("20231208200552_MexendoNosAtributosStatus")]
+    partial class MexendoNosAtributosStatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -175,6 +175,9 @@ namespace Ticket.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("statusPayment")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CartsId");
@@ -194,9 +197,6 @@ namespace Ticket.Migrations
 
                     b.Property<string>("UsersId")
                         .HasColumnType("text");
-
-                    b.Property<int>("statusPayment")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

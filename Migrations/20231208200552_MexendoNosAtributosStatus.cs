@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTables : Migration
+    public partial class MexendoNosAtributosStatus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -255,6 +255,7 @@ namespace Ticket.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     TicketId = table.Column<string>(type: "text", nullable: false),
+                    statusPayment = table.Column<int>(type: "integer", nullable: false),
                     CartsId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>

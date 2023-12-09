@@ -17,4 +17,6 @@ public class CartItem
     public int Quantity { get; set; }
 
     public virtual Tickets Ticket { get; set; }
+
+    public StatusPayment statusPayment { get; set; } = StatusPayment.Pedding;
 }

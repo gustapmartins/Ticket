@@ -2,6 +2,6 @@
 
 public enum StatusPayment
 {
-    pedding = 0,
+    Pedding = 0,
     Aproved = 1
 }

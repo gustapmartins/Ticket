@@ -17,6 +17,4 @@ public class Carts
     public virtual Users Users { get; set; }
 
     public decimal TotalPrice { get; set; }
-
-    public StatusPayment statusPayment { get; set; } = StatusPayment.pedding;
 }

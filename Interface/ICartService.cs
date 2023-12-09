@@ -1,11 +1,12 @@
 ﻿using Ticket.DTO.Cart;
+using Ticket.Enum;
 using Ticket.Model;
 
 namespace Ticket.Interface;
 
 public interface ICartService
 {
-    CartViewDto ViewCartUserId(string clientId);
+    CartViewDto ViewCartPedding(string clientId, StatusPayment statusPayment);
 
     Carts AddTicketToCart(List<CreateCartDto> ticketQuantityDt, string clientId);
 

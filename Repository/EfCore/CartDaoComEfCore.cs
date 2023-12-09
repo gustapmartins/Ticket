@@ -1,6 +1,7 @@
-﻿using Ticket.Data;
+﻿using Ticket.Repository.Dao;
 using Ticket.Model;
-using Ticket.Repository.Dao;
+using Ticket.Data;
+using Ticket.Enum;
 
 namespace Ticket.Repository.EfCore;
 
@@ -24,9 +25,10 @@ public class CartDaoComEfCore : ICartDao
        _ticketContext.SaveChanges();
     }
 
-    public Carts FindCartUser(string Id) 
+    public Carts FindCartPedding(string Id, StatusPayment statusPayment) 
     {
-        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id)!;
+        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id 
+            && cart.CartList.Any(item => item.statusPayment == statusPayment))!;
     }
 
     public List<Carts> FindAll()
@@ -38,6 +40,7 @@ public class CartDaoComEfCore : ICartDao
     {
         return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == id);
     }
+
 
     public void Remove(Carts category)
     {
