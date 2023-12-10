@@ -52,32 +52,48 @@ public class CartService : TicketBase, ICartService
             };
         }
 
-        foreach (var CreateCartDto in CreateCartsDto)
-        {
-            Tickets ticket = _ticketDao.FindId(CreateCartDto.TicketId);
-
-            if (ticket != null && CreateCartDto.Quantity <= ticket.QuantityTickets)
-            {
-                ticket.QuantityTickets -= CreateCartDto.Quantity;
-                cart.TotalPrice += ticket.Price * CreateCartDto.Quantity;
-
-                var cartMapper = _mapper.Map<CartItem>(CreateCartDto);
-                cartMapper.Ticket = ticket;
-
-                cart.CartList.Add(cartMapper);
-            }
-        }
+        AddCartItems(CreateCartsDto, cart);
 
         _cartDao.Add(cart);
 
         return cart;
     }
 
+    private void AddCartItems(List<CreateCartDto> CreateCartsDto, Carts cart)
+    {
+        foreach (var CreateCartDto in CreateCartsDto)
+        {
+            Tickets ticket = _ticketDao.FindId(CreateCartDto.TicketId);
+
+            if (ticket != null && CreateCartDto.Quantity <= ticket.QuantityTickets)
+            {
+                var existCartItem = cart.CartList.FirstOrDefault(c => c.Ticket.Id == ticket.Id);
+
+                if (existCartItem != null)
+                {
+                    existCartItem.Quantity += CreateCartDto.Quantity;
+                    cart.TotalPrice += ticket.Price * CreateCartDto.Quantity;
+
+                }
+                else
+                {
+                    ticket.QuantityTickets -= CreateCartDto.Quantity;
+                    cart.TotalPrice += ticket.Price * CreateCartDto.Quantity;
+
+                    var cartMapper = _mapper.Map<CartItem>(CreateCartDto);
+                    cartMapper.Ticket = ticket;
+
+                    cart.CartList.Add(cartMapper);
+                }
+            }
+        }
+    }
+
     public CartViewDto RemoveTickets(string cartItemId, string clientId)
     {
         Carts cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
 
-        CartItem cartItem = cart.CartList.FirstOrDefault(ticket => ticket.Id == cartItemId);
+        CartItem cartItem = HandleErrorAsync(() => cart.CartList.FirstOrDefault(ticket => ticket.Id == cartItemId))!;
 
         if (cartItem != null)
         {
@@ -110,6 +126,7 @@ public class CartService : TicketBase, ICartService
         if (cart != null)
         {
             cart.CartList.Clear();
+            cart.TotalPrice = 0;
             _cartDao.Add(cart);
         }
 
