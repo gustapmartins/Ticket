@@ -69,11 +69,10 @@ public class CartService : TicketBase, ICartService
             {
                 var existCartItem = cart.CartList.FirstOrDefault(c => c.Ticket.Id == ticket.Id);
 
-                if (existCartItem != null)
+                if (existCartItem != null && existCartItem.statusPayment.Equals(StatusPayment.Pedding))
                 {
                     existCartItem.Quantity += CreateCartDto.Quantity;
                     cart.TotalPrice += ticket.Price * CreateCartDto.Quantity;
-
                 }
                 else
                 {
