@@ -18,7 +18,7 @@ public class CachingService : ICachingService
         string resultCache = _redisClient.Get<string>(key);
 
         if (resultCache != null)
-            return JsonConvert.DeserializeObject<Output>(resultCache);
+            return JsonConvert.DeserializeObject<Output>(resultCache)!;
 
         Output register = function.Invoke();
 

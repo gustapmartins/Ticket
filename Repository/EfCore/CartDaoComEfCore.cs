@@ -38,7 +38,7 @@ public class CartDaoComEfCore : ICartDao
 
     public Carts FindId(string id)
     {
-        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == id);
+        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == id)!;
     }
 
 

@@ -14,8 +14,8 @@ public class CartService : TicketBase, ICartService
     private readonly IMapper _mapper;
     private readonly ICartDao _cartDao;
     private readonly ITicketDao _ticketDao;
-    private readonly IMessagePublisher _messagePublisher;
     private readonly UserManager<Users> _userManager;
+    private readonly IMessagePublisher _messagePublisher;
 
     public CartService(IMapper mapper, ITicketDao ticketDao, ICartDao cartDao, IMessagePublisher messagePublisher, UserManager<Users> userManager)
     {
@@ -129,7 +129,7 @@ public class CartService : TicketBase, ICartService
             _cartDao.Add(cart);
         }
 
-        return cart;
+        return cart!;
     }
 
     public void BuyTicketsAsync(string clientId)
