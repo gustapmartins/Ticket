@@ -1,4 +1,4 @@
-﻿using Ticket.DTO.Ticket;
+﻿using Ticket.DTO.FeatureToggle;
 using Ticket.Model;
 
 namespace Ticket.Interface;
@@ -6,8 +6,8 @@ namespace Ticket.Interface;
 public interface IFeatureToggleService
 {
     List<FeatureToggle> FindAllFeatureToggle();
-    Tickets FindIdFeatureToggle(string id);
-    Tickets CreateFeatureToggle(TicketCreateDto ticketDto);
-    Tickets DeleteFeatureToggle(string id);
-    Tickets UpdateFeatureToggle(string id, TicketUpdateDto ticketDto);
+    FeatureToggle FindIdFeatureToggle(string nameFeatureToggle);
+    FeatureToggle CreateFeatureToggle(FeatureToggleCreateDto featureToggleCreateDto);
+    FeatureToggle DeleteFeatureToggle(string id);
+    FeatureToggle UpdateFeatureToggle(string id, FeatureToggleUpdateDto featureToggleUpdateDto);
 }

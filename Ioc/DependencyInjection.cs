@@ -78,6 +78,9 @@ public class DependencyInjection
         services.AddScoped<ICartService, CartService>();
         services.AddTransient<ICartDao, CartDaoComEfCore>();
 
+        services.AddScoped<IFeatureToggleService, FeatureToggleService>();
+        services.AddTransient<IFeatureToggleDao, FeatureToggleEfCore>();
+
         services.AddScoped<ICachingService, CachingService>();
 
         services.AddSingleton<IRedisClient>(c => new RedisClient(configuration["Redis:Host"], int.Parse(configuration["Redis:Port"])));
