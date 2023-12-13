@@ -10,4 +10,5 @@ public interface IFeatureToggleService
     FeatureToggle CreateFeatureToggle(FeatureToggleCreateDto featureToggleCreateDto);
     FeatureToggle DeleteFeatureToggle(string id);
     FeatureToggle UpdateFeatureToggle(string id, FeatureToggleUpdateDto featureToggleUpdateDto);
+    bool FeatureToggleActive(string FT_TICKETS);
 }

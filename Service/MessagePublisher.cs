@@ -9,9 +9,10 @@ public class MessagePublisher : IMessagePublisher
 {
     private readonly IConnection _factory;
     private readonly IConfiguration _configuration;
+    private readonly IFeatureToggleService _featureToggleService;
     private readonly IModel _channel;
 
-    public MessagePublisher(IConfiguration configuration)
+    public MessagePublisher(IConfiguration configuration, IFeatureToggleService featureToggleService)
     {
         _configuration = configuration;
         _factory = new ConnectionFactory()
@@ -21,17 +22,25 @@ public class MessagePublisher : IMessagePublisher
         }.CreateConnection();
 
         _channel = _factory.CreateModel();
+        _featureToggleService = featureToggleService;
     }
 
 
     public void Publish<TResult>(TResult message)
     {
-        _channel.QueueDeclare(queue: Commons.Constants.RABBITMQ_TICKETS, durable: false, exclusive: false, autoDelete: false, arguments: null);
+        string FT_RABBITMQ = "FT_RABBITMQ_TICKETS";
 
-        var result = JsonConvert.SerializeObject(message);
+        var cacheHabiliy = _featureToggleService.FeatureToggleActive(FT_RABBITMQ);
 
-        var body = Encoding.UTF8.GetBytes(result);
+        if (cacheHabiliy)
+        {
+            _channel.QueueDeclare(queue: Commons.Constants.RABBITMQ_TICKETS, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-        _channel.BasicPublish(exchange: string.Empty, routingKey: Commons.Constants.RABBITMQ_TICKETS, basicProperties: null, body: body);
+            var result = JsonConvert.SerializeObject(message);
+
+            var body = Encoding.UTF8.GetBytes(result);
+
+            _channel.BasicPublish(exchange: string.Empty, routingKey: Commons.Constants.RABBITMQ_TICKETS, basicProperties: null, body: body);
+        }
     }
 }

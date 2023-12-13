@@ -56,7 +56,7 @@ public class DependencyInjection
        .AddEntityFrameworkStores<TicketContext>()
        .AddDefaultTokenProviders();
 
-        services.AddSingleton<IMessagePublisher, MessagePublisher>();
+        services.AddScoped<IMessagePublisher, MessagePublisher>();
 
         services.AddScoped<IAuthService, AuthService>();
 

@@ -25,18 +25,19 @@ public class FeatureToggleService : TicketBase, IFeatureToggleService
         {
             var findFeatureToggle = _featureToggleDao.FindId(featureToggleDto.Name);
 
-            if(findFeatureToggle != null) 
+            if (findFeatureToggle != null)
             {
                 throw new StudentNotFoundException("This FeatureToggle already exists");
             }
-            
+
             FeatureToggle featureToggle = _mapper.Map<FeatureToggle>(featureToggleDto);
 
             _featureToggleDao.Add(featureToggle);
 
             return featureToggle;
 
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             throw new NotImplementedException($"Error in the request: {ex}");
         }
@@ -51,7 +52,8 @@ public class FeatureToggleService : TicketBase, IFeatureToggleService
             _featureToggleDao.Remove(findFeatureToggle);
 
             return findFeatureToggle;
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             throw new StudentNotFoundException("Error in the request", ex);
         }
@@ -63,14 +65,14 @@ public class FeatureToggleService : TicketBase, IFeatureToggleService
         {
             List<FeatureToggle> findFeatureToggle = _featureToggleDao.FindAll();
 
-            if(findFeatureToggle.Count == 0)
+            if (findFeatureToggle.Count == 0)
             {
                 throw new StudentNotFoundException("The list is empty");
             }
 
             return findFeatureToggle;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw new StudentNotFoundException("Error in the request", ex);
         }
@@ -91,9 +93,23 @@ public class FeatureToggleService : TicketBase, IFeatureToggleService
 
             return findFeatureToggle;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw new StudentNotFoundException("Error in the request", ex);
+        }
+    }
+
+    public bool FeatureToggleActive(string FT_TICKETS)
+    {
+        try
+        {
+            var findFeatureToggleRedis = _featureToggleDao.FindId(FT_TICKETS);
+
+            return findFeatureToggleRedis != null && findFeatureToggleRedis.IsEnabledFeature == Enum.FeatureToggleActive.active;
+        }
+        catch
+        {
+            return false;
         }
     }
 }

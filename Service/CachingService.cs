@@ -1,26 +1,26 @@
 ﻿
 using Newtonsoft.Json;
 using ServiceStack.Redis;
-using Ticket.Enum;
 using Ticket.Interface;
-using Ticket.Repository.Dao;
 
 namespace Ticket.Service;
 
 public class CachingService : ICachingService
 {
     private readonly IRedisClient _redisClient;
-    private readonly IFeatureToggleDao _featureToggleDao;
+    private readonly IFeatureToggleService _featureToggleService;
 
-    public CachingService(IRedisClient redisClient, IFeatureToggleDao featureToggleDao)
+    public CachingService(IRedisClient redisClient, IFeatureToggleService featureToggleService)
     {
         _redisClient = redisClient;
-        _featureToggleDao = featureToggleDao;
+        _featureToggleService = featureToggleService;
     }
 
     public async Task<Output> StringGetSet<Output>(string key, Func<Output> function)
     {
-        var cacheHabiliy = FeatureToggle();
+        string FT_REDIS = "FT_REDIS_TICKETS";
+
+        var cacheHabiliy = _featureToggleService.FeatureToggleActive(FT_REDIS);
 
         if(cacheHabiliy)
         {
@@ -38,21 +38,5 @@ public class CachingService : ICachingService
         }
 
         return function.Invoke();
-    }
-
-    public bool FeatureToggle()
-    {
-        try
-        {
-            string FT_REDIS = "FT_REDIS_TICKETS";
-
-            var findFeatureToggleRedis = _featureToggleDao.FindId(FT_REDIS);
-
-            return findFeatureToggleRedis != null && findFeatureToggleRedis.IsEnabledFeature == FeatureToggleActive.active;
-        }
-        catch
-        {
-            return false;
-        }
     }
 }
