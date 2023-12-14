@@ -28,9 +28,7 @@ public class MessagePublisher : IMessagePublisher
 
     public void Publish<TResult>(TResult message)
     {
-        string FT_RABBITMQ = "FT_RABBITMQ_TICKETS";
-
-        var cacheHabiliy = _featureToggleService.FeatureToggleActive(FT_RABBITMQ);
+        var cacheHabiliy = _featureToggleService.FeatureToggleActive(Commons.Constants.FT_RABBITMQ);
 
         if (cacheHabiliy)
         {

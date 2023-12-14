@@ -1,6 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 using ServiceStack.Redis;
+using System.Reflection.Metadata;
 using Ticket.Interface;
 
 namespace Ticket.Service;
@@ -18,9 +19,7 @@ public class CachingService : ICachingService
 
     public async Task<Output> StringGetSet<Output>(string key, Func<Output> function)
     {
-        string FT_REDIS = "FT_REDIS_TICKETS";
-
-        var cacheHabiliy = _featureToggleService.FeatureToggleActive(FT_REDIS);
+        var cacheHabiliy = _featureToggleService.FeatureToggleActive(Commons.Constants.FT_REDIS);
 
         if(cacheHabiliy)
         {
