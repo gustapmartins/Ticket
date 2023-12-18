@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231213014816_NOME_DA_NOVA_MIGRACAO")]
-    partial class NOME_DA_NOVA_MIGRACAO
+    [Migration("20231216043312_CreateTablesAddress")]
+    partial class CreateTablesAddress
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,40 @@ namespace Ticket.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Ticket.Model.Address", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Complement")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Neighborhood")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UF")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Address");
+                });
+
             modelBuilder.Entity("Ticket.Model.CartItem", b =>
                 {
                     b.Property<string>("Id")
@@ -271,6 +305,10 @@ namespace Ticket.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AddressId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("CategoryId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -282,15 +320,13 @@ namespace Ticket.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Local")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("CategoryId");
 
@@ -470,11 +506,19 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
+                    b.HasOne("Ticket.Model.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Ticket.Model.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("Category");
                 });

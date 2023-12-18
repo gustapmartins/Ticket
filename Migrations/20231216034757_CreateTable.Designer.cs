@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231213015059_FeatureToggleTable")]
-    partial class FeatureToggleTable
+    [Migration("20231216034757_CreateTable")]
+    partial class CreateTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,40 @@ namespace Ticket.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Ticket.Model.Address", b =>
+                {
+                    b.Property<string>("ShowId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Complement")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Neighborhood")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UF")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ShowId");
+
+                    b.ToTable("Address");
+                });
+
             modelBuilder.Entity("Ticket.Model.CartItem", b =>
                 {
                     b.Property<string>("Id")
@@ -279,10 +313,6 @@ namespace Ticket.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Local")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -444,6 +474,15 @@ namespace Ticket.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Ticket.Model.Address", b =>
+                {
+                    b.HasOne("Ticket.Model.Show", null)
+                        .WithOne("Address")
+                        .HasForeignKey("Ticket.Model.Address", "ShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Ticket.Model.CartItem", b =>
                 {
                     b.HasOne("Ticket.Model.Carts", null)
@@ -493,6 +532,12 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Carts", b =>
                 {
                     b.Navigation("CartList");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Show", b =>
+                {
+                    b.Navigation("Address")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

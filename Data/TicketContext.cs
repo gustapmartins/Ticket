@@ -23,4 +23,5 @@ public class TicketContext: IdentityDbContext<Users>
     public DbSet<PasswordReset> PasswordResets { get; set; }
     public DbSet<FeatureToggle> FeatureToggles { get; set; }
     public DbSet<Carts> Carts { get; set; }
+    public DbSet<Address> Address { get; set; }
 }

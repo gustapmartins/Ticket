@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class NOME_DA_NOVA_MIGRACAO : Migration
+    public partial class CreateTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -228,7 +228,6 @@ namespace Ticket.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Local = table.Column<string>(type: "text", nullable: false),
                     CategoryId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -238,6 +237,29 @@ namespace Ticket.Migrations
                         name: "FK_Shows_Categorys_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categorys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Address",
+                columns: table => new
+                {
+                    ShowId = table.Column<string>(type: "text", nullable: false),
+                    CEP = table.Column<string>(type: "text", nullable: false),
+                    Logradouro = table.Column<string>(type: "text", nullable: false),
+                    Complement = table.Column<string>(type: "text", nullable: false),
+                    Neighborhood = table.Column<string>(type: "text", nullable: false),
+                    Location = table.Column<string>(type: "text", nullable: false),
+                    UF = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Address", x => x.ShowId);
+                    table.ForeignKey(
+                        name: "FK_Address_Shows_ShowId",
+                        column: x => x.ShowId,
+                        principalTable: "Shows",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -354,6 +376,9 @@ namespace Ticket.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Address");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

@@ -12,15 +12,12 @@ public class TicketService: TicketBase, ITicketService
 {
     private readonly IMapper _mapper;
     private readonly ITicketDao _ticketDao;
-    private readonly IMessagePublisher _messagePublisher;
     public TicketService(
         ITicketDao ticketDao, 
-        IMapper mapper,
-        IMessagePublisher messagePublisher)
+        IMapper mapper)
     {
         _mapper = mapper;
         _ticketDao = ticketDao;
-        _messagePublisher = messagePublisher;
     }
 
     public List<Tickets> FindAllTicket()
@@ -51,15 +48,18 @@ public class TicketService: TicketBase, ITicketService
     {
         return HandleErrorAsync(() => _ticketDao.FindId(id));
     }
-   
+
+    public async Task<List<Show>> SearchShow(string name)
+    {
+        return await _ticketDao.FindByShowNameList(name);
+    }
+
     public Tickets CreateTicket(TicketCreateDto ticketDto)
     {
         Show show = HandleErrorAsync(() => _ticketDao.FindByShowName(ticketDto.ShowName));
 
         Tickets ticket = _mapper.Map<Tickets>(ticketDto);
-
         ticket.Show = show;
-
         _ticketDao.Add(ticket);
 
         return ticket;

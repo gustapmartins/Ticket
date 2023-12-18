@@ -1,10 +1,10 @@
-﻿using Ticket.Repository.Dao;
-using Ticket.ExceptionFilter;
+﻿using Ticket.ExceptionFilter;
+using Ticket.Repository.Dao;
+using Ticket.Validation;
 using Ticket.Interface;
 using Ticket.DTO.Show;
 using Ticket.Model;
 using AutoMapper;
-using Ticket.Validation;
 
 namespace Ticket.Service;
 
@@ -12,11 +12,13 @@ public class ShowService: TicketBase, IShowService
 {
     private readonly IMapper _mapper;
     private readonly IShowDao _showDao;
+    private readonly ViaCep _viaCep;
 
     public ShowService(IMapper mapper, IShowDao showDao)
     {
         _mapper = mapper;
         _showDao = showDao;
+        _viaCep = new ViaCep();
     }
 
     public List<Show> FindAllShow()
@@ -43,12 +45,7 @@ public class ShowService: TicketBase, IShowService
         return HandleErrorAsync(() => _showDao.FindId(id));
     }
 
-    public async Task<List<Show>> SearchShow(string name)
-    {
-        return await _showDao.FindByShowNameList(name);
-    }
-
-    public Show CreateShow(ShowCreateDto showDto)
+    public async Task<Show> CreateShow(ShowCreateDto showDto)
     {
         Category category = HandleErrorAsync(() => _showDao.FindByCategoryName(showDto.CategoryName));
 
@@ -59,9 +56,22 @@ public class ShowService: TicketBase, IShowService
             throw new StudentNotFoundException("This show already exists");
         }
 
+        Address cep = await _viaCep.GetCep(showDto.CEP);
+
         var show = _mapper.Map<Show>(showDto);
 
+        show.Address = show.Address ?? new Address()
+        {
+            CEP = cep.CEP,
+            Logradouro = cep.Logradouro,
+            Complement = cep.Complement,
+            Neighborhood = cep.Neighborhood,
+            Location = cep.Location,
+            UF = cep.UF
+        };
+
         show.Category = category;
+
         show.Date = DateTime.Now.ToUniversalTime();
 
         _showDao.Add(show);

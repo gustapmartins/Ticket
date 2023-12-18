@@ -24,14 +24,6 @@ public class ShowDaoComEfCore: IShowDao
         return _ticketContext.Shows.FirstOrDefault(show => show.Id == Id)!;
     }
 
-    public async Task<List<Show>> FindByShowNameList(string name)
-    {
-        return await Task.Run(() =>
-        {
-            return _ticketContext.Shows.Where(show => show.Name.StartsWith(name)).ToList();
-        });
-    }
-
     public Category FindByCategoryName(string Name)
     {
         return _ticketContext.Categorys.FirstOrDefault(category => category.Name == Name)!;
@@ -63,10 +55,6 @@ public class ShowDaoComEfCore: IShowDao
         if (showUpdateDto.Description != null)
         {
             show.Description = showUpdateDto.Description;
-        }
-        if(showUpdateDto.Local != null)
-        {
-            show.Local = showUpdateDto.Local;
         }
         if(showUpdateDto.CategoryName != null)
         {

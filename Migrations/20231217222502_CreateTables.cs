@@ -5,7 +5,7 @@
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class FeatureToggleTable : Migration
+    public partial class CreateTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
