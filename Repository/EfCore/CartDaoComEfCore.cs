@@ -42,9 +42,14 @@ public class CartDaoComEfCore : ICartDao
     }
 
 
-    public void Remove(Carts category)
+    public void Remove(Carts cart)
     {
-        throw new NotImplementedException();
+        if (cart != null)
+        {
+            cart.CartList.Clear();
+            cart.TotalPrice = 0;
+            Add(cart);
+        }
     }
 
     public void SaveChanges()

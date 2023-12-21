@@ -5,6 +5,8 @@ using Ticket.Interface;
 using Ticket.DTO.Show;
 using Ticket.Model;
 using AutoMapper;
+using Ticket.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ticket.Service;
 
@@ -12,13 +14,15 @@ public class ShowService: TicketBase, IShowService
 {
     private readonly IMapper _mapper;
     private readonly IShowDao _showDao;
-    private readonly ViaCep _viaCep;
+    private readonly TicketContext _ticketContext;
+    private readonly ViaCep _viacep;
 
-    public ShowService(IMapper mapper, IShowDao showDao)
+    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext)
     {
         _mapper = mapper;
         _showDao = showDao;
-        _viaCep = new ViaCep();
+        _viacep = new ViaCep();
+        _ticketContext = ticketContext;
     }
 
     public List<Show> FindAllShow()
@@ -47,36 +51,39 @@ public class ShowService: TicketBase, IShowService
 
     public async Task<Show> CreateShow(ShowCreateDto showDto)
     {
-        Category category = HandleErrorAsync(() => _showDao.FindByCategoryName(showDto.CategoryName));
-
-        Show nameExist = _showDao.FindByName(showDto.Name);
-
-        if (nameExist != null)
+        try
         {
-            throw new StudentNotFoundException("This show already exists");
+            Category category = HandleErrorAsync(() => _showDao.FindByCategoryName(showDto.CategoryName));
+
+            Show nameExist = _showDao.FindByName(showDto.Name);
+
+            if (nameExist != null)
+            {
+                throw new StudentNotFoundException("This show already exists");
+            }
+
+            Address address = new Address();
+
+            address = await _ticketContext.Address.FirstOrDefaultAsync(c => c.CEP == showDto.CEP);
+
+            if(address == null)
+            {
+                address = await _viacep.GetCep(showDto.CEP);
+            }
+
+            var show = _mapper.Map<Show>(showDto);
+
+            show.Category = category;
+            show.Address = address;
+            show.Date = DateTime.Now.ToUniversalTime();
+
+            _showDao.Add(show);
+
+            return show;
+        }catch(Exception ex)
+        {
+            throw new Exception(ex.Message, ex);
         }
-
-        Address cep = await _viaCep.GetCep(showDto.CEP);
-
-        var show = _mapper.Map<Show>(showDto);
-
-        show.Address = show.Address ?? new Address()
-        {
-            CEP = cep.CEP,
-            Logradouro = cep.Logradouro,
-            Complement = cep.Complement,
-            Neighborhood = cep.Neighborhood,
-            Location = cep.Location,
-            UF = cep.UF
-        };
-
-        show.Category = category;
-
-        show.Date = DateTime.Now.ToUniversalTime();
-
-        _showDao.Add(show);
-
-        return show;
     }
 
     public Show DeleteShow(string Id)

@@ -15,6 +15,4 @@ public class ShowCreateDto
 
     [Required(ErrorMessage = "CategoryName é obrigatório")]
     public string CategoryName { get; set; }
-
-    
 }

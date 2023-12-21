@@ -12,7 +12,7 @@ public interface ICartService
 
     CartViewDto RemoveTickets(string TicketId, string clientId);
 
-    Carts ClearTicketsCart(string clientId);
+    ResultOperation<Carts> ClearTicketsCart(string clientId);
 
     void BuyTicketsAsync(string clientId);
 }

@@ -7,11 +7,28 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ticket.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTable : Migration
+    public partial class CreateTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Address",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    CEP = table.Column<string>(type: "text", nullable: false),
+                    Logradouro = table.Column<string>(type: "text", nullable: false),
+                    Complement = table.Column<string>(type: "text", nullable: false),
+                    Neighborhood = table.Column<string>(type: "text", nullable: false),
+                    Location = table.Column<string>(type: "text", nullable: false),
+                    UF = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Address", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -207,8 +224,8 @@ namespace Ticket.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    UsersId = table.Column<string>(type: "text", nullable: true),
-                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false)
+                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    UsersId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -217,7 +234,8 @@ namespace Ticket.Migrations
                         name: "FK_Carts_AspNetUsers_UsersId",
                         column: x => x.UsersId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -228,38 +246,22 @@ namespace Ticket.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AddressId = table.Column<string>(type: "text", nullable: false),
                     CategoryId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shows", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Shows_Address_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Address",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Shows_Categorys_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categorys",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Address",
-                columns: table => new
-                {
-                    ShowId = table.Column<string>(type: "text", nullable: false),
-                    CEP = table.Column<string>(type: "text", nullable: false),
-                    Logradouro = table.Column<string>(type: "text", nullable: false),
-                    Complement = table.Column<string>(type: "text", nullable: false),
-                    Neighborhood = table.Column<string>(type: "text", nullable: false),
-                    Location = table.Column<string>(type: "text", nullable: false),
-                    UF = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Address", x => x.ShowId);
-                    table.ForeignKey(
-                        name: "FK_Address_Shows_ShowId",
-                        column: x => x.ShowId,
-                        principalTable: "Shows",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -291,8 +293,8 @@ namespace Ticket.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     TicketId = table.Column<string>(type: "text", nullable: false),
-                    statusPayment = table.Column<int>(type: "integer", nullable: false),
-                    CartsId = table.Column<string>(type: "text", nullable: true)
+                    CartsId = table.Column<string>(type: "text", nullable: false),
+                    statusPayment = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -301,7 +303,8 @@ namespace Ticket.Migrations
                         name: "FK_CartItem_Carts_CartsId",
                         column: x => x.CartsId,
                         principalTable: "Carts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CartItem_Tickets_TicketId",
                         column: x => x.TicketId,
@@ -360,7 +363,19 @@ namespace Ticket.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_UsersId",
                 table: "Carts",
-                column: "UsersId");
+                column: "UsersId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FeatureToggles_Name",
+                table: "FeatureToggles",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shows_AddressId",
+                table: "Shows",
+                column: "AddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shows_CategoryId",
@@ -376,9 +391,6 @@ namespace Ticket.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Address");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -417,6 +429,9 @@ namespace Ticket.Migrations
 
             migrationBuilder.DropTable(
                 name: "Shows");
+
+            migrationBuilder.DropTable(
+                name: "Address");
 
             migrationBuilder.DropTable(
                 name: "Categorys");

@@ -12,9 +12,11 @@ public class Carts
     [Required]
     public string Id { get; set; }
 
-    public virtual List<CartItem> CartList { get; set; }
+    public decimal TotalPrice { get; set; }
+    
+    public string UsersId { get; set; }
 
     public virtual Users Users { get; set; }
 
-    public decimal TotalPrice { get; set; }
+    public virtual List<CartItem> CartList { get; set; }
 }

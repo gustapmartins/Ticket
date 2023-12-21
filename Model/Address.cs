@@ -20,7 +20,7 @@ public class Address
 
     [JsonPropertyName("logradouro")]
     public string Logradouro { get; set; }
-    
+
     [JsonPropertyName("complemento")]
     public string Complement { get; set; }
 

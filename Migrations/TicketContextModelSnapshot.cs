@@ -203,6 +203,7 @@ namespace Ticket.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CartsId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
@@ -233,11 +234,13 @@ namespace Ticket.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<string>("UsersId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsersId");
+                    b.HasIndex("UsersId")
+                        .IsUnique();
 
                     b.ToTable("Carts");
                 });
@@ -277,6 +280,9 @@ namespace Ticket.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("FeatureToggles");
                 });
@@ -485,9 +491,11 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.CartItem", b =>
                 {
-                    b.HasOne("Ticket.Model.Carts", null)
+                    b.HasOne("Ticket.Model.Carts", "Carts")
                         .WithMany("CartList")
-                        .HasForeignKey("CartsId");
+                        .HasForeignKey("CartsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Ticket.Model.Tickets", "Ticket")
                         .WithMany()
@@ -495,14 +503,18 @@ namespace Ticket.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Carts");
+
                     b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("Ticket.Model.Carts", b =>
                 {
                     b.HasOne("Ticket.Model.Users", "Users")
-                        .WithMany()
-                        .HasForeignKey("UsersId");
+                        .WithOne()
+                        .HasForeignKey("Ticket.Model.Carts", "UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Users");
                 });

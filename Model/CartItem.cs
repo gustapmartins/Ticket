@@ -16,7 +16,13 @@ public class CartItem
 
     public int Quantity { get; set; }
 
+    public string TicketId { get; set; }
+
     public virtual Tickets Ticket { get; set; }
+    
+    public string CartsId { get; set; }
+    
+    public virtual Carts Carts { get; set; }
 
     public StatusPayment statusPayment { get; set; } = StatusPayment.Pedding;
 }

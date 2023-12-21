@@ -118,18 +118,25 @@ public class CartService : TicketBase, ICartService
         return cartViewMapper;
     }
 
-    public Carts ClearTicketsCart(string clientId)
+    public ResultOperation<Carts> ClearTicketsCart(string clientId)
     {
-        Carts cart = _cartDao.FindId(clientId);
-
-        if (cart != null)
+        try
         {
-            cart.CartList.Clear();
-            cart.TotalPrice = 0;
-            _cartDao.Add(cart);
-        }
+            Carts cart = _cartDao.FindId(clientId);
 
-        return cart!;
+            if(cart == null) 
+            {
+                throw new ApplicationException("Cart não encontrado");
+            }
+
+            _cartDao.Remove(cart);
+
+            return new ResultOperation<Carts> { Sucesso = true, MensagemErro = null, Dados = cart };
+        }
+        catch(Exception ex)
+        {
+            return new ResultOperation<Carts> { Sucesso = false, MensagemErro = $"Erro na requisição {ex}", Dados = null };
+        }
     }
 
     public void BuyTicketsAsync(string clientId)

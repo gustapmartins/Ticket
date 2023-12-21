@@ -2,6 +2,7 @@
 using Ticket.DTO.Show;
 using Ticket.Model;
 using Ticket.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ticket.Repository.EfCore;
 
@@ -16,7 +17,7 @@ public class ShowDaoComEfCore: IShowDao
 
     public List<Show> FindAll()
     {
-        return _ticketContext.Shows.OrderByDescending(show => show.Id).ToList();
+        return _ticketContext.Shows.Include(s => s.Address).OrderByDescending(show => show.Name).ToList();
     }
 
     public Show FindId(string Id) 

@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231216034757_CreateTable")]
-    partial class CreateTable
+    [Migration("20231221024421_CreateTables")]
+    partial class CreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -162,34 +162,40 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.Address", b =>
                 {
-                    b.Property<string>("ShowId")
+                    b.Property<string>("Id")
                         .HasColumnType("text");
 
                     b.Property<string>("CEP")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "cep");
 
                     b.Property<string>("Complement")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "complemento");
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "localidade");
 
                     b.Property<string>("Logradouro")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "logradouro");
 
                     b.Property<string>("Neighborhood")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "bairro");
 
                     b.Property<string>("UF")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "uf");
 
-                    b.HasKey("ShowId");
+                    b.HasKey("Id");
 
                     b.ToTable("Address");
                 });
@@ -200,6 +206,7 @@ namespace Ticket.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CartsId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
@@ -230,11 +237,13 @@ namespace Ticket.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<string>("UsersId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsersId");
+                    b.HasIndex("UsersId")
+                        .IsUnique();
 
                     b.ToTable("Carts");
                 });
@@ -275,6 +284,9 @@ namespace Ticket.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("FeatureToggles");
                 });
 
@@ -305,6 +317,10 @@ namespace Ticket.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AddressId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("CategoryId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -321,6 +337,8 @@ namespace Ticket.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("CategoryId");
 
@@ -474,20 +492,13 @@ namespace Ticket.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Ticket.Model.Address", b =>
-                {
-                    b.HasOne("Ticket.Model.Show", null)
-                        .WithOne("Address")
-                        .HasForeignKey("Ticket.Model.Address", "ShowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Ticket.Model.CartItem", b =>
                 {
-                    b.HasOne("Ticket.Model.Carts", null)
+                    b.HasOne("Ticket.Model.Carts", "Carts")
                         .WithMany("CartList")
-                        .HasForeignKey("CartsId");
+                        .HasForeignKey("CartsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Ticket.Model.Tickets", "Ticket")
                         .WithMany()
@@ -495,25 +506,37 @@ namespace Ticket.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Carts");
+
                     b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("Ticket.Model.Carts", b =>
                 {
                     b.HasOne("Ticket.Model.Users", "Users")
-                        .WithMany()
-                        .HasForeignKey("UsersId");
+                        .WithOne()
+                        .HasForeignKey("Ticket.Model.Carts", "UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
+                    b.HasOne("Ticket.Model.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Ticket.Model.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("Category");
                 });
@@ -532,12 +555,6 @@ namespace Ticket.Migrations
             modelBuilder.Entity("Ticket.Model.Carts", b =>
                 {
                     b.Navigation("CartList");
-                });
-
-            modelBuilder.Entity("Ticket.Model.Show", b =>
-                {
-                    b.Navigation("Address")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

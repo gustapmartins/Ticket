@@ -55,9 +55,9 @@ public class ShowController : ControllerBase
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPost, Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public CreatedAtActionResult CreateShow([FromBody] ShowCreateDto showDto)
+    public async Task<CreatedAtActionResult> CreateShow([FromBody] ShowCreateDto showDto)
     {
-        return CreatedAtAction(nameof(FindAllShow), _showService.CreateShow(showDto));
+        return CreatedAtAction(nameof(FindAllShow),await _showService.CreateShow(showDto));
     }
 
     /// <summary>
