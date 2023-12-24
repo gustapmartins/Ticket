@@ -6,9 +6,9 @@ namespace Ticket.Interface;
 
 public interface ICategoryService
 {
-    List<Category> FindAllCategory();
-    Category FindIdCategory(string id);
-    CategoryCreateDto CreateCategory(CategoryCreateDto CategoryDto);
-    Category DeleteCategory(string id);
-    Category UpdateCategory(string id, CategoryUpdateDto categoryDto);
+    ResultOperation<List<Category>> FindAllCategory();
+    ResultOperation<Category> FindIdCategory(string id);
+    ResultOperation<CategoryCreateDto> CreateCategory(CategoryCreateDto CategoryDto);
+    ResultOperation<Category> DeleteCategory(string id);
+    ResultOperation<Category> UpdateCategory(string id, CategoryUpdateDto categoryDto);
 }

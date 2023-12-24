@@ -5,10 +5,10 @@ namespace Ticket.Interface;
 
 public interface IFeatureToggleService
 {
-    List<FeatureToggle> FindAllFeatureToggle();
-    FeatureToggle FindIdFeatureToggle(string nameFeatureToggle);
-    FeatureToggle CreateFeatureToggle(FeatureToggleCreateDto featureToggleCreateDto);
-    FeatureToggle DeleteFeatureToggle(string id);
-    FeatureToggle UpdateFeatureToggle(string id, FeatureToggleUpdateDto featureToggleUpdateDto);
+    ResultOperation<List<FeatureToggle>> FindAllFeatureToggle();
+    ResultOperation<FeatureToggle> FindIdFeatureToggle(string nameFeatureToggle);
+    ResultOperation<FeatureToggle> CreateFeatureToggle(FeatureToggleCreateDto featureToggleCreateDto);
+    ResultOperation<FeatureToggle> DeleteFeatureToggle(string id);
+    ResultOperation<FeatureToggle> UpdateFeatureToggle(string id, FeatureToggleUpdateDto featureToggleUpdateDto);
     bool FeatureToggleActive(string FT_TICKETS);
 }

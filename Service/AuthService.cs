@@ -13,7 +13,7 @@ using Ticket.Validation;
 
 namespace Ticket.Service;
 
-public class AuthService: TicketBase, IAuthService
+public class AuthService: BaseService, IAuthService
 {
     private readonly UserManager<Users> _userManager;
     private readonly TicketContext _ticketContext;

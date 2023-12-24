@@ -9,7 +9,7 @@ using AutoMapper;
 
 namespace Ticket.Service;
 
-public class CartService : TicketBase, ICartService
+public class CartService : BaseService, ICartService
 {
     private readonly IMapper _mapper;
     private readonly ICartDao _cartDao;
@@ -26,37 +26,51 @@ public class CartService : TicketBase, ICartService
         _userManager = userManager;
     }
 
-    public CartViewDto ViewCartPedding(string clientId, StatusPayment statusPayment)
+    public ResultOperation<CartViewDto> ViewCartPedding(string clientId, StatusPayment statusPayment)
     {
-        var cart = HandleErrorAsync(() => _cartDao.FindCartPedding(clientId, statusPayment));
+        try
+        {
+            Carts cart = HandleError(() => _cartDao.FindCartPedding(clientId, statusPayment));
 
-        var cartViewMapper = _mapper.Map<CartViewDto>(cart);
+            var cartViewMapper = _mapper.Map<CartViewDto>(cart);
 
-        return cartViewMapper;
+            return CreateSuccessResult(cartViewMapper);
+        }
+        catch(Exception ex)
+        {
+            return CreateErrorResult<CartViewDto>(ex.Message);
+        }
     }
 
-    public Carts AddTicketToCart(List<CreateCartDto> CreateCartsDto, string clientId)
+    public ResultOperation<Carts> AddTicketToCart(List<CreateCartDto> CreateCartsDto, string clientId)
     {
-        Users user = HandleErrorAsync(() => _userManager.Users.FirstOrDefault(user => user.Id == clientId)!);
-
-        Carts cart = _cartDao.FindId(user.Id);
-
-        if (cart == null)
+        try
         {
-            cart = new Carts
+            Users user = HandleError(() => _userManager.Users.FirstOrDefault(user => user.Id == clientId)!);
+
+            Carts cart = _cartDao.FindId(user.Id);
+
+            if (cart == null)
             {
-                Id = Guid.NewGuid().ToString(),
-                Users = user,
-                CartList = new List<CartItem>(),
-                TotalPrice = 0,
-            };
+                cart = new Carts
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Users = user,
+                    CartList = new List<CartItem>(),
+                    TotalPrice = 0,
+                };
+            }
+
+            AddCartItems(CreateCartsDto, cart);
+
+            _cartDao.Add(cart);
+
+            return CreateSuccessResult(cart);
         }
-
-        AddCartItems(CreateCartsDto, cart);
-
-        _cartDao.Add(cart);
-
-        return cart;
+        catch(Exception ex)
+        {
+            return CreateErrorResult<Carts>(ex.Message);
+        }
     }
 
     private void AddCartItems(List<CreateCartDto> CreateCartsDto, Carts cart)
@@ -88,54 +102,54 @@ public class CartService : TicketBase, ICartService
         }
     }
 
-    public CartViewDto RemoveTickets(string cartItemId, string clientId)
-    {
-        Carts cart = HandleErrorAsync(() => _cartDao.FindId(clientId));
-
-        CartItem cartItem = HandleErrorAsync(() => cart.CartList.FirstOrDefault(ticket => ticket.Id == cartItemId))!;
-
-        if (cartItem != null)
-        {
-            // Recupere a quantidade do ticket no carrinho
-            Tickets ticket = _ticketDao.FindId(cartItem.Ticket.Id);
-
-            if (ticket != null)
-            {
-
-                cart.TotalPrice -= ticket.Price * cartItem.Quantity;
-
-                ticket.QuantityTickets += cartItem.Quantity;
-
-                cart.CartList.Remove(cartItem);
-
-            }
-
-            _cartDao.SaveChanges();
-        }
-
-        var cartViewMapper = _mapper.Map<CartViewDto>(cart);
-
-        return cartViewMapper;
-    }
-
-    public ResultOperation<Carts> ClearTicketsCart(string clientId)
+    public ResultOperation<CartViewDto> RemoveTickets(string cartItemId, string clientId)
     {
         try
         {
-            Carts cart = _cartDao.FindId(clientId);
+            Carts cart = HandleError(() => _cartDao.FindId(clientId));
 
-            if(cart == null) 
+            CartItem cartItem = HandleError(() => cart.CartList.FirstOrDefault(ticket => ticket.Id == cartItemId))!;
+
+            if (cartItem != null)
             {
-                throw new ApplicationException("Cart não encontrado");
+                // Recupere a quantidade do ticket no carrinho
+                Tickets ticket = _ticketDao.FindId(cartItem.Ticket.Id);
+
+                if (ticket != null)
+                {
+
+                    cart.TotalPrice -= ticket.Price * cartItem.Quantity;
+                    ticket.QuantityTickets += cartItem.Quantity;
+                    cart.CartList.Remove(cartItem);
+                }
+
+                _cartDao.SaveChanges();
             }
+
+            var cartViewMapper = _mapper.Map<CartViewDto>(cart);
+
+            return CreateSuccessResult(cartViewMapper);
+        }catch (Exception ex)
+        {
+            return CreateErrorResult<CartViewDto>(ex.Message);
+        }
+    }
+
+    public ResultOperation<CartViewDto> ClearTicketsCart(string clientId)
+    {
+        try
+        {
+            Carts cart = HandleError(() => _cartDao.FindId(clientId));
+
+            var cartViewMapper = _mapper.Map<CartViewDto>(cart);
 
             _cartDao.Remove(cart);
 
-            return new ResultOperation<Carts> { Sucesso = true, MensagemErro = null, Dados = cart };
+            return CreateSuccessResult(cartViewMapper);
         }
         catch(Exception ex)
         {
-            return new ResultOperation<Carts> { Sucesso = false, MensagemErro = $"Erro na requisição {ex}", Dados = null };
+            return CreateErrorResult<CartViewDto>(ex.Message);
         }
     }
 
@@ -144,14 +158,14 @@ public class CartService : TicketBase, ICartService
         //esse metodo só funciona com o projeto worker, que é um processador de fila do rabbitMQ
         try
         {
-            Carts cart = HandleErrorAsync(() => 
+            Carts cart = HandleError(() => 
                 _cartDao.FindCartPedding(clientId, StatusPayment.Pedding));
 
             _messagePublisher.Publish(cart);
         }
         catch(Exception ex)
         {
-            throw new Exception($"Error {ex}");
+            CreateErrorResult<CartViewDto>(ex.Message);
         }
     }
 }

@@ -1,14 +1,14 @@
 ﻿using Ticket.DTO.FeatureToggle;
 using Ticket.ExceptionFilter;
 using Ticket.Repository.Dao;
-using Ticket.Interface;
 using Ticket.Validation;
+using Ticket.Interface;
 using Ticket.Model;
 using AutoMapper;
 
 namespace Ticket.Service;
 
-public class FeatureToggleService : TicketBase, IFeatureToggleService
+public class FeatureToggleService : BaseService, IFeatureToggleService
 {
     private readonly IFeatureToggleDao _featureToggleDao;
     private readonly IMapper _mapper;
@@ -19,7 +19,7 @@ public class FeatureToggleService : TicketBase, IFeatureToggleService
         _mapper = mapper;
     }
 
-    public FeatureToggle CreateFeatureToggle(FeatureToggleCreateDto featureToggleDto)
+    public ResultOperation<FeatureToggle> CreateFeatureToggle(FeatureToggleCreateDto featureToggleDto)
     {
         try
         {
@@ -27,39 +27,44 @@ public class FeatureToggleService : TicketBase, IFeatureToggleService
 
             if (findFeatureToggle != null)
             {
-                throw new StudentNotFoundException("This FeatureToggle already exists");
+                return CreateErrorResult<FeatureToggle>("This FeatureToggle already exists");
             }
 
             FeatureToggle featureToggle = _mapper.Map<FeatureToggle>(featureToggleDto);
 
             _featureToggleDao.Add(featureToggle);
 
-            return featureToggle;
+            return CreateSuccessResult(findFeatureToggle);
 
         }
         catch (Exception ex)
         {
-            throw new NotImplementedException($"Error in the request: {ex}");
+            return CreateErrorResult<FeatureToggle>(ex.Message);
         }
     }
 
-    public FeatureToggle DeleteFeatureToggle(string id)
+    public ResultOperation<FeatureToggle> DeleteFeatureToggle(string id)
     {
         try
         {
-            var findFeatureToggle = HandleErrorAsync(() => _featureToggleDao.FindId(id));
+            var findFeatureToggle = _featureToggleDao.FindId(id);
+
+            if(findFeatureToggle == null)
+            {
+                return CreateErrorResult<FeatureToggle>("This value is not exist");
+            }
 
             _featureToggleDao.Remove(findFeatureToggle);
 
-            return findFeatureToggle;
+            return CreateSuccessResult(findFeatureToggle);
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<FeatureToggle>(ex.Message);
         }
     }
 
-    public List<FeatureToggle> FindAllFeatureToggle()
+    public ResultOperation<List<FeatureToggle>> FindAllFeatureToggle()
     {
         try
         {
@@ -67,35 +72,53 @@ public class FeatureToggleService : TicketBase, IFeatureToggleService
 
             if (findFeatureToggle.Count == 0)
             {
-                throw new StudentNotFoundException("The list is empty");
+                return CreateErrorResult<List<FeatureToggle>>("The list is empty");
             }
 
-            return findFeatureToggle;
+            return CreateSuccessResult(findFeatureToggle);
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<List<FeatureToggle>>(ex.Message);
         }
     }
 
-    public FeatureToggle FindIdFeatureToggle(string id)
-    {
-        return HandleErrorAsync(() => _featureToggleDao.FindId(id));
-    }
-
-    public FeatureToggle UpdateFeatureToggle(string id, FeatureToggleUpdateDto featureToggleUpdateDto)
+    public ResultOperation<FeatureToggle> FindIdFeatureToggle(string id)
     {
         try
         {
-            var findFeatureToggle = HandleErrorAsync(() => _featureToggleDao.FindId(id));
+            var findIdFeatureToggle = _featureToggleDao.FindId(id);
+
+            if (findIdFeatureToggle == null)
+            {
+                return CreateErrorResult<FeatureToggle>("This value is not exist");
+            }
+
+            return CreateSuccessResult(findIdFeatureToggle);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<FeatureToggle>(ex.Message);
+        }
+    }
+
+    public ResultOperation<FeatureToggle> UpdateFeatureToggle(string id, FeatureToggleUpdateDto featureToggleUpdateDto)
+    {
+        try
+        {
+            var findFeatureToggle = _featureToggleDao.FindId(id);
+
+            if(findFeatureToggle == null)
+            {
+                return CreateErrorResult<FeatureToggle>("This value is not exist");
+            }
 
             _featureToggleDao.Update(findFeatureToggle, featureToggleUpdateDto);
 
-            return findFeatureToggle;
+            return CreateSuccessResult(findFeatureToggle);
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<FeatureToggle>(ex.Message);
         }
     }
 

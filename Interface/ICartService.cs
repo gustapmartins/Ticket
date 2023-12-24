@@ -1,18 +1,19 @@
 ﻿using Ticket.DTO.Cart;
 using Ticket.Enum;
 using Ticket.Model;
+using Ticket.Service;
 
 namespace Ticket.Interface;
 
 public interface ICartService
 {
-    CartViewDto ViewCartPedding(string clientId, StatusPayment statusPayment);
+    ResultOperation<CartViewDto> ViewCartPedding(string clientId, StatusPayment statusPayment);
 
-    Carts AddTicketToCart(List<CreateCartDto> ticketQuantityDt, string clientId);
+    ResultOperation<Carts> AddTicketToCart(List<CreateCartDto> ticketQuantityDt, string clientId);
 
-    CartViewDto RemoveTickets(string TicketId, string clientId);
+    ResultOperation<CartViewDto> RemoveTickets(string TicketId, string clientId);
 
-    ResultOperation<Carts> ClearTicketsCart(string clientId);
+    ResultOperation<CartViewDto> ClearTicketsCart(string clientId);
 
     void BuyTicketsAsync(string clientId);
 }

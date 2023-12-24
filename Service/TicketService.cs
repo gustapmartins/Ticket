@@ -1,14 +1,14 @@
 ﻿using Ticket.ExceptionFilter;
 using Ticket.Repository.Dao;
-using Ticket.Validation;
 using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
 using AutoMapper;
+using Ticket.Validation;
 
 namespace Ticket.Service;
 
-public class TicketService: TicketBase, ITicketService
+public class TicketService: BaseService, ITicketService
 {
     private readonly IMapper _mapper;
     private readonly ITicketDao _ticketDao;
@@ -20,7 +20,7 @@ public class TicketService: TicketBase, ITicketService
         _ticketDao = ticketDao;
     }
 
-    public List<Tickets> FindAllTicket()
+    public ResultOperation<List<Tickets>> FindAllTicket()
     {
         try
         {
@@ -28,25 +28,28 @@ public class TicketService: TicketBase, ITicketService
 
             if (ticket.Count == 0)
             {
-                throw new StudentNotFoundException("The list is empty");
+                return CreateErrorResult<List<Tickets>>("The list is empty");
             }
 
-            return ticket;
+            return CreateSuccessResult(ticket);
         }
         catch (Exception ex)
         {
-            if (ex is StudentNotFoundException)
-            {
-                throw;
-            }
-          
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<List<Tickets>>(ex.Message);
         }
     }
 
-    public Tickets FindIdTicket(string id)
+    public ResultOperation<Tickets> FindIdTicket(string id)
     {
-        return HandleErrorAsync(() => _ticketDao.FindId(id));
+
+        var findTicket = _ticketDao.FindId(id);
+
+        if(findTicket == null)
+        {
+            return CreateErrorResult<Tickets>("This value is not exist");
+        }
+
+        return CreateSuccessResult(findTicket);
     }
 
     public async Task<List<Show>> SearchShow(string name)
@@ -54,32 +57,67 @@ public class TicketService: TicketBase, ITicketService
         return await _ticketDao.FindByShowNameList(name);
     }
 
-    public Tickets CreateTicket(TicketCreateDto ticketDto)
+    public ResultOperation<Tickets> CreateTicket(TicketCreateDto ticketDto)
     {
-        Show show = HandleErrorAsync(() => _ticketDao.FindByShowName(ticketDto.ShowName));
+        try
+        {
+            Show show = _ticketDao.FindByShowName(ticketDto.ShowName);
 
-        Tickets ticket = _mapper.Map<Tickets>(ticketDto);
-        ticket.Show = show;
-        _ticketDao.Add(ticket);
+            if (show == null)
+            {
+                return CreateErrorResult<Tickets>("This value is not exist");
+            }
 
-        return ticket;
+            Tickets ticket = _mapper.Map<Tickets>(ticketDto);
+            ticket.Show = show;
+            _ticketDao.Add(ticket);
+
+            return CreateSuccessResult(ticket);
+        }
+        catch(Exception ex)
+        {
+            return CreateErrorResult<Tickets>(ex.Message);
+        }
     }
 
-    public Tickets DeleteTicket(string Id)
+    public ResultOperation<Tickets> DeleteTicket(string Id)
     {
-        var ticket = HandleErrorAsync(() => _ticketDao.FindId(Id));
+        try
+        {
+            var ticket = _ticketDao.FindId(Id);
 
-        _ticketDao.Remove(ticket);
+            if(ticket == null)
+            {
+                return CreateErrorResult<Tickets>(ex.Message);
+            }
 
-        return ticket;
+            _ticketDao.Remove(ticket);
+
+            return CreateSuccessResult(ticket);
+        }
+        catch(Exception ex)
+        {
+            return CreateErrorResult<Tickets>(ex.Message);
+        }
     }
 
-    public Tickets UpdateTicket(string Id, TicketUpdateDto ticketDto)
+    public ResultOperation<Tickets> UpdateTicket(string Id, TicketUpdateDto ticketDto)
     {
-        var ticket = HandleErrorAsync(() => _ticketDao.FindId(Id));
+        try
+        {
+            var ticket = _ticketDao.FindId(Id);
 
-        _ticketDao.Update(ticket, ticketDto);
+            if(ticket == null)
+            {
+                return CreateErrorResult<Tickets>("This value is not exist");
+            }
 
-        return ticket;
+            _ticketDao.Update(ticket, ticketDto);
+
+            return CreateSuccessResult(ticket);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<Tickets>(ex.Message);
+        }
     }
 }

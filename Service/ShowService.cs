@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ticket.Service;
 
-public class ShowService: TicketBase, IShowService
+public class ShowService: BaseService, IShowService
 {
     private readonly IMapper _mapper;
     private readonly IShowDao _showDao;
@@ -25,7 +25,7 @@ public class ShowService: TicketBase, IShowService
         _ticketContext = ticketContext;
     }
 
-    public List<Show> FindAllShow()
+    public ResultOperation<List<Show>> FindAllShow()
     {
         try
         {
@@ -33,33 +33,51 @@ public class ShowService: TicketBase, IShowService
 
             if (show.Count == 0)
             {
-                throw new StudentNotFoundException("Está lista está vazia");
+                return CreateErrorResult<List<Show>>("This list is empty");
             }
 
-            return show;
+            return CreateSuccessResult(show);
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<List<Show>>(ex.Message);
         }
     }
 
-    public Show FindIdShow(string id)
-    {
-        return HandleErrorAsync(() => _showDao.FindId(id));
-    }
-
-    public async Task<Show> CreateShow(ShowCreateDto showDto)
+    public ResultOperation<Show> FindIdShow(string id)
     {
         try
         {
-            Category category = HandleErrorAsync(() => _showDao.FindByCategoryName(showDto.CategoryName));
+            var showFindId = _showDao.FindId(id);
+
+            if(showFindId == null)
+            {
+                return CreateErrorResult<Show>("This is value is not exist");
+            }
+
+            return CreateSuccessResult(showFindId);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<Show>(ex.Message);
+        }
+    }
+
+    public async Task<ResultOperation<Show>> CreateShow(ShowCreateDto showDto)
+    {
+        try
+        {
+            Category category = _showDao.FindByCategoryName(showDto.CategoryName);
+
+            if(category == null)
+            {
+                return CreateErrorResult<Show>($"This value {showDto.CategoryName} is not exist");
+            }
 
             Show nameExist = _showDao.FindByName(showDto.Name);
 
             if (nameExist != null)
             {
-                throw new StudentNotFoundException("This show already exists");
+                return CreateErrorResult<Show>("This show already exists");
             }
 
             Address address = new Address();
@@ -79,28 +97,50 @@ public class ShowService: TicketBase, IShowService
 
             _showDao.Add(show);
 
-            return show;
+            return CreateSuccessResult(show);
         }catch(Exception ex)
         {
-            throw new Exception(ex.Message, ex);
+            return CreateErrorResult<Show>($"{ex.Message}");
         }
     }
 
-    public Show DeleteShow(string Id)
+    public ResultOperation<Show> DeleteShow(string Id)
     {
-        var show = HandleErrorAsync(() => _showDao.FindId(Id));
+        try
+        {
+            var show = _showDao.FindId(Id);
 
-        _showDao.Remove(show);
+            if(show == null)
+            {
+                return CreateErrorResult<Show>("this value is not exist");
+            }
 
-        return show;
+            _showDao.Remove(show);
+
+            return CreateSuccessResult(show);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<Show>(ex.Message);
+        }
     }
 
-    public Show UpdateShow(string Id, ShowUpdateDto showDto)
+    public ResultOperation<Show> UpdateShow(string Id, ShowUpdateDto showDto)
     {
-        var show = HandleErrorAsync(() => _showDao.FindId(Id));
+        try
+        {
+            var show = _showDao.FindId(Id);
 
-        _showDao.Update(show, showDto);
+            if(show == null)
+            {
+                return CreateErrorResult<Show>("This value is not exist");
+            }
 
-        return show;
+            _showDao.Update(show, showDto);
+
+            return CreateSuccessResult(show);
+        }catch( Exception ex)
+        {
+            return CreateErrorResult<Show>(ex.Message);
+        }
     }
 }

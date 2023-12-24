@@ -6,9 +6,9 @@ namespace Ticket.Interface;
 
 public interface IShowService
 {
-    List<Show> FindAllShow();
-    Show FindIdShow(string id);
-    Task<Show> CreateShow(ShowCreateDto showDto);
-    Show DeleteShow(string Id);
-    Show UpdateShow(string Id, ShowUpdateDto showtDto);
+    ResultOperation<List<Show>> FindAllShow();
+    ResultOperation<Show> FindIdShow(string id);
+    Task<ResultOperation<Show>> CreateShow(ShowCreateDto showDto);
+    ResultOperation<Show> DeleteShow(string Id);
+    ResultOperation<Show> UpdateShow(string Id, ShowUpdateDto showtDto);
 }
