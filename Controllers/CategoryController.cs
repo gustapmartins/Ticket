@@ -33,7 +33,7 @@ public class CategoryController: ControllerBase
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///     Consultar categoria pelo id
     /// </summary>
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
