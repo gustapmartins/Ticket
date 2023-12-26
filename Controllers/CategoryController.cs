@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Category;
 using Ticket.Interface;
-using Ticket.Model;
 
 namespace Ticket.Controles;
 
