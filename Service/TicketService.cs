@@ -88,7 +88,7 @@ public class TicketService: BaseService, ITicketService
 
             if(ticket == null)
             {
-                return CreateErrorResult<Tickets>(ex.Message);
+                return CreateErrorResult<Tickets>("This value is not exist");
             }
 
             _ticketDao.Remove(ticket);
