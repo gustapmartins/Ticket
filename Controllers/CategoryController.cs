@@ -27,9 +27,9 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Category> FindAllCategory()
+    public IActionResult FindAllCategory()
     {
-        return _categoryService.FindAllCategory();
+        return Ok(_categoryService.FindAllCategory());
     }
 
     /// <summary>
