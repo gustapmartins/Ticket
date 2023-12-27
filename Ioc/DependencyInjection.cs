@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Ticket.Service;
 using Ticket.Model;
 using Ticket.Data;
+using Microsoft.AspNetCore.Hosting;
 
 
 namespace Ticket.Configure;
@@ -89,8 +90,8 @@ public class DependencyInjection
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings
         {
-            Formatting = Newtonsoft.Json.Formatting.Indented,
-            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
         Authentication.ConfigureAuth(services);

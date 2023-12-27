@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ticket.DTO.Show;
 using Ticket.Interface;
+using Ticket.DTO.Show;
 
 namespace Ticket.Controllers;
 
@@ -59,6 +59,7 @@ public class ShowController : ControllerBase
     {
         return CreatedAtAction(nameof(FindAllShow),await _showService.CreateShow(showDto));
     }
+
 
     /// <summary>
     ///     Adiciona um filme ao banco de dados

@@ -1,11 +1,12 @@
-﻿using Ticket.Repository.Dao;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticket.Repository.Dao;
 using Ticket.Validation;
 using Ticket.Interface;
 using Ticket.DTO.Show;
 using Ticket.Model;
 using AutoMapper;
 using Ticket.Data;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Ticket.Service;
 
@@ -15,15 +16,13 @@ public class ShowService: BaseService, IShowService
     private readonly IShowDao _showDao;
     private readonly TicketContext _ticketContext;
     private readonly ViaCep _viacep;
-    private readonly IWebHostEnvironment _hostingEnvironment;
 
-    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext, IWebHostEnvironment hostingEnvironment)
+    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext)
     {
         _mapper = mapper;
         _showDao = showDao;
         _viacep = new ViaCep();
         _ticketContext = ticketContext;
-        _hostingEnvironment = hostingEnvironment;
     }
 
     public ResultOperation<List<Show>> FindAllShow()
@@ -102,7 +101,14 @@ public class ShowService: BaseService, IShowService
     {
         if (imageFile != null && imageFile.Length > 0)
         {
-            string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string uploadsFolder = Path.Combine(currentDirectory, "uploads");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
             string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
             imageFile.CopyTo(new FileStream(filePath, FileMode.Create));
