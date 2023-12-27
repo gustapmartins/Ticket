@@ -1,5 +1,4 @@
-﻿using Ticket.ExceptionFilter;
-using Ticket.Repository.Dao;
+﻿using Ticket.Repository.Dao;
 using Ticket.Validation;
 using Ticket.Interface;
 using Ticket.DTO.Show;
@@ -16,13 +15,15 @@ public class ShowService: BaseService, IShowService
     private readonly IShowDao _showDao;
     private readonly TicketContext _ticketContext;
     private readonly ViaCep _viacep;
+    private readonly IWebHostEnvironment _hostingEnvironment;
 
-    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext)
+    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext, IWebHostEnvironment hostingEnvironment)
     {
         _mapper = mapper;
         _showDao = showDao;
         _viacep = new ViaCep();
         _ticketContext = ticketContext;
+        _hostingEnvironment = hostingEnvironment;
     }
 
     public ResultOperation<List<Show>> FindAllShow()
@@ -68,7 +69,7 @@ public class ShowService: BaseService, IShowService
         {
             Category category = _showDao.FindByCategoryName(showDto.CategoryName);
 
-            if(category == null)
+            if (category == null)
             {
                 return CreateErrorResult<Show>($"This value {showDto.CategoryName} is not exist");
             }
@@ -80,28 +81,48 @@ public class ShowService: BaseService, IShowService
                 return CreateErrorResult<Show>("This show already exists");
             }
 
-            Address address = new Address();
-
-            address = await _ticketContext.Address.FirstOrDefaultAsync(c => c.CEP == showDto.CEP);
-
-            if(address == null)
-            {
-                address = await _viacep.GetCep(showDto.CEP);
-            }
-
             var show = _mapper.Map<Show>(showDto);
 
             show.Category = category;
-            show.Address = address;
+            show.ImagePath = SaveImage(showDto.imageFile);
+            show.Address = await GetOrCreateAddressAsync(showDto.CEP);
             show.Date = DateTime.Now.ToUniversalTime();
 
             _showDao.Add(show);
 
             return CreateSuccessResult(show);
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             return CreateErrorResult<Show>($"{ex.Message}");
         }
+    }
+
+    private string SaveImage(IFormFile imageFile)
+    {
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            imageFile.CopyTo(new FileStream(filePath, FileMode.Create));
+
+            return uniqueFileName;
+        }
+
+        return null;
+    }
+
+    private async Task<Address> GetOrCreateAddressAsync(string cep)
+    {
+        Address address = await _ticketContext.Address.FirstOrDefaultAsync(c => c.CEP == cep);
+
+        if (address == null)
+        {
+            address = await _viacep.GetCep(cep);
+        }
+
+        return address;
     }
 
     public ResultOperation<Show> DeleteShow(string Id)

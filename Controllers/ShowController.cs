@@ -48,14 +48,14 @@ public class ShowController : ControllerBase
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///    Adicione um show ao banco de daods
     /// </summary>
     /// <param name="showDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPost, Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<CreatedAtActionResult> CreateShow([FromBody] ShowCreateDto showDto)
+    public async Task<CreatedAtActionResult> CreateShow([FromForm] ShowCreateDto showDto)
     {
         return CreatedAtAction(nameof(FindAllShow),await _showService.CreateShow(showDto));
     }

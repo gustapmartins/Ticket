@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231221174846_CreateTables")]
-    partial class CreateTables
+    [Migration("20231226220342_createTable")]
+    partial class createTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

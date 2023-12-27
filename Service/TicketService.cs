@@ -1,10 +1,9 @@
-﻿using Ticket.ExceptionFilter;
-using Ticket.Repository.Dao;
+﻿using Ticket.Repository.Dao;
+using Ticket.Validation;
 using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
 using AutoMapper;
-using Ticket.Validation;
 
 namespace Ticket.Service;
 

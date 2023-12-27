@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Extensions.Hosting.Internal;
 using Swashbuckle.AspNetCore.Filters;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Ticket.Repository.EfCore;
 using Ticket.ExceptionFilter;
@@ -9,8 +10,9 @@ using ServiceStack.Redis;
 using Ticket.Interface;
 using Newtonsoft.Json;
 using Ticket.Service;
-using Ticket.Data;
 using Ticket.Model;
+using Ticket.Data;
+
 
 namespace Ticket.Configure;
 
