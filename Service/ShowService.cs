@@ -4,9 +4,9 @@ using Ticket.Validation;
 using Ticket.Interface;
 using Ticket.DTO.Show;
 using Ticket.Model;
-using AutoMapper;
 using Ticket.Data;
-
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ticket.Service;
 
@@ -16,13 +16,15 @@ public class ShowService: BaseService, IShowService
     private readonly IShowDao _showDao;
     private readonly TicketContext _ticketContext;
     private readonly ViaCep _viacep;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext)
+    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext, IWebHostEnvironment webHostEnvironment)
     {
         _mapper = mapper;
         _showDao = showDao;
         _viacep = new ViaCep();
         _ticketContext = ticketContext;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     public ResultOperation<List<Show>> FindAllShow()
@@ -62,6 +64,27 @@ public class ShowService: BaseService, IShowService
         }
     }
 
+    public byte[] GetImagem(string fileName)
+    {
+        try
+        {
+            string path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            var filePath = Path.Combine(path, fileName + ".png");
+
+            if (File.Exists(filePath))
+            {
+                byte[] fileBytes = File.ReadAllBytes(filePath);
+                return fileBytes;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
     public async Task<ResultOperation<Show>> CreateShow(ShowCreateDto showDto)
     {
         try
@@ -97,20 +120,20 @@ public class ShowService: BaseService, IShowService
         }
     }
 
+
     private string SaveImage(IFormFile imageFile)
     {
         if (imageFile != null && imageFile.Length > 0)
         {
-            string currentDirectory = Directory.GetCurrentDirectory();
-            string uploadsFolder = Path.Combine(currentDirectory, "uploads");
+            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
 
-            if (!Directory.Exists(uploadsFolder))
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory(uploadsFolder);
+                Directory.CreateDirectory(path);
             }
 
             string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            string filePath = Path.Combine(path, uniqueFileName);
             imageFile.CopyTo(new FileStream(filePath, FileMode.Create));
 
             return uniqueFileName;
@@ -165,7 +188,7 @@ public class ShowService: BaseService, IShowService
             _showDao.Update(show, showDto);
 
             return CreateSuccessResult(show);
-        }catch( Exception ex)
+        }catch(Exception ex)
         {
             return CreateErrorResult<Show>(ex.Message);
         }

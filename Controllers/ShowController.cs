@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ticket.Interface;
 using Ticket.DTO.Show;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Ticket.Controllers;
 
@@ -11,11 +12,13 @@ public class ShowController : ControllerBase
 {
     private readonly IShowService _showService;
     private readonly ICachingService _cachingService;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ShowController(IShowService showService, ICachingService cacheService)
+    public ShowController(IShowService showService, ICachingService cacheService, IWebHostEnvironment webHostEnvironment)
     {
         _showService = showService;
         _cachingService = cacheService;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     /// <summary>
@@ -46,6 +49,23 @@ public class ShowController : ControllerBase
                 _showService.FindIdShow(id)
          ));
     }
+
+    /// <summary>
+    ///     Busca uma imagem no banco de dados
+    /// </summary>
+    /// <param name="showDto">Objeto com os campos necessários para criação de um filme</param>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpGet("GetImage/{fileName}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GetImage([FromRoute] string fileName)
+    {
+       var fileBytes = _showService.GetImagem(fileName);
+
+       return File(fileBytes, "image/png");
+    }
+
 
     /// <summary>
     ///    Adicione um show ao banco de daods
