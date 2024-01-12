@@ -106,8 +106,8 @@ public class ShowService: BaseService, IShowService
             var show = _mapper.Map<Show>(showDto);
 
             show.Category = category;
-            show.ImagePath = SaveImage(showDto.imageFile);
             show.Address = await GetOrCreateAddressAsync(showDto.CEP);
+            show.ImagePath = SaveImage(showDto.imageFile);
             show.Date = DateTime.Now.ToUniversalTime();
 
             _showDao.Add(show);

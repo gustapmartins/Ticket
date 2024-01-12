@@ -20,9 +20,19 @@ public class ViaCep
             {
                 // Converte a resposta para um objeto EnderecoViaCep
                 string responseData = await response.Content.ReadAsStringAsync();
-                var endereco = JsonSerializer.Deserialize<Address>(responseData);
-                return endereco;
-            }
+                // Verifica se a resposta contém um indicativo de CEP não encontrado
+                if (!responseData.Contains("erro\": true"))
+                {
+                    // Converte a resposta para um objeto EnderecoViaCep
+                    var endereco = JsonSerializer.Deserialize<Address>(responseData);
+                    return endereco;
+                }
+                else
+                {
+                    // CEP não encontrado, você pode lidar com isso da maneira desejada
+                    return null;
+                }
+            }   
             else
             {
                 // Se a requisição falhou, lança uma exceção ou retorna null, dependendo da sua lógica
