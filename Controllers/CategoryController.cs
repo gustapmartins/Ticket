@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Category;
 using Ticket.Interface;
-using Ticket.JwtHelper;
-using Ticket.Model;
 
 namespace Ticket.Controles;
 
@@ -28,13 +26,13 @@ public class CategoryController: ControllerBase
     /// <response code="200">Caso inserção seja feita com sucesso</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public List<Category> FindAllCategory()
+    public IActionResult FindAllCategory()
     {
-        return _categoryService.FindAllCategory();
+        return Ok(_categoryService.FindAllCategory());
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///     Consultar categoria pelo id
     /// </summary>
     /// <param name="id">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>

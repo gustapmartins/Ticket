@@ -12,8 +12,8 @@ using Ticket.Data;
 namespace Ticket.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20231204185731_Test")]
-    partial class Test
+    [Migration("20231227160026_CreateTable")]
+    partial class CreateTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,13 +160,77 @@ namespace Ticket.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Ticket.Model.Cart", b =>
+            modelBuilder.Entity("Ticket.Model.Address", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "cep");
+
+                    b.Property<string>("Complement")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "complemento");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "localidade");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "logradouro");
+
+                    b.Property<string>("Neighborhood")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "bairro");
+
+                    b.Property<string>("UF")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "uf");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Address");
+                });
+
+            modelBuilder.Entity("Ticket.Model.CartItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CartsId")
+                        .HasColumnType("text");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
+
+                    b.Property<string>("TicketId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("statusPayment")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartsId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("CartItem");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Carts", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
@@ -199,6 +263,27 @@ namespace Ticket.Migrations
                     b.ToTable("Categorys");
                 });
 
+            modelBuilder.Entity("Ticket.Model.FeatureToggle", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("IsEnabledFeature")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FeatureToggles");
+                });
+
             modelBuilder.Entity("Ticket.Model.PasswordReset", b =>
                 {
                     b.Property<int>("Id")
@@ -226,6 +311,10 @@ namespace Ticket.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AddressId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("CategoryId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -237,7 +326,7 @@ namespace Ticket.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Local")
+                    b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -246,6 +335,8 @@ namespace Ticket.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("CategoryId");
 
@@ -326,9 +417,6 @@ namespace Ticket.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("numeric");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
@@ -402,7 +490,22 @@ namespace Ticket.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Ticket.Model.Cart", b =>
+            modelBuilder.Entity("Ticket.Model.CartItem", b =>
+                {
+                    b.HasOne("Ticket.Model.Carts", null)
+                        .WithMany("CartList")
+                        .HasForeignKey("CartsId");
+
+                    b.HasOne("Ticket.Model.Tickets", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Carts", b =>
                 {
                     b.HasOne("Ticket.Model.Users", "Users")
                         .WithMany()
@@ -413,11 +516,19 @@ namespace Ticket.Migrations
 
             modelBuilder.Entity("Ticket.Model.Show", b =>
                 {
+                    b.HasOne("Ticket.Model.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Ticket.Model.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("Category");
                 });
@@ -431,6 +542,11 @@ namespace Ticket.Migrations
                         .IsRequired();
 
                     b.Navigation("Show");
+                });
+
+            modelBuilder.Entity("Ticket.Model.Carts", b =>
+                {
+                    b.Navigation("CartList");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,7 +8,7 @@ using Ticket.Validation;
 
 namespace Ticket.Service;
 
-public class CategoryService : TicketBase, ICategoryService
+public class CategoryService : BaseService, ICategoryService
 {
     private readonly IMapper _mapper;
     private readonly ICategoryDao _categoryDao;
@@ -19,75 +19,105 @@ public class CategoryService : TicketBase, ICategoryService
         _categoryDao = categoryDao;
     }
 
-    public List<Category> FindAllCategory()
+    public ResultOperation<List<Category>> FindAllCategory()
     {
         try
         {
-            List<Category> find = _categoryDao.FindAll();
+            List<Category> findCategory = _categoryDao.FindAll();
 
-            if (find.Count == 0)
+            if (findCategory.Count == 0)
             {
-                throw new StudentNotFoundException("The list is empty");
+                return CreateErrorResult<List<Category>>("The list is empty");
             }
 
-            return find;
+            return CreateSuccessResult(findCategory);
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<List<Category>>(ex.Message);
         }
     }
 
-    public Category FindIdCategory(string Id)
+    public ResultOperation<Category> FindIdCategory(string Id)
     {
-        return HandleErrorAsync(() => _categoryDao.FindId(Id));
-    }
 
-    public CategoryCreateDto CreateCategory(CategoryCreateDto categoryDto)
-    {
-        Category categoryExist = _categoryDao.FindByName(categoryDto.Name);
-
-        if (categoryExist != null)
+        try
         {
-            throw new StudentNotFoundException("This category already exists");
+            var findCategoryId = _categoryDao.FindId(Id);
+
+            if (findCategoryId == null)
+            {
+                return CreateErrorResult<Category>("This value is not exist");
+            }
+
+            return CreateSuccessResult(findCategoryId);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<Category>(ex.Message);
         }
-
-        Category category = _mapper.Map<Category>(categoryDto);
-
-        _categoryDao.Add(category);
-
-        return categoryDto;
     }
 
-    public Category DeleteCategory(string Id)
+    public ResultOperation<CategoryCreateDto> CreateCategory(CategoryCreateDto categoryDto)
     {
         try
         {
-            var category = HandleErrorAsync(() =>  _categoryDao.FindId(Id));
+            Category categoryExist = _categoryDao.FindByName(categoryDto.Name);
 
-            _categoryDao.Remove(category);
+            if (categoryExist != null)
+            {
+                return CreateErrorResult<CategoryCreateDto>("This category already exists");
+            }
 
-            return category;
-        }
-        catch (Exception ex)
+            Category category = _mapper.Map<Category>(categoryDto);
+
+            _categoryDao.Add(category);
+
+            return CreateSuccessResult(categoryDto);
+        }catch(Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<CategoryCreateDto>(ex.Message);
         }
     }
 
-    public Category UpdateCategory(string Id, CategoryUpdateDto categoryDto)
+    public ResultOperation<Category> DeleteCategory(string Id)
     {
         try
         {
-            var category = HandleErrorAsync(() => _categoryDao.FindId(Id));
+            var findCategoryId =  _categoryDao.FindId(Id);
 
-            _categoryDao.Update(category, categoryDto);
+            if(findCategoryId == null)
+            {
+                return CreateErrorResult<Category>("This value is not exist");
+            }
 
-            return category;
+            _categoryDao.Remove(findCategoryId);
+
+            return CreateSuccessResult(findCategoryId);
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<Category>(ex.Message);
+        }
+    }
+
+    public ResultOperation<Category> UpdateCategory(string Id, CategoryUpdateDto categoryDto)
+    {
+        try
+        {
+            var findCategoryId = _categoryDao.FindId(Id);
+
+            if(findCategoryId == null)
+            {
+                return CreateErrorResult<Category>("This value is not exist");
+            }
+
+            _categoryDao.Update(findCategoryId, categoryDto);
+
+            return CreateSuccessResult(findCategoryId);
+        }
+        catch (Exception ex)
+        {
+            return CreateErrorResult<Category>(ex.Message);
         }
     }
 }

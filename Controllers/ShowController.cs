@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ticket.DTO.Show;
 using Ticket.Interface;
+using Ticket.DTO.Show;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Ticket.Controllers;
 
@@ -11,11 +12,13 @@ public class ShowController : ControllerBase
 {
     private readonly IShowService _showService;
     private readonly ICachingService _cachingService;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ShowController(IShowService showService, ICachingService cacheService)
+    public ShowController(IShowService showService, ICachingService cacheService, IWebHostEnvironment webHostEnvironment)
     {
         _showService = showService;
         _cachingService = cacheService;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     /// <summary>
@@ -48,29 +51,35 @@ public class ShowController : ControllerBase
     }
 
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///     Busca uma imagem no banco de dados
     /// </summary>
+    /// <param name="showDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="200">Caso inserção seja feita com sucesso</response>
-    [HttpGet("search")]
+    [HttpGet("GetImage/{fileName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult SearchShows([FromHeader] string name)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GetImage([FromRoute] string fileName)
     {
-        return Ok(_showService.SearchShow(name));
+       var fileBytes = _showService.GetImagem(fileName);
+
+       return File(fileBytes, "image/png");
     }
 
+
     /// <summary>
-    ///     Adiciona um filme ao banco de dados
+    ///    Adicione um show ao banco de daods
     /// </summary>
     /// <param name="showDto">Objeto com os campos necessários para criação de um filme</param>
     ///     <returns>IActionResult</returns>
     /// <response code="201">Caso inserção seja feita com sucesso</response>
     [HttpPost, Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public CreatedAtActionResult CreateShow([FromBody] ShowCreateDto showDto)
+    public async Task<CreatedAtActionResult> CreateShow([FromForm] ShowCreateDto showDto)
     {
-        return CreatedAtAction(nameof(FindAllShow), _showService.CreateShow(showDto));
+        return CreatedAtAction(nameof(FindAllShow),await _showService.CreateShow(showDto));
     }
+
 
     /// <summary>
     ///     Adiciona um filme ao banco de dados

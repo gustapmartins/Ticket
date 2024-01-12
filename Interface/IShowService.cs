@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Show;
 using Ticket.Model;
 
@@ -6,10 +7,10 @@ namespace Ticket.Interface;
 
 public interface IShowService
 {
-    List<Show> FindAllShow();
-    Show FindIdShow(string id);
-    Task<List<Show>> SearchShow(string name);
-    Show CreateShow(ShowCreateDto showDto);
-    Show DeleteShow(string Id);
-    Show UpdateShow(string Id, ShowUpdateDto showtDto);
+    ResultOperation<List<Show>> FindAllShow();
+    ResultOperation<Show> FindIdShow(string id);
+    Task<ResultOperation<Show>> CreateShow(ShowCreateDto showDto);
+    ResultOperation<Show> DeleteShow(string Id);
+    ResultOperation<Show> UpdateShow(string Id, ShowUpdateDto showtDto);
+    byte[] GetImagem(string fileName);
 }

@@ -1,25 +1,33 @@
-﻿using Ticket.Repository.Dao;
-using Ticket.ExceptionFilter;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticket.Repository.Dao;
+using Ticket.Validation;
 using Ticket.Interface;
 using Ticket.DTO.Show;
 using Ticket.Model;
+using Ticket.Data;
 using AutoMapper;
-using Ticket.Validation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ticket.Service;
 
-public class ShowService: TicketBase, IShowService
+public class ShowService: BaseService, IShowService
 {
     private readonly IMapper _mapper;
     private readonly IShowDao _showDao;
+    private readonly TicketContext _ticketContext;
+    private readonly ViaCep _viacep;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ShowService(IMapper mapper, IShowDao showDao)
+    public ShowService(IMapper mapper, IShowDao showDao, TicketContext ticketContext, IWebHostEnvironment webHostEnvironment)
     {
         _mapper = mapper;
         _showDao = showDao;
+        _viacep = new ViaCep();
+        _ticketContext = ticketContext;
+        _webHostEnvironment = webHostEnvironment;
     }
 
-    public List<Show> FindAllShow()
+    public ResultOperation<List<Show>> FindAllShow()
     {
         try
         {
@@ -27,63 +35,162 @@ public class ShowService: TicketBase, IShowService
 
             if (show.Count == 0)
             {
-                throw new StudentNotFoundException("Está lista está vazia");
+                return CreateErrorResult<List<Show>>("This list is empty");
             }
 
-            return show;
+            return CreateSuccessResult(show);
         }
         catch (Exception ex)
         {
-            throw new StudentNotFoundException("Error in the request", ex);
+            return CreateErrorResult<List<Show>>(ex.Message);
         }
     }
 
-    public Show FindIdShow(string id)
+    public ResultOperation<Show> FindIdShow(string id)
     {
-        return HandleErrorAsync(() => _showDao.FindId(id));
-    }
-
-    public async Task<List<Show>> SearchShow(string name)
-    {
-        return await _showDao.FindByShowNameList(name);
-    }
-
-    public Show CreateShow(ShowCreateDto showDto)
-    {
-        Category category = HandleErrorAsync(() => _showDao.FindByCategoryName(showDto.CategoryName));
-
-        Show nameExist = _showDao.FindByName(showDto.Name);
-
-        if (nameExist != null)
+        try
         {
-            throw new StudentNotFoundException("This show already exists");
+            var showFindId = _showDao.FindId(id);
+
+            if(showFindId == null)
+            {
+                return CreateErrorResult<Show>("This is value is not exist");
+            }
+
+            return CreateSuccessResult(showFindId);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<Show>(ex.Message);
+        }
+    }
+
+    public byte[] GetImagem(string fileName)
+    {
+        try
+        {
+            string path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            var filePath = Path.Combine(path, fileName + ".png");
+
+            if (File.Exists(filePath))
+            {
+                byte[] fileBytes = File.ReadAllBytes(filePath);
+                return fileBytes;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<ResultOperation<Show>> CreateShow(ShowCreateDto showDto)
+    {
+        try
+        {
+            Category category = _showDao.FindByCategoryName(showDto.CategoryName);
+
+            if (category == null)
+            {
+                return CreateErrorResult<Show>($"This value {showDto.CategoryName} is not exist");
+            }
+
+            Show nameExist = _showDao.FindByName(showDto.Name);
+
+            if (nameExist != null)
+            {
+                return CreateErrorResult<Show>("This show already exists");
+            }
+
+            var show = _mapper.Map<Show>(showDto);
+
+            show.Category = category;
+            show.Address = await GetOrCreateAddressAsync(showDto.CEP);
+            show.ImagePath = SaveImage(showDto.imageFile);
+            show.Date = DateTime.Now.ToUniversalTime();
+
+            _showDao.Add(show);
+
+            return CreateSuccessResult(show);
+        }
+        catch (Exception ex)
+        {
+            return CreateErrorResult<Show>($"{ex.Message}");
+        }
+    }
+
+
+    private string SaveImage(IFormFile imageFile)
+    {
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+            string filePath = Path.Combine(path, uniqueFileName);
+            imageFile.CopyTo(new FileStream(filePath, FileMode.Create));
+
+            return uniqueFileName;
         }
 
-        var show = _mapper.Map<Show>(showDto);
-
-        show.Category = category;
-        show.Date = DateTime.Now.ToUniversalTime();
-
-        _showDao.Add(show);
-
-        return show;
+        return null;
     }
 
-    public Show DeleteShow(string Id)
+    private async Task<Address> GetOrCreateAddressAsync(string cep)
     {
-        var show = HandleErrorAsync(() => _showDao.FindId(Id));
+        Address address = await _ticketContext.Address.FirstOrDefaultAsync(c => c.CEP == cep);
 
-        _showDao.Remove(show);
+        if (address == null)
+        {
+            address = await _viacep.GetCep(cep);
+        }
 
-        return show;
+        return address;
     }
 
-    public Show UpdateShow(string Id, ShowUpdateDto showDto)
+    public ResultOperation<Show> DeleteShow(string Id)
     {
-        var show = HandleErrorAsync(() => _showDao.FindId(Id));
+        try
+        {
+            var show = _showDao.FindId(Id);
 
-        _showDao.Update(show, showDto);
+            if(show == null)
+            {
+                return CreateErrorResult<Show>("this value is not exist");
+            }
 
-        return show;
+            _showDao.Remove(show);
+
+            return CreateSuccessResult(show);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<Show>(ex.Message);
+        }
+    }
+
+    public ResultOperation<Show> UpdateShow(string Id, ShowUpdateDto showDto)
+    {
+        try
+        {
+            var show = _showDao.FindId(Id);
+
+            if(show == null)
+            {
+                return CreateErrorResult<Show>("This value is not exist");
+            }
+
+            _showDao.Update(show, showDto);
+
+            return CreateSuccessResult(show);
+        }catch(Exception ex)
+        {
+            return CreateErrorResult<Show>(ex.Message);
+        }
     }
 }

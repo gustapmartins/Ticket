@@ -12,7 +12,7 @@ public class CartMapper: Profile
            .ForMember(dest => dest.Ticket, opt => opt.MapFrom(src => new Tickets { Id = src.TicketId }));
             
 
-        CreateMap<Cart, CartViewDto>()
+        CreateMap<Carts, CartViewDto>()
              .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Users.Id));
     }
 }

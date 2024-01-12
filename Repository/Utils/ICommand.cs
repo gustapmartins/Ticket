@@ -6,9 +6,9 @@ public interface ICommand<T>
 
     T FindId(string Id);
 
-    void Add(T category);
+    void Add(T addObject);
 
-    void Remove(T category);
+    void Remove(T removeObject);
 
     void SaveChanges();
 }

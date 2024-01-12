@@ -10,8 +10,11 @@ public class ShowCreateDto
     [Required(ErrorMessage = "Description é obrigatório")]
     public string Description { get; set; }
 
-    [Required(ErrorMessage = "Local é obrigatório")]
-    public string Local { get; set; }
+    [Required(ErrorMessage = "CEP é obrigatório")]
+    public string CEP { get; set; }
+
+    [Required(ErrorMessage = "imageFile é obrigatório")]
+    public IFormFile imageFile { get; set; }
 
     [Required(ErrorMessage = "CategoryName é obrigatório")]
     public string CategoryName { get; set; }
