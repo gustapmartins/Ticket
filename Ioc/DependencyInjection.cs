@@ -13,6 +13,7 @@ using Ticket.Service;
 using Ticket.Model;
 using Ticket.Data;
 using Microsoft.AspNetCore.Hosting;
+using Lib_Authentication_2FA;
 
 
 namespace Ticket.Configure;
@@ -68,6 +69,8 @@ public class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
 
         services.AddScoped<ICachingService, CachingService>();
+
+        services.AddScoped<Authentication_2FA>();
 
         services.AddScoped<IShowService, ShowService>();
         services.AddTransient<IShowDao, ShowDaoComEfCore>();
