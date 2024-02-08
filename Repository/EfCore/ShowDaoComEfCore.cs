@@ -2,6 +2,7 @@
 using Ticket.DTO.Show;
 using Ticket.Model;
 using Ticket.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ticket.Repository.EfCore;
 
@@ -16,20 +17,12 @@ public class ShowDaoComEfCore: IShowDao
 
     public List<Show> FindAll()
     {
-        return _ticketContext.Shows.OrderByDescending(show => show.Id).ToList();
+        return _ticketContext.Shows.Include(s => s.Address).OrderByDescending(show => show.Name).ToList();
     }
 
     public Show FindId(string Id) 
     {
         return _ticketContext.Shows.FirstOrDefault(show => show.Id == Id)!;
-    }
-
-    public async Task<List<Show>> FindByShowNameList(string name)
-    {
-        return await Task.Run(() =>
-        {
-            return _ticketContext.Shows.Where(show => show.Name.StartsWith(name)).ToList();
-        });
     }
 
     public Category FindByCategoryName(string Name)
@@ -63,10 +56,6 @@ public class ShowDaoComEfCore: IShowDao
         if (showUpdateDto.Description != null)
         {
             show.Description = showUpdateDto.Description;
-        }
-        if(showUpdateDto.Local != null)
-        {
-            show.Local = showUpdateDto.Local;
         }
         if(showUpdateDto.CategoryName != null)
         {

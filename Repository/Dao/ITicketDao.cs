@@ -8,5 +8,5 @@ public interface ITicketDao : ICommand<Tickets>, ObjectHandler<Tickets, TicketUp
 {
     Show FindByShowName(string showName);
 
-    Users FindByUserEmail(string email);
+    Task<List<Show>> FindByShowNameList(string nome);
 }

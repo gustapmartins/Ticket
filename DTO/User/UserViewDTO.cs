@@ -10,6 +10,4 @@ public class UserViewDTO
     public string Cpf { get; set; }
     public int YearsOld { get; set; }
     public string Role { get; set; }
-    public double TotalPrice { get; set; }
-    public virtual List<Tickets> Tickets { get; set; }
 }

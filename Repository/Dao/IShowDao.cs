@@ -8,5 +8,4 @@ public interface IShowDao : ICommand<Show>, ObjectHandler<Show, ShowUpdateDto>
 {
     Category FindByCategoryName(string Name);
     Show FindByName(string Name);
-    Task<List<Show>> FindByShowNameList(string nome);
 }

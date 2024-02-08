@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ticket.DTO.Ticket;
 using Ticket.Interface;
+using Ticket.Service;
 
 namespace Ticket.Controllers;
 
@@ -43,9 +44,21 @@ public class TicketController : ControllerBase
     {
         string chaveRedis = $"Ticket:FindIdTicket:{id}";
 
-        return Ok(await _cachingService.StringGetSet(chaveRedis, () => 
+        return Ok(await _cachingService.StringGetSet(chaveRedis, () =>
             _ticketService.FindIdTicket(id)
         ));
+    }
+
+    /// <summary>
+    ///     Retorna os shows com o nome digitado
+    /// </summary>
+    ///     <returns>IActionResult</returns>
+    /// <response code="200">Caso inserção seja feita com sucesso</response>
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult SearchShows([FromHeader] string name)
+    {
+        return Ok(_ticketService.SearchShow(name));
     }
 
     /// <summary>

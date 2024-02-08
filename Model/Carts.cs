@@ -1,18 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Ticket.Enum;
+
 namespace Ticket.Model;
 
-public class Cart
+public class Carts
 {
+
+    public Carts() { }
 
     [Key]
     [Required]
     public string Id { get; set; }
 
-    public virtual List<CartItem> CartList { get; set; }
-
-    public int Quantity { get; set; }
-
     public decimal TotalPrice { get; set; }
-
+    
     public virtual Users Users { get; set; }
+
+    public virtual List<CartItem> CartList { get; set; }
 }

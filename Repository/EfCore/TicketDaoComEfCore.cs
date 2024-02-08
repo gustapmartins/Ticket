@@ -31,9 +31,12 @@ public class TicketDaoComEfCore: ITicketDao
         return _ticketContext.Shows.Include(show => show.Category).FirstOrDefault(show => show.Name == name)!;
     }
 
-    public Users FindByUserEmail(string email)
+    public async Task<List<Show>> FindByShowNameList(string name)
     {
-       return _ticketContext.Users.FirstOrDefault(user => user.Email == email)!;
+        return await Task.Run(() =>
+        {
+            return _ticketContext.Shows.Where(show => show.Name.StartsWith(name)).ToList();
+        });
     }
 
     public void Add(Tickets show)

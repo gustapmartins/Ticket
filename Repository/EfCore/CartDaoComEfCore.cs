@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ticket.Data;
+﻿using Ticket.Repository.Dao;
 using Ticket.Model;
-using Ticket.Repository.Dao;
+using Ticket.Data;
+using Ticket.Enum;
 
 namespace Ticket.Repository.EfCore;
 
@@ -13,7 +13,7 @@ public class CartDaoComEfCore : ICartDao
         _ticketContext = ticketContext;
     }
 
-    public void Add(Cart cart)
+    public void Add(Carts cart)
     {
         var existingCart = _ticketContext.Carts.FirstOrDefault(c => c.Id == cart.Id);
 
@@ -25,24 +25,31 @@ public class CartDaoComEfCore : ICartDao
        _ticketContext.SaveChanges();
     }
 
-    public Cart FindCartUser(string Id) 
+    public Carts FindCartPedding(string Id, StatusPayment statusPayment) 
     {
-        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id)!;
+        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == Id 
+            && cart.CartList.Any(item => item.statusPayment == statusPayment))!;
     }
 
-    public List<Cart> FindAll()
+    public List<Carts> FindAll()
     {
         throw new NotImplementedException();
     }
 
-    public Cart FindId(string id)
+    public Carts FindId(string id)
     {
-        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == id);
+        return _ticketContext.Carts.FirstOrDefault(cart => cart.Users.Id == id)!;
     }
 
-    public void Remove(Cart category)
+
+    public void Remove(Carts cart)
     {
-        throw new NotImplementedException();
+        if (cart != null)
+        {
+            cart.CartList.Clear();
+            cart.TotalPrice = 0;
+            Add(cart);
+        }
     }
 
     public void SaveChanges()

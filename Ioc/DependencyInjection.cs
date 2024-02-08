@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Extensions.Hosting.Internal;
 using Swashbuckle.AspNetCore.Filters;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Ticket.Repository.EfCore;
 using Ticket.ExceptionFilter;
@@ -9,8 +10,10 @@ using ServiceStack.Redis;
 using Ticket.Interface;
 using Newtonsoft.Json;
 using Ticket.Service;
-using Ticket.Data;
 using Ticket.Model;
+using Ticket.Data;
+using Microsoft.AspNetCore.Hosting;
+
 
 namespace Ticket.Configure;
 
@@ -56,7 +59,7 @@ public class DependencyInjection
        .AddEntityFrameworkStores<TicketContext>()
        .AddDefaultTokenProviders();
 
-        services.AddSingleton<IMessagePublisher, MessagePublisher>();
+        services.AddScoped<IMessagePublisher, MessagePublisher>();
 
         services.AddScoped<IAuthService, AuthService>();
 
@@ -78,14 +81,17 @@ public class DependencyInjection
         services.AddScoped<ICartService, CartService>();
         services.AddTransient<ICartDao, CartDaoComEfCore>();
 
+        services.AddScoped<IFeatureToggleService, FeatureToggleService>();
+        services.AddTransient<IFeatureToggleDao, FeatureToggleEfCore>();
+
         services.AddScoped<ICachingService, CachingService>();
 
         services.AddSingleton<IRedisClient>(c => new RedisClient(configuration["Redis:Host"], int.Parse(configuration["Redis:Port"])));
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings
         {
-            Formatting = Newtonsoft.Json.Formatting.Indented,
-            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
         Authentication.ConfigureAuth(services);

@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ticket.Model;
-
-
 
 public class Tickets
 {
