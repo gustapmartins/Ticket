@@ -10,4 +10,5 @@ public class LoginDTO
     [Required(ErrorMessage = "O Password do login é obrigatório")]
     public string? Password { get; set; }
 
+    public string? Code { get; set; }
 }

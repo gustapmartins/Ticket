@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Ticket.Model;
 
-namespace Ticket.Validation;
+namespace Ticket.Commons;
 
 public class ViaCep
 {
@@ -32,13 +32,14 @@ public class ViaCep
                     // CEP não encontrado, você pode lidar com isso da maneira desejada
                     return null;
                 }
-            }   
+            }
             else
             {
                 // Se a requisição falhou, lança uma exceção ou retorna null, dependendo da sua lógica
                 return null;
             }
-        }catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             throw new StudentNotFoundException(ex.Message, ex);
         }
