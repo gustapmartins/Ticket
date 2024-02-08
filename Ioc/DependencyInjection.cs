@@ -25,7 +25,7 @@ public class DependencyInjection
         var connectionString = configuration.GetConnectionString("TicketConnection");
 
         services.AddDbContext<TicketContext>(opts =>
-            opts.UseLazyLoadingProxies().UseNpgsql(connectionString));
+            opts.UseSqlServer(connectionString));
 
         services.AddControllers().AddNewtonsoftJson();
 
