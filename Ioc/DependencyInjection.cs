@@ -25,7 +25,8 @@ public class DependencyInjection
         var connectionString = configuration.GetConnectionString("TicketConnection");
 
         services.AddDbContext<TicketContext>(opts =>
-            opts.UseSqlServer(connectionString));
+            opts.UseMySql(connectionString,
+                ServerVersion.AutoDetect(connectionString)));
 
         services.AddControllers().AddNewtonsoftJson();
 
