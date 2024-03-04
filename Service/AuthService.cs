@@ -5,11 +5,15 @@ using Ticket.ExceptionFilter;
 using Ticket.DTO.Ticket;
 using Ticket.Interface;
 using Ticket.Model;
+using Ticket.DTO.User;
+using Ticket.Validation;
 using System.Text;
 using Ticket.Data;
 using AutoMapper;
-using Ticket.DTO.User;
-using Ticket.Validation;
+using Lib_Authentication_2FA;
+using static QRCoder.PayloadGenerator;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace Ticket.Service;
 
@@ -21,15 +25,16 @@ public class AuthService: BaseService, IAuthService
     private readonly IEmailService _emailService;
     private readonly IMapper _mapper;
     private readonly ITokenService _tokenService;
+    private readonly Authentication_2FA _authentication2FA;
 
     public AuthService(
         UserManager<Users> userManager,
         TicketContext ticketContext,
-        IMapper mapper, 
-        SignInManager<Users> signInManager, 
+        IMapper mapper,
+        SignInManager<Users> signInManager,
         ITokenService tokenService,
-        IEmailService emailService
-    )
+        IEmailService emailService,
+        Authentication_2FA authentication2FA)
     {
         _userManager = userManager;
         _ticketContext = ticketContext;
@@ -37,6 +42,7 @@ public class AuthService: BaseService, IAuthService
         _signInManager = signInManager;
         _tokenService = tokenService;
         _emailService = emailService;
+        _authentication2FA = authentication2FA;
     }
 
     public List<UserViewDTO> FindAll()
@@ -57,71 +63,84 @@ public class AuthService: BaseService, IAuthService
         }
     }
 
-    public async Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto)
+    public async Task<ResultOperation<RegisterDTO>> RegisterAsync(RegisterDTO registerDto)
     {
         try
         {
             var existEmail = await _userManager.FindByEmailAsync(registerDto.Email);
 
-            if (existEmail != null)
-            {
-                throw new StudentNotFoundException("This email already exists");
-            }
+            if (existEmail != null) 
+                return CreateErrorResult<RegisterDTO>("E-mail arealdy exist");
+           
+            bool cpf = Lib_AttributeValidation.Validation.ValidarCpf(registerDto.Cpf!);
 
-            if (registerDto.YearsOld <= 16)
-            {
-                throw new StudentNotFoundException("This email already exists");
-            }
+            if (!cpf)
+                return CreateErrorResult<RegisterDTO>("Invalid CPF");
 
             Users user = _mapper.Map<Users>(registerDto);
 
+            if(registerDto.TwoFactorEnabled)
+            {
+                var twoFactorKey = _authentication2FA.GenerateSecretKey();
+
+                user.TwoFactorAuthKey = twoFactorKey;
+                // Gere o código QR para o usuário escanear
+                registerDto.qrCodeUrl = _authentication2FA.GenerateQR(registerDto.Email, twoFactorKey);
+            }
+
             IdentityResult result = await _userManager.CreateAsync(user, registerDto.Password);
 
-            if (!result.Succeeded) throw new StudentNotFoundException("Failed to register the user");
+            if (!result.Succeeded)            
+                throw new InvalidOperationException($"Falha ao registrar o usuário. Erros: {string.Join(", ", result.Errors)}");
 
-            return registerDto;
-        }catch
+            return CreateSuccessResult(registerDto);
+
+        }
+        catch (Exception ex)
         {
-            throw;
+            return CreateErrorResult<RegisterDTO>(ex.Message);
         }
     }
 
-    public async Task<string> Login(LoginDTO loginDto)
+    public async Task<ResultOperation<string>> Login(LoginDTO loginDto)
     {
-
         try
         {
-            var email = await _userManager.FindByEmailAsync(loginDto.Email);
 
-            if (email == null)
-            {
-                throw new StudentNotFoundException($"This {loginDto.Email} already exists");
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(email, loginDto.Password, false, false);
-
-            if (!result.Succeeded)
-            {
-                throw new StudentNotFoundException("Unauthenticated user");
-            }
-
-            var user = _signInManager
-                .UserManager
-                .Users
-                .FirstOrDefault(user => user.NormalizedEmail == loginDto.Email!.ToUpper());
+            Users user = await _userManager.FindByEmailAsync(loginDto.Email);
 
             if (user == null)
+                throw new StudentNotFoundException($"This {loginDto.Email} not exists");
+
+            var is2FAEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+
+            if(is2FAEnabled)
             {
-                throw new StudentNotFoundException("User is null");
+                string key = user.TwoFactorAuthKey;
+
+                if (string.IsNullOrEmpty(key))
+                    // A chave 2FA do usuário não está definida
+                    throw new InvalidOperationException("Chave 2FA não encontrada para o usuário");
+
+                bool is2FAValid = _authentication2FA.ValidateCode(loginDto.Code, key);
+
+                if (!is2FAValid)
+                    // Código 2FA inválido
+                    throw new InvalidOperationException("Código 2FA inválido");
             }
+            
+            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
+
+            if (!result.Succeeded)
+                throw new StudentNotFoundException("Unauthenticated user");
 
             var token = _tokenService.GenerateToken(user);
 
-            return token;
+            return CreateSuccessResult(token);
         }
-        catch
+        catch(Exception ex)
         {
-            throw;
+            return CreateErrorResult<string>(ex.Message);
         }
     }
 

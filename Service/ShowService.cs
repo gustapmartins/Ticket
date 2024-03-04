@@ -7,6 +7,7 @@ using Ticket.Model;
 using Ticket.Data;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Ticket.Commons;
 
 namespace Ticket.Service;
 

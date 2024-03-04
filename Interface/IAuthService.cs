@@ -1,5 +1,6 @@
 ﻿using Ticket.DTO.Ticket;
 using Ticket.DTO.User;
+using Ticket.Model;
 
 namespace Ticket.Interface;
 
@@ -7,9 +8,9 @@ public interface IAuthService
 {
     List<UserViewDTO> FindAll();
 
-    Task<string> Login(LoginDTO loginDto);
+    Task<ResultOperation<string>> Login(LoginDTO loginDto);
 
-    Task<RegisterDTO> RegisterAsync(RegisterDTO registerDto);
+    Task<ResultOperation<RegisterDTO>> RegisterAsync(RegisterDTO registerDto);
 
     Task<string> ForgetPasswordAsync(string email);
 

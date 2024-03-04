@@ -27,4 +27,8 @@ public class RegisterDTO
 
     [Required(ErrorMessage = "YearsOld is required")]
     public string? Role { get; set; }
+
+    public string? qrCodeUrl { get; set; }
+
+    public bool TwoFactorEnabled { get; set; }
 }

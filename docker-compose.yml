@@ -6,7 +6,7 @@
         container_name: postgres.database
         restart: always
         environment:
-          POSTGRES_PASSWORD: "2525"
+          POSTGRES_PASSWORD: 2525
           POSTGRES_DB: Ticket
         ports:
           - "5432:5432"
